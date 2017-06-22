@@ -1,1 +1,1 @@
-"# Sillycore" 
+# Sillycore
