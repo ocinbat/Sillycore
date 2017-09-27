@@ -3,31 +3,25 @@ using System.Threading.Tasks;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Sillycore.Domain.Abstractions;
 
 namespace Sillycore.Web.Results
 {
-    public class PageResult<T> : JsonResult
+    public class PageResult<T> : IActionResult
     {
         private readonly IPage<T> _page;
 
         public PageResult(IPage<T> page)
-            : base(page.Items)
         {
             _page = page;
         }
 
-        public override void ExecuteResult(ActionContext context)
+        public async Task ExecuteResultAsync(ActionContext context)
         {
-            base.ExecuteResult(context);
-
             SetHeaders(context);
-        }
-
-        public override async Task ExecuteResultAsync(ActionContext context)
-        {
-            await base.ExecuteResultAsync(context);
-            SetHeaders(context);
+            await context.HttpContext.Response.WriteAsync(JsonConvert.SerializeObject(_page.Items,
+                SillycoreApp.JsonSerializerSettings));
         }
 
         private void SetHeaders(ActionContext context)
