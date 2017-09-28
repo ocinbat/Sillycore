@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace Sillycore.Extensions
 {
@@ -262,6 +264,13 @@ namespace Sillycore.Extensions
             return textInfo.ToTitleCase(input.ToLower());
         }
 
+        public static IEnumerable<string> Fields<T>(this string input) where T : class
+        {
+            IEnumerable<string> selectedPropertyNames = (input ?? "").ToLowerInvariant().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim());
+            IDictionary<string, PropertyInfo> selectedProperties = GetSelectableProperties<T>(selectedPropertyNames);
+            return selectedProperties.Keys;
+        }
+
         #region Helpers
 
         private static Dictionary<string, string> GenerateHtmlReplacementCharacters()
@@ -292,6 +301,25 @@ namespace Sillycore.Extensions
             results.Add(">", String.Empty);
 
             return results;
+        }
+
+        private static IDictionary<string, PropertyInfo> GetSelectableProperties<T>(IEnumerable<string> selectedProperties) where T : class
+        {
+            var existedProperties = typeof(T)
+                .GetProperties()
+                .Where(p => p.GetCustomAttribute<JsonIgnoreAttribute>() == null)
+                .ToDictionary(p => p.Name.ToLowerInvariant());
+
+            IEnumerable<string> properties = selectedProperties as string[] ?? selectedProperties.ToArray();
+
+            if (properties.Any())
+            {
+                return properties
+                    .Where(p => existedProperties.ContainsKey(p.ToLowerInvariant()))
+                    .ToDictionary(p => p, p => existedProperties[p.ToLowerInvariant()]);
+            }
+
+            return existedProperties;
         }
 
         #endregion
