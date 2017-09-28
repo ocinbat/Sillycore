@@ -268,7 +268,15 @@ namespace Sillycore.Extensions
         {
             IEnumerable<string> selectedPropertyNames = (input ?? "").ToLowerInvariant().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim());
             IDictionary<string, PropertyInfo> selectedProperties = GetSelectableProperties<T>(selectedPropertyNames);
-            return selectedProperties.Keys;
+
+            List<string> results = new List<string>();
+
+            foreach (string name in selectedProperties.Keys)
+            {
+                results.Add(Char.ToLowerInvariant(name[0]) + name.Substring(1));
+            }
+
+            return results;
         }
 
         #region Helpers
