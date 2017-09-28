@@ -268,15 +268,17 @@ namespace Sillycore.Extensions
         {
             IEnumerable<string> selectedPropertyNames = (input ?? "").ToLowerInvariant().Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim());
             IDictionary<string, PropertyInfo> selectedProperties = GetSelectableProperties<T>(selectedPropertyNames);
+            return selectedProperties.Select(p => p.Value.Name);
+        }
 
-            List<string> results = new List<string>();
-
-            foreach (string name in selectedProperties.Keys)
+        public static string ToCamelCase(this string input)
+        {
+            if (String.IsNullOrEmpty(input))
             {
-                results.Add(Char.ToLowerInvariant(name[0]) + name.Substring(1));
+                throw new ArgumentNullException(nameof(input));
             }
 
-            return results;
+            return Char.ToLowerInvariant(input[0]) + input.Substring(1);
         }
 
         #region Helpers
