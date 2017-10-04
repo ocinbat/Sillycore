@@ -8,6 +8,11 @@ namespace Sillycore.Web.Filters
     {
         public override void OnException(ExceptionContext context)
         {
+            while (context.Exception?.InnerException != null)
+            {
+                context.Exception = context.Exception.InnerException;
+            }
+
             ErrorResponse errorResponse = new ErrorResponse();
             errorResponse.AdditionalInfo = context.Exception?.Message;
             errorResponse.ErrorCode = "InternalServerError";

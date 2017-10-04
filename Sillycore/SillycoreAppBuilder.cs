@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using NLog.Extensions.Logging;
 using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Objects.DateTimeProviders;
 
@@ -17,24 +20,47 @@ namespace Sillycore
         private readonly List<Action> _afterBuildTasks = new List<Action>();
 
         public InMemoryDataStore DataStore = new InMemoryDataStore();
+        public ServiceCollection Services = new ServiceCollection();
 
-        public SillycoreApp Build()
+        public void Build()
         {
             SetGlobalJsonSerializerSettings();
+            InitializeLogger();
 
             foreach (var task in _beforeBuildTasks)
             {
                 task.Invoke();
             }
 
-            SillycoreApp.Instance = new SillycoreApp(DataStore);
+            BuildServiceProvider();
+            SillycoreApp.Initialize(DataStore);
+            AddNLog();
 
             foreach (var task in _afterBuildTasks)
             {
                 task.Invoke();
             }
+        }
 
-            return SillycoreApp.Instance;
+        private void AddNLog()
+        {
+            ILoggerFactory loggerFactory = DataStore.GetData<ServiceProvider>(Constants.ServiceProvider).GetService<ILoggerFactory>();
+            loggerFactory.AddNLog();
+            DataStore.SetData(Constants.LoggerFactory, loggerFactory);
+        }
+
+        private void BuildServiceProvider()
+        {
+            ServiceProvider serviceProvider = Services.BuildServiceProvider();
+            DataStore.SetData(Constants.ServiceProvider, serviceProvider);
+        }
+
+        private void InitializeLogger()
+        {
+            Services.AddLogging(lb =>
+            {
+                lb.SetMinimumLevel(LogLevel.Trace);
+            });
         }
 
         public void BeforeBuild(Action action)

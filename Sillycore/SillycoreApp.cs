@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Objects.DateTimeProviders;
 
@@ -7,12 +8,11 @@ namespace Sillycore
     public class SillycoreApp
     {
         public static JsonSerializerSettings JsonSerializerSettings { get; set; }
-        public static SillycoreApp Instance { get; set; }
 
-        public InMemoryDataStore DataStore { get; set; }
+        public static InMemoryDataStore DataStore { get; set; }
 
-        private IDateTimeProvider _dateTimeProvider;
-        public IDateTimeProvider DateTimeProvider
+        private static IDateTimeProvider _dateTimeProvider;
+        public static IDateTimeProvider DateTimeProvider
         {
             get
             {
@@ -30,7 +30,9 @@ namespace Sillycore
             }
         }
 
-        public SillycoreApp(InMemoryDataStore dataStore)
+        public static ILoggerFactory LoggerFactory => DataStore.GetData<ILoggerFactory>(Constants.LoggerFactory);
+
+        public static void Initialize(InMemoryDataStore dataStore)
         {
             DataStore = dataStore;
         }

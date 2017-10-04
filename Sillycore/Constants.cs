@@ -12,5 +12,8 @@
 
         public const string DateTimeProvider = "DateTimeProvider";
         public const string ConfigManager = "ConfigManager";
+        public const string ServiceCollection = "Services";
+        public const string ServiceProvider = "ServiceProvider";
+        public const string LoggerFactory = "LoggerFactory";
     }
 }

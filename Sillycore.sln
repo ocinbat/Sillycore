@@ -13,7 +13,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sillycore.Web", "Sillycore.Web\Sillycore.Web.csproj", "{A9ED9401-2F7C-4DD6-9277-27879801A2B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sillycore.Web", "Sillycore.Web\Sillycore.Web.csproj", "{A9ED9401-2F7C-4DD6-9277-27879801A2B2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{583056BC-14D3-4671-8A53-E46F4AB6B8F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "Samples\ConsoleApp\ConsoleApp.csproj", "{71E12D22-CF71-4326-B2B5-6C7DCC0EDDBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,9 +33,16 @@ Global
 		{A9ED9401-2F7C-4DD6-9277-27879801A2B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9ED9401-2F7C-4DD6-9277-27879801A2B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9ED9401-2F7C-4DD6-9277-27879801A2B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71E12D22-CF71-4326-B2B5-6C7DCC0EDDBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71E12D22-CF71-4326-B2B5-6C7DCC0EDDBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71E12D22-CF71-4326-B2B5-6C7DCC0EDDBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71E12D22-CF71-4326-B2B5-6C7DCC0EDDBA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{71E12D22-CF71-4326-B2B5-6C7DCC0EDDBA} = {583056BC-14D3-4671-8A53-E46F4AB6B8F9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E6C78FCE-F5DA-45B5-B9D3-F5F8A855B296}
