@@ -16,9 +16,9 @@ namespace Sillycore
             _builder.BeforeBuild(action);
         }
 
-        public void Build()
+        public SillycoreApp Build()
         {
-            _builder.Build();
+            return _builder.Build();
         }
 
         public void AfterBuild(Action action)

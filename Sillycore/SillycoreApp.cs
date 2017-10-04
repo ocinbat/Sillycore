@@ -8,6 +8,7 @@ namespace Sillycore
     public class SillycoreApp
     {
         public static JsonSerializerSettings JsonSerializerSettings { get; set; }
+        public static SillycoreApp Instance { get; set; }
 
         public static InMemoryDataStore DataStore { get; set; }
 
@@ -32,7 +33,7 @@ namespace Sillycore
 
         public static ILoggerFactory LoggerFactory => DataStore.GetData<ILoggerFactory>(Constants.LoggerFactory);
 
-        public static void Initialize(InMemoryDataStore dataStore)
+        public SillycoreApp(InMemoryDataStore dataStore)
         {
             DataStore = dataStore;
         }

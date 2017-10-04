@@ -22,7 +22,7 @@ namespace Sillycore
         public InMemoryDataStore DataStore = new InMemoryDataStore();
         public ServiceCollection Services = new ServiceCollection();
 
-        public void Build()
+        public SillycoreApp Build()
         {
             SetGlobalJsonSerializerSettings();
             InitializeLogger();
@@ -33,13 +33,15 @@ namespace Sillycore
             }
 
             BuildServiceProvider();
-            SillycoreApp.Initialize(DataStore);
+            SillycoreApp.Instance = new SillycoreApp(DataStore);
             AddNLog();
 
             foreach (var task in _afterBuildTasks)
             {
                 task.Invoke();
             }
+
+            return SillycoreApp.Instance;
         }
 
         private void AddNLog()

@@ -6,7 +6,7 @@ namespace Sillycore
     {
         void BeforeBuild(Action action);
 
-        void Build();
+        SillycoreApp Build();
 
         void AfterBuild(Action action);
     }
