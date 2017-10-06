@@ -1,0 +1,8 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)nlog.config">
+      <Link>GRabc.txt</Link>
+      <CopyToOutputDirectory>IfNewer</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
