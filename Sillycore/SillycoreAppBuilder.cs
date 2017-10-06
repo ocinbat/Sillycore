@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using NLog.Extensions.Logging;
 using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Objects.DateTimeProviders;
 
@@ -20,7 +19,7 @@ namespace Sillycore
         private readonly List<Action> _afterBuildTasks = new List<Action>();
 
         public InMemoryDataStore DataStore = new InMemoryDataStore();
-        public ServiceCollection Services = new ServiceCollection();
+        public IServiceCollection Services = new ServiceCollection();
 
         public SillycoreApp Build()
         {
@@ -34,7 +33,6 @@ namespace Sillycore
 
             BuildServiceProvider();
             SillycoreApp.Instance = new SillycoreApp(DataStore);
-            AddNLog();
 
             foreach (var task in _afterBuildTasks)
             {
@@ -42,27 +40,6 @@ namespace Sillycore
             }
 
             return SillycoreApp.Instance;
-        }
-
-        private void AddNLog()
-        {
-            ILoggerFactory loggerFactory = DataStore.GetData<ServiceProvider>(Constants.ServiceProvider).GetService<ILoggerFactory>();
-            loggerFactory.AddNLog();
-            DataStore.SetData(Constants.LoggerFactory, loggerFactory);
-        }
-
-        private void BuildServiceProvider()
-        {
-            ServiceProvider serviceProvider = Services.BuildServiceProvider();
-            DataStore.SetData(Constants.ServiceProvider, serviceProvider);
-        }
-
-        private void InitializeLogger()
-        {
-            Services.AddLogging(lb =>
-            {
-                lb.SetMinimumLevel(LogLevel.Trace);
-            });
         }
 
         public void BeforeBuild(Action action)
@@ -121,6 +98,23 @@ namespace Sillycore
 
             settings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
             return settings;
+        }
+
+        private void BuildServiceProvider()
+        {
+            if (DataStore.GetData(Constants.ServiceProvider) == null)
+            {
+                ServiceProvider serviceProvider = Services.BuildServiceProvider();
+                DataStore.SetData(Constants.ServiceProvider, serviceProvider);
+            }
+        }
+
+        private void InitializeLogger()
+        {
+            Services.AddLogging(lb =>
+            {
+                lb.SetMinimumLevel(LogLevel.Trace);
+            });
         }
     }
 }

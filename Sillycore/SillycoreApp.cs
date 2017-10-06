@@ -10,10 +10,10 @@ namespace Sillycore
         public static JsonSerializerSettings JsonSerializerSettings { get; set; }
         public static SillycoreApp Instance { get; set; }
 
-        public static InMemoryDataStore DataStore { get; set; }
+        public InMemoryDataStore DataStore { get; set; }
 
-        private static IDateTimeProvider _dateTimeProvider;
-        public static IDateTimeProvider DateTimeProvider
+        private IDateTimeProvider _dateTimeProvider;
+        public IDateTimeProvider DateTimeProvider
         {
             get
             {
@@ -31,7 +31,7 @@ namespace Sillycore
             }
         }
 
-        public static ILoggerFactory LoggerFactory => DataStore.GetData<ILoggerFactory>(Constants.LoggerFactory);
+        public ILoggerFactory LoggerFactory => DataStore.GetData<ILoggerFactory>(Constants.LoggerFactory);
 
         public SillycoreApp(InMemoryDataStore dataStore)
         {

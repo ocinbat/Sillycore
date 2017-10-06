@@ -14,7 +14,7 @@ namespace ConsoleApp
                 .UseUtcTimes()
                 .Build();
 
-            _logger = SillycoreApp.LoggerFactory.CreateLogger<Program>();
+            _logger = SillycoreApp.Instance.LoggerFactory.CreateLogger<Program>();
             _logger.LogInformation("dsadsada");
         }
     }
