@@ -66,6 +66,13 @@ namespace Sillycore
             return this;
         }
 
+        public SillycoreAppBuilder ConfigureServices(Action<IServiceCollection> action)
+        {
+            action.Invoke(Services);
+
+            return this;
+        }
+
         private void SetGlobalJsonSerializerSettings()
         {
             IDateTimeProvider dateTimeProvider = DataStore.GetData<IDateTimeProvider>(Constants.DateTimeProvider);
