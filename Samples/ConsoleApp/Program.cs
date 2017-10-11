@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
 using Microsoft.Extensions.Logging;
 using Sillycore;
 
@@ -16,6 +16,9 @@ namespace ConsoleApp
 
             _logger = SillycoreApp.Instance.LoggerFactory.CreateLogger<Program>();
             _logger.LogInformation("dsadsada");
+
+            Console.Out.WriteLineAsync(SillycoreApp.Instance.Configuration["key"]);
+            Console.ReadKey();
         }
     }
 }

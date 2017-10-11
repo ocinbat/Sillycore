@@ -10,9 +10,8 @@ namespace Sillycore.NLog
         {
             builder.AfterBuild(() =>
             {
-                ILoggerFactory loggerFactory = builder.DataStore.GetData<ServiceProvider>(Constants.ServiceProvider).GetService<ILoggerFactory>();
+                ILoggerFactory loggerFactory = builder.DataStore.Get<ILoggerFactory>(Constants.LoggerFactory);
                 loggerFactory.AddNLog();
-                builder.DataStore.SetData(Constants.LoggerFactory, loggerFactory);
             });
 
             return builder;

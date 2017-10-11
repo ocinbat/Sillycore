@@ -23,7 +23,7 @@ namespace Sillycore.Web
         {
             if (!String.IsNullOrEmpty(rootUrl))
             {
-                _sillycoreAppBuilder.DataStore.SetData(Constants.ApiRootUrl, rootUrl.TrimEnd('/'));
+                _sillycoreAppBuilder.DataStore.Set(Constants.ApiRootUrl, rootUrl.TrimEnd('/'));
             }
 
             return this;
@@ -31,7 +31,7 @@ namespace Sillycore.Web
 
         public void Build()
         {
-            _sillycoreAppBuilder.DataStore.SetData(Constants.ApplicationName, _applicationName);
+            _sillycoreAppBuilder.DataStore.Set(Constants.ApplicationName, _applicationName);
 
             _sillycoreAppBuilder.BeforeBuild(() =>
             {
@@ -39,16 +39,16 @@ namespace Sillycore.Web
                     .UseStartup<Startup>()
                     .Build();
 
-                _sillycoreAppBuilder.DataStore.SetData(Constants.WebHost, webhost);
+                _sillycoreAppBuilder.DataStore.Set(Constants.WebHost, webhost);
             });
 
             SillycoreApp app = _sillycoreAppBuilder.Build();
 
-            ServiceProvider serviceProvider = app.DataStore.GetData<ServiceProvider>(Sillycore.Constants.ServiceProvider);
+            ServiceProvider serviceProvider = app.DataStore.Get<ServiceProvider>(Sillycore.Constants.ServiceProvider);
             ILogger<SillycoreWebhostBuilder> logger = serviceProvider.GetService<ILogger<SillycoreWebhostBuilder>>();
             logger.LogInformation($"{_applicationName} started.");
 
-            app.DataStore.GetData<IWebHost>(Constants.WebHost).Run();
+            app.DataStore.Get<IWebHost>(Constants.WebHost).Run();
         }
     }
 }

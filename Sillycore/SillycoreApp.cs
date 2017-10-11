@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Objects.DateTimeProviders;
@@ -12,26 +13,9 @@ namespace Sillycore
 
         public InMemoryDataStore DataStore { get; set; }
 
-        private IDateTimeProvider _dateTimeProvider;
-        public IDateTimeProvider DateTimeProvider
-        {
-            get
-            {
-                if (_dateTimeProvider == null)
-                {
-                    _dateTimeProvider = DataStore.GetData<IDateTimeProvider>(Constants.DateTimeProvider);
-
-                    if (_dateTimeProvider == null)
-                    {
-                        _dateTimeProvider = new UtcDateTimeProvider();
-                    }
-                }
-
-                return _dateTimeProvider;
-            }
-        }
-
-        public ILoggerFactory LoggerFactory => DataStore.GetData<ILoggerFactory>(Constants.LoggerFactory);
+        public IDateTimeProvider DateTimeProvider => DataStore.Get<IDateTimeProvider>(Constants.DateTimeProvider);
+        public ILoggerFactory LoggerFactory => DataStore.Get<ILoggerFactory>(Constants.LoggerFactory);
+        public IConfiguration Configuration => DataStore.Get<IConfiguration>(Constants.Configuration);
 
         public SillycoreApp(InMemoryDataStore dataStore)
         {

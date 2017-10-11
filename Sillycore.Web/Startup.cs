@@ -52,7 +52,7 @@ namespace Sillycore.Web
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = dataStore.GetData<string>(Constants.ApplicationName), Version = "v1" });
+                c.SwaggerDoc("v1", new Info { Title = dataStore.Get<string>(Constants.ApplicationName), Version = "v1" });
                 c.DescribeAllEnumsAsStrings();
                 c.DescribeStringEnumsInCamelCase();
                 c.IgnoreObsoleteActions();
@@ -64,7 +64,7 @@ namespace Sillycore.Web
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            SillycoreAppBuilder.Instance.DataStore.SetData(Sillycore.Constants.ServiceProvider, app.ApplicationServices);
+            SillycoreAppBuilder.Instance.DataStore.Set(Sillycore.Constants.ServiceProvider, app.ApplicationServices);
 
             if (env.IsDevelopment())
             {

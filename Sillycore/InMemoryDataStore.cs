@@ -6,19 +6,27 @@ namespace Sillycore
     {
         protected Dictionary<string, object> Data = new Dictionary<string, object>();
 
-        public void SetData(string key, object value)
+        public void Set(string key, object value)
         {
             Data.Add(key, value);
         }
 
-        public object GetData(string key)
+        public object Get(string key)
         {
             return Data.ContainsKey(key) ? Data[key] : null;
         }
 
-        public T GetData<T>(string key)
+        public T Get<T>(string key)
         {
-            return (T)GetData(key);
+            return (T)Get(key);
+        }
+
+        public void Delete(string key)
+        {
+            if (Data.ContainsKey(key))
+            {
+                Data.Remove(key);
+            }
         }
     }
 }

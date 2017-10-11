@@ -15,5 +15,6 @@
         public const string ServiceCollection = "Services";
         public const string ServiceProvider = "ServiceProvider";
         public const string LoggerFactory = "LoggerFactory";
+        public const string Configuration = "Configuration";
     }
 }
