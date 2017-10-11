@@ -150,6 +150,9 @@ namespace Sillycore
             _configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", true, true)
+                .AddJsonFile("appsettings.ci.json", true, true)
+                .AddJsonFile("appsettings.test.json", true, true)
+                .AddJsonFile("appsettings.staging.json", true, true)
                 .AddJsonFile("appsettings.production.json", true, true)
                 .AddEnvironmentVariables()
                 .Build();
