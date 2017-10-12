@@ -37,7 +37,6 @@ namespace Sillycore.Web
             {
                 IWebHost webhost = WebHost.CreateDefaultBuilder(_args)
                     .UseStartup<Startup>()
-                    .UseUrls("http://0.0.0.0:80")
                     .Build();
 
                 _sillycoreAppBuilder.DataStore.Set(Constants.WebHost, webhost);
