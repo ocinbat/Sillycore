@@ -2,6 +2,7 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +34,16 @@ namespace Sillycore.Web
                 .AddApplicationPart(Assembly.GetEntryAssembly())
                 .AddMvcOptions(o =>
                 {
+                    o.InputFormatters.RemoveType<JsonPatchInputFormatter>();
+                    o.InputFormatters.RemoveType<XmlDataContractSerializerInputFormatter>();
+                    o.InputFormatters.RemoveType<XmlSerializerInputFormatter>();
+
+                    o.OutputFormatters.RemoveType<HttpNoContentOutputFormatter>();
+                    o.OutputFormatters.RemoveType<StreamOutputFormatter>();
+                    o.OutputFormatters.RemoveType<StringOutputFormatter>();
+                    o.OutputFormatters.RemoveType<XmlDataContractSerializerOutputFormatter>();
+                    o.OutputFormatters.RemoveType<XmlSerializerOutputFormatter>();
+
                     o.Filters.Add<GlobalExceptionFilter>();
                 })
                 .AddJsonOptions(o =>
