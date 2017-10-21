@@ -1,9 +1,7 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -82,7 +80,7 @@ namespace Sillycore.Web
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            
             app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
@@ -90,6 +88,9 @@ namespace Sillycore.Web
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
                 c.InjectOnCompleteJavaScript("");
             });
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
         }
     }
 }
