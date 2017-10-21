@@ -1,4 +1,5 @@
-﻿using Microsoft.ApplicationInsights.AspNetCore.Extensions;
+﻿using System;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Sillycore.Web.HealthCheck;
@@ -26,6 +27,7 @@ namespace Sillycore.Web.Controllers
         public IActionResult HealthCheck()
         {
             HealthCheckResponse response = new HealthCheckResponse();
+            response.DockerImageName = Environment.GetEnvironmentVariable("Sillycore.DockerImageName");
             return Ok(response);
         }
     }
