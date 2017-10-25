@@ -32,7 +32,6 @@ namespace Sillycore.Web
                 .AddApplicationPart(Assembly.GetEntryAssembly())
                 .AddMvcOptions(o =>
                 {
-                    o.InputFormatters.RemoveType<JsonPatchInputFormatter>();
                     o.InputFormatters.RemoveType<XmlDataContractSerializerInputFormatter>();
                     o.InputFormatters.RemoveType<XmlSerializerInputFormatter>();
 
