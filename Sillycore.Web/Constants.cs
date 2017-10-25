@@ -5,5 +5,8 @@
         public const string WebHost = "WebHost";
         public const string ApplicationName = "ApplicationName";
         public const string ApiRootUrl = "ApiRootUrl";
+        public const string WithLocalSsl = "WithLocalSsl";
+        public const string CertificatePath = "CertificatePath";
+        public const string CertificatePassword = "CertificatePassword";
     }
 }
