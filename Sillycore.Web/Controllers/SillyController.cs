@@ -82,6 +82,11 @@ namespace Sillycore.Web.Controllers
             return StatusCode(HttpStatusCode.InternalServerError.ToInt(), errorResponse);
         }
 
+        protected IActionResult InternalServerError<T>(T errorResponse)
+        {
+            return StatusCode(HttpStatusCode.InternalServerError.ToInt(), errorResponse);
+        }
+
         private string GetIdFromReturnValue(object returnValue)
         {
             if (returnValue != null)

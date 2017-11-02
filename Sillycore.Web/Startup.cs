@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -90,6 +91,14 @@ namespace Sillycore.Web
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
+            var applicationLifetime = app.ApplicationServices.GetRequiredService<IApplicationLifetime>();
+            applicationLifetime.ApplicationStopping.Register(OnShutdown);
+        }
+
+        private void OnShutdown()
+        {
+            SillycoreApp.Instance.DataStore.Set(Constants.IsShuttingDown, true);
+            Thread.Sleep(15000);
         }
     }
 }

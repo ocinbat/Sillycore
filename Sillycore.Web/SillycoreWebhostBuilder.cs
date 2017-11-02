@@ -42,6 +42,7 @@ namespace Sillycore.Web
         public void Build()
         {
             _sillycoreAppBuilder.DataStore.Set(Constants.ApplicationName, _applicationName);
+            _sillycoreAppBuilder.DataStore.Set(Constants.IsShuttingDown, false);
 
             _sillycoreAppBuilder.BeforeBuild(() =>
             {

@@ -7,5 +7,6 @@
         public const string ApiRootUrl = "ApiRootUrl";
         public const string CertificatePath = "CertificatePath";
         public const string CertificatePassword = "CertificatePassword";
+        public const string IsShuttingDown = "IsShuttingDown";
     }
 }

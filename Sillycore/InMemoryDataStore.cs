@@ -8,7 +8,14 @@ namespace Sillycore
 
         public void Set(string key, object value)
         {
-            Data.Add(key, value);
+            if (Data.ContainsKey(key))
+            {
+                Data[key] = value;
+            }
+            else
+            {
+                Data.Add(key, value);
+            }
         }
 
         public object Get(string key)
