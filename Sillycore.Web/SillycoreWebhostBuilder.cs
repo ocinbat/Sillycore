@@ -21,6 +21,9 @@ namespace Sillycore.Web
             _sillycoreAppBuilder = sillycoreAppBuilder;
             _applicationName = applicationName;
             _args = args;
+
+            _sillycoreAppBuilder.DataStore.Set(Constants.IsShuttingDown, false);
+            _sillycoreAppBuilder.DataStore.Set(Constants.UseSwagger, false);
         }
 
         public SillycoreWebhostBuilder WithUrl(string rootUrl)
@@ -29,6 +32,13 @@ namespace Sillycore.Web
             {
                 _sillycoreAppBuilder.DataStore.Set(Constants.ApiRootUrl, rootUrl.TrimEnd('/'));
             }
+
+            return this;
+        }
+
+        public SillycoreWebhostBuilder WithSwagger()
+        {
+            _sillycoreAppBuilder.DataStore.Set(Constants.UseSwagger, true);
 
             return this;
         }
@@ -42,7 +52,6 @@ namespace Sillycore.Web
         public void Build()
         {
             _sillycoreAppBuilder.DataStore.Set(Constants.ApplicationName, _applicationName);
-            _sillycoreAppBuilder.DataStore.Set(Constants.IsShuttingDown, false);
 
             _sillycoreAppBuilder.BeforeBuild(() =>
             {

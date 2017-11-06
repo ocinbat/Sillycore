@@ -19,11 +19,10 @@ namespace Sillycore.Web
         }
 
         public IConfiguration Configuration { get; }
+        public InMemoryDataStore DataStore => SillycoreAppBuilder.Instance.DataStore;
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var dataStore = SillycoreAppBuilder.Instance.DataStore;
-
             foreach (ServiceDescriptor descriptor in SillycoreAppBuilder.Instance.Services)
             {
                 services.Add(descriptor);
@@ -60,14 +59,17 @@ namespace Sillycore.Web
                     }
                 });
 
-            services.AddSwaggerGen(c =>
+            if (DataStore.Get<bool>(Constants.UseSwagger))
             {
-                c.SwaggerDoc("v1", new Info { Title = dataStore.Get<string>(Constants.ApplicationName), Version = "v1" });
-                c.DescribeAllEnumsAsStrings();
-                c.DescribeStringEnumsInCamelCase();
-                c.IgnoreObsoleteActions();
-                c.IgnoreObsoleteProperties();
-            });
+                services.AddSwaggerGen(c =>
+                {
+                    c.SwaggerDoc("v1", new Info { Title = DataStore.Get<string>(Constants.ApplicationName), Version = "v1" });
+                    c.DescribeAllEnumsAsStrings();
+                    c.DescribeStringEnumsInCamelCase();
+                    c.IgnoreObsoleteActions();
+                    c.IgnoreObsoleteProperties();
+                });
+            }
 
             SillycoreAppBuilder.Instance.Services = services;
         }
@@ -81,13 +83,25 @@ namespace Sillycore.Web
                 app.UseDeveloperExceptionPage();
             }
             
-            app.UseMvc();
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
+            app.UseMvc(r =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-                c.InjectOnCompleteJavaScript("");
+                if (DataStore.Get<bool>(Constants.UseSwagger))
+                {
+                    r.MapRoute(name: "Default",
+                        template: "",
+                        defaults: new {controller = "Help", action = "Index"});
+                }
             });
+            
+            if (DataStore.Get<bool>(Constants.UseSwagger))
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                    c.InjectOnCompleteJavaScript("");
+                });
+            }
 
             app.UseDefaultFiles();
             app.UseStaticFiles();

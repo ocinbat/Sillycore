@@ -8,5 +8,6 @@
         public const string CertificatePath = "CertificatePath";
         public const string CertificatePassword = "CertificatePassword";
         public const string IsShuttingDown = "IsShuttingDown";
+        public const string UseSwagger = "UseSwagger";
     }
 }

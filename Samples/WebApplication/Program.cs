@@ -12,6 +12,7 @@ namespace WebApplication
                 .UseUtcTimes()
                 .UseNLog()
                 .UseWebApi("WebApplication")
+                    .WithSwagger()
                     .Build();
         }
     }
