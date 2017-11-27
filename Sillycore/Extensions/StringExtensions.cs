@@ -293,7 +293,7 @@ namespace Sillycore.Extensions
 
                 foreach (var t in hashBytes)
                 {
-                    sb.Append(t.ToString("X2"));
+                    sb.Append(t.ToString("x2"));
                 }
 
                 return sb.ToString();
