@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
@@ -279,6 +280,24 @@ namespace Sillycore.Extensions
             }
 
             return Char.ToLowerInvariant(input[0]) + input.Substring(1);
+        }
+
+        public static string ToMd5(this string input)
+        {
+            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
+            {
+                byte[] inputBytes = Encoding.UTF8.GetBytes(input);
+                byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+                StringBuilder sb = new StringBuilder();
+
+                foreach (var t in hashBytes)
+                {
+                    sb.Append(t.ToString("X2"));
+                }
+
+                return sb.ToString();
+            }
         }
 
         #region Helpers
