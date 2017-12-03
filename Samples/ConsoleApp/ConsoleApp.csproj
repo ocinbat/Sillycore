@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Sillycore.NLog\Sillycore.NLog.csproj" />
     <ProjectReference Include="..\..\Sillycore\Sillycore.csproj" />
   </ItemGroup>
 

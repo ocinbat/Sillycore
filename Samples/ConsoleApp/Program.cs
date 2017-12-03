@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 using Sillycore;
+using Sillycore.NLog;
 
 namespace ConsoleApp
 {
@@ -12,6 +13,7 @@ namespace ConsoleApp
         {
             SillycoreAppBuilder.Instance
                 .UseUtcTimes()
+                .UseNLog()
                 .Build();
 
             _logger = SillycoreApp.Instance.LoggerFactory.CreateLogger<Program>();
