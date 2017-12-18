@@ -56,6 +56,20 @@ namespace Sillycore.Web.Controllers
             return StatusCode(HttpStatusCode.Conflict.ToInt(), errorResponse);
         }
 
+        protected IActionResult Forbidden(string errorMessage)
+        {
+            return Forbidden(errorMessage, String.Empty);
+        }
+
+        protected IActionResult Forbidden(string errorMessage, string errorCode)
+        {
+            ErrorResponse errorResponse = new ErrorResponse();
+            errorResponse.ErrorCode = errorCode;
+            errorResponse.AddErrorMessage(errorMessage);
+
+            return StatusCode(HttpStatusCode.Forbidden.ToInt(), errorResponse);
+        }
+
         protected IActionResult Created(object returnValue)
         {
             BaseResponse baseResponse = returnValue as BaseResponse;
