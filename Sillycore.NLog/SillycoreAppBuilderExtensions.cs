@@ -20,6 +20,23 @@ namespace Sillycore.NLog
                     File.WriteAllText("nlog.config", configuration["NLogConfig"], Encoding.UTF8);
                 }
 
+                string environment = configuration["ASPNETCORE_ENVIRONMENT"].ToLowerInvariant();
+
+                if (environment != "development")
+                {
+                    if (File.Exists("nlog.config"))
+                    {
+                        File.Delete("nlog.config");
+                    }
+
+                    string environmentFileName = $"nlog.{environment}.config";
+
+                    if (File.Exists(environmentFileName))
+                    {
+                        File.Move(environmentFileName, "nlog.config");
+                    }
+                }
+
                 ILoggerFactory loggerFactory = builder.DataStore.Get<ILoggerFactory>(Constants.LoggerFactory);
                 loggerFactory.AddNLog();
             });
