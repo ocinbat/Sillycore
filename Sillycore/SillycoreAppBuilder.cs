@@ -157,6 +157,11 @@ namespace Sillycore
                 .AddEnvironmentVariables()
                 .Build();
 
+            if (!String.IsNullOrWhiteSpace(_configuration["ASPNETCORE_ENVIRONMENT"]))
+            {
+                Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", _configuration["ASPNETCORE_ENVIRONMENT"]);
+            }
+
             DataStore.Set(Constants.Configuration, _configuration);
         }
 
