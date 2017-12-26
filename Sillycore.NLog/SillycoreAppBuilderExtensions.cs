@@ -20,20 +20,23 @@ namespace Sillycore.NLog
                     File.WriteAllText("nlog.config", configuration["NLogConfig"], Encoding.UTF8);
                 }
 
-                string environment = configuration["ASPNETCORE_ENVIRONMENT"].ToLowerInvariant();
+                string environment = (configuration["ASPNETCORE_ENVIRONMENT"] ?? "").ToLowerInvariant();
 
-                if (environment != "development")
+                if (!String.IsNullOrWhiteSpace(environment))
                 {
-                    if (File.Exists("nlog.config"))
+                    if (environment != "development")
                     {
-                        File.Delete("nlog.config");
-                    }
+                        string environmentFileName = $"nlog.{environment}.config";
 
-                    string environmentFileName = $"nlog.{environment}.config";
+                        if (File.Exists(environmentFileName))
+                        {
+                            if (File.Exists("nlog.config"))
+                            {
+                                File.Delete("nlog.config");
+                            }
 
-                    if (File.Exists(environmentFileName))
-                    {
-                        File.Move(environmentFileName, "nlog.config");
+                            File.Move(environmentFileName, "nlog.config");
+                        }
                     }
                 }
 
