@@ -6,10 +6,10 @@ namespace Sillycore.EntityFramework
 {
     public static class SillycoreAppBuilderExtensions
     {
-        public static SillycoreAppBuilder UseEntityFramework<TContext>(this SillycoreAppBuilder builder, Action<DbContextOptionsBuilder> dbContextOptionsBuilder)
+        public static SillycoreAppBuilder UseEntityFramework<TContext>(this SillycoreAppBuilder builder, Action<DbContextOptionsBuilder> optionsAction)
             where TContext : DbContext
         {
-            builder.Services.AddDbContext<TContext>(dbContextOptionsBuilder);
+            builder.Services.AddDbContext<TContext>(optionsAction);
 
             return builder;
         }
