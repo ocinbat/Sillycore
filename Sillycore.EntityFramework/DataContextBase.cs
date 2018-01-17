@@ -4,8 +4,11 @@ namespace Sillycore.EntityFramework
 {
     public abstract class DataContextBase : DbContext
     {
-        protected DataContextBase(DbContextOptions options) : base(options)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            optionsBuilder.UseSqlServer(SillycoreApp.Instance.Configuration[Constants.ConnectionStringKey]);
+
+            base.OnConfiguring(optionsBuilder);
         }
     }
 }
