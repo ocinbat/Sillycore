@@ -9,7 +9,9 @@
         public const string CertificatePassword = "CertificatePassword";
         public const string IsShuttingDown = "IsShuttingDown";
         public const string UseSwagger = "UseSwagger";
-        public const string IsSecure = "IsSecure";
-        public const string SecurityOptions = "SecurityOptions";
+        public const string RequiresAuthentication = "RequiresAuthentication";
+        public const string AuthenticationOptions = "AuthenticationOptions";
+        public const string RequiresAuthorization = "RequiresAuthorization";
+        public const string AuthorizationOptions = "AuthorizationOptions";
     }
 }

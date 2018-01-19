@@ -26,7 +26,8 @@ namespace Sillycore.Web
 
             _sillycoreAppBuilder.DataStore.Set(Constants.IsShuttingDown, false);
             _sillycoreAppBuilder.DataStore.Set(Constants.UseSwagger, false);
-            _sillycoreAppBuilder.DataStore.Set(Constants.IsSecure, false);
+            _sillycoreAppBuilder.DataStore.Set(Constants.RequiresAuthentication, false);
+            _sillycoreAppBuilder.DataStore.Set(Constants.RequiresAuthorization, false);
         }
 
         public SillycoreWebhostBuilder WithUrl(string rootUrl)
@@ -52,10 +53,17 @@ namespace Sillycore.Web
             return this;
         }
 
-        public SillycoreWebhostBuilder WithSecurity(SillycoreSecurityOptions securityOptions)
+        public SillycoreWebhostBuilder WithAuthentication(SillycoreAuthenticationOptions authenticationOptions)
         {
-            _sillycoreAppBuilder.DataStore.Set(Constants.IsSecure, true);
-            _sillycoreAppBuilder.DataStore.Set(Constants.SecurityOptions, securityOptions);
+            _sillycoreAppBuilder.DataStore.Set(Constants.RequiresAuthentication, true);
+            _sillycoreAppBuilder.DataStore.Set(Constants.AuthenticationOptions, authenticationOptions);
+            return this;
+        }
+
+        public SillycoreWebhostBuilder WithAuthorization(SillycoreAuthorizationOptions authorizationOptions)
+        {
+            _sillycoreAppBuilder.DataStore.Set(Constants.RequiresAuthorization, true);
+            _sillycoreAppBuilder.DataStore.Set(Constants.AuthorizationOptions, authorizationOptions);
             return this;
         }
 

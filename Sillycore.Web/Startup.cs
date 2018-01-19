@@ -78,39 +78,59 @@ namespace Sillycore.Web
             }
 
 
-            if (DataStore.Get<bool>(Constants.IsSecure))
+            if (DataStore.Get<bool>(Constants.RequiresAuthentication))
             {
-                ConfigureSecurity(services);
+                ConfigureAuthentication(services);
+            }
+
+            if (DataStore.Get<bool>(Constants.RequiresAuthorization))
+            {
+                ConfigureAuthorization(services);
             }
 
             SillycoreAppBuilder.Instance.Services = services;
         }
 
-        private void ConfigureSecurity(IServiceCollection services)
+        private void ConfigureAuthorization(IServiceCollection services)
         {
-            var securityOptions = DataStore.Get<SillycoreSecurityOptions>(Constants.SecurityOptions);
+            var authorizationOptions = DataStore.Get<SillycoreAuthorizationOptions>(Constants.AuthorizationOptions);
+
+            services.AddAuthorization(options =>
+            {
+                ConfigureAuthorizationPolicies(authorizationOptions, options);
+            });
+        }
+
+        private static void ConfigureAuthorizationPolicies(SillycoreAuthorizationOptions authorizationOptions,
+            AuthorizationOptions options)
+        {
+            foreach (var authorizationPolicy in authorizationOptions.Policies)
+            {
+                options.AddPolicy(authorizationPolicy.Name, builder =>
+                {
+                    builder.RequireClaim("scope", authorizationPolicy.RequiredScopes);
+                });
+            }
+        }
+
+        private void ConfigureAuthentication(IServiceCollection services)
+        {
+            var authenticationOptions = DataStore.Get<SillycoreAuthenticationOptions>(Constants.AuthenticationOptions);
+
+            var authority = Configuration.GetValue<string>(authenticationOptions.AuthorityConfigKey);
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.Authority = securityOptions.Authority;
-                    options.RequireHttpsMetadata = securityOptions.RequiresHttpsMetadata;
-                    if (securityOptions.LegacyAudienceValidation)
+                    options.Authority = authority;
+                    options.RequireHttpsMetadata = authenticationOptions.RequiresHttpsMetadata;
+                    if (authenticationOptions.LegacyAudienceValidation)
                     {
                         options.TokenValidationParameters.ValidateAudience = false;
                     }
                 });
 
-            foreach (var authorizationPolicy in securityOptions.Policies)
-            {
-                services.AddAuthorization(options =>
-                {
-                    options.AddPolicy(authorizationPolicy.Name, builder =>
-                        {
-                            builder.RequireClaim("scope", authorizationPolicy.RequiredScopes);
-                        });
-                });
-            }
+
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -122,7 +142,7 @@ namespace Sillycore.Web
                 app.UseDeveloperExceptionPage();
             }
 
-            if (DataStore.Get<bool>(Constants.IsSecure))
+            if (DataStore.Get<bool>(Constants.RequiresAuthentication))
             {
                 app.UseAuthentication();
             }
