@@ -162,6 +162,8 @@ namespace Sillycore
                 Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", _configuration["ASPNETCORE_ENVIRONMENT"]);
             }
 
+            Services.TryAdd(ServiceDescriptor.Singleton(_configuration));
+
             DataStore.Set(Constants.Configuration, _configuration);
         }
 
