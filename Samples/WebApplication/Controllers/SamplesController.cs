@@ -9,6 +9,7 @@ using WebApplication.Domain;
 
 namespace WebApplication.Controllers
 {
+    //[Authorization("defaultPolicy")]
     [Route("samples")]
     public class SamplesController : SillyController
     {

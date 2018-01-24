@@ -1,12 +1,18 @@
-﻿using System.Reflection;
+﻿using System.Linq;
+using System.Reflection;
 using System.Threading;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Sillycore.Web.Filters;
+using Sillycore.Web.Security;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Sillycore.Web
@@ -71,7 +77,58 @@ namespace Sillycore.Web
                 });
             }
 
+
+            if (DataStore.Get<bool>(Constants.RequiresAuthentication))
+            {
+                ConfigureAuthentication(services);
+                ConfigureAuthorization(services);
+            }
+
             SillycoreAppBuilder.Instance.Services = services;
+        }
+
+        private void ConfigureAuthorization(IServiceCollection services)
+        {
+            var authorizationOptions = DataStore.Get<SillycoreAuthorizationOptions>(Constants.AuthorizationOptions);
+            if (authorizationOptions != null)
+            {
+                services.AddAuthorization(options =>
+                {
+                    ConfigureAuthorizationPolicies(authorizationOptions, options);
+                });
+            }
+        }
+
+        private static void ConfigureAuthorizationPolicies(SillycoreAuthorizationOptions authorizationOptions,
+            AuthorizationOptions options)
+        {
+            foreach (var authorizationPolicy in authorizationOptions.Policies)
+            {
+                options.AddPolicy(authorizationPolicy.Name, builder =>
+                {
+                    builder.RequireClaim("scope", authorizationPolicy.RequiredScopes);
+                });
+            }
+        }
+
+        private void ConfigureAuthentication(IServiceCollection services)
+        {
+            var authenticationOptions = DataStore.Get<SillycoreAuthenticationOptions>(Constants.AuthenticationOptions);
+
+            var authority = Configuration.GetValue<string>(authenticationOptions.AuthorityConfigKey);
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.Authority = authority;
+                    options.RequireHttpsMetadata = authenticationOptions.RequiresHttpsMetadata;
+                    if (authenticationOptions.LegacyAudienceValidation)
+                    {
+                        options.TokenValidationParameters.ValidateAudience = false;
+                    }
+                });
+
+
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -82,17 +139,22 @@ namespace Sillycore.Web
             {
                 app.UseDeveloperExceptionPage();
             }
-            
+
+            if (DataStore.Get<bool>(Constants.RequiresAuthentication))
+            {
+                app.UseAuthentication();
+            }
+
             app.UseMvc(r =>
             {
                 if (DataStore.Get<bool>(Constants.UseSwagger))
                 {
                     r.MapRoute(name: "Default",
                         template: "",
-                        defaults: new {controller = "Help", action = "Index"});
+                        defaults: new { controller = "Help", action = "Index" });
                 }
             });
-            
+
             if (DataStore.Get<bool>(Constants.UseSwagger))
             {
                 app.UseSwagger();

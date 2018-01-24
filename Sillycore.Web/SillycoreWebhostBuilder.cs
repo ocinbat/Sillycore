@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Sillycore.Web.Security;
 
 namespace Sillycore.Web
 {
@@ -24,6 +26,7 @@ namespace Sillycore.Web
 
             _sillycoreAppBuilder.DataStore.Set(Constants.IsShuttingDown, false);
             _sillycoreAppBuilder.DataStore.Set(Constants.UseSwagger, false);
+            _sillycoreAppBuilder.DataStore.Set(Constants.RequiresAuthentication, false);
         }
 
         public SillycoreWebhostBuilder WithUrl(string rootUrl)
@@ -47,6 +50,13 @@ namespace Sillycore.Web
         {
             _withIisIntegration = true;
             return this;
+        }
+
+        public SillycoreAuthenticationBuilder WithAuthentication()
+        {
+            _sillycoreAppBuilder.DataStore.Set(Constants.RequiresAuthentication, true);
+            var sillycoreAuthenticationBuilder = new SillycoreAuthenticationBuilder(this, _sillycoreAppBuilder.DataStore);
+            return sillycoreAuthenticationBuilder;
         }
 
         public void Build()
