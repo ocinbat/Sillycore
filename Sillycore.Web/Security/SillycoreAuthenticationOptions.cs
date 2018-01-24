@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Sillycore.Web.Security
 {
-    public class SillycoreAuthenticationOptions
+    internal class SillycoreAuthenticationOptions
     {
         public string AuthorityConfigKey { get; }
         public bool RequiresHttpsMetadata { get; private set; } = false;

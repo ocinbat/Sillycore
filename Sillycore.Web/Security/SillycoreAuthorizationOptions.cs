@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Sillycore.Web.Security
 {
-    public class SillycoreAuthorizationOptions
+    internal class SillycoreAuthorizationOptions
     {
         private readonly List<SillycoreAuthorizationPolicy> _policies;
 

@@ -11,7 +11,6 @@
         public const string UseSwagger = "UseSwagger";
         public const string RequiresAuthentication = "RequiresAuthentication";
         public const string AuthenticationOptions = "AuthenticationOptions";
-        public const string RequiresAuthorization = "RequiresAuthorization";
         public const string AuthorizationOptions = "AuthorizationOptions";
     }
 }

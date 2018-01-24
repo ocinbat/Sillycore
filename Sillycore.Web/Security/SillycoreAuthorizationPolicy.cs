@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Sillycore.Web.Security
 {
-    public class SillycoreAuthorizationPolicy
+    internal class SillycoreAuthorizationPolicy
     {
         public string Name { get; set; }
 

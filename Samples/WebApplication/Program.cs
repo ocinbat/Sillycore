@@ -11,7 +11,7 @@ namespace WebApplication
         {
             /*
              * To enable authentication & authorization:
-             *  1) Comment in the WithAuthentication & WithAuthorization options
+             *  1) Comment in the WithAuthentication and its following options
              *  2) Comment in the Authorization attribute above the SampleController class declaration
              */
 
@@ -20,9 +20,10 @@ namespace WebApplication
                 .UseNLog()
                 .UseWebApi("WebApplication")
                     .WithSwagger()
-                    //.WithAuthentication(new SillycoreAuthenticationOptions("AuthServer"))
-                    //.WithAuthorization(new SillycoreAuthorizationOptions()
-                    //    .WithPolicy(SillycoreAuthorizationPolicy.Create("defaultPolicy", "lookup")))
+                        /* .WithAuthentication()
+                        .As("AuthServer")
+                        .WithPolicy("defaultPolicy", "lookup")
+                        .Then() */
                     .Build();
         }
     }

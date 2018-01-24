@@ -81,10 +81,6 @@ namespace Sillycore.Web
             if (DataStore.Get<bool>(Constants.RequiresAuthentication))
             {
                 ConfigureAuthentication(services);
-            }
-
-            if (DataStore.Get<bool>(Constants.RequiresAuthorization))
-            {
                 ConfigureAuthorization(services);
             }
 
@@ -94,11 +90,13 @@ namespace Sillycore.Web
         private void ConfigureAuthorization(IServiceCollection services)
         {
             var authorizationOptions = DataStore.Get<SillycoreAuthorizationOptions>(Constants.AuthorizationOptions);
-
-            services.AddAuthorization(options =>
+            if (authorizationOptions != null)
             {
-                ConfigureAuthorizationPolicies(authorizationOptions, options);
-            });
+                services.AddAuthorization(options =>
+                {
+                    ConfigureAuthorizationPolicies(authorizationOptions, options);
+                });
+            }
         }
 
         private static void ConfigureAuthorizationPolicies(SillycoreAuthorizationOptions authorizationOptions,
