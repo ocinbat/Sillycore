@@ -21,10 +21,10 @@ namespace Sillycore
 
         private readonly List<Action> _beforeBuildTasks = new List<Action>();
         private readonly List<Action> _afterBuildTasks = new List<Action>();
-        private IConfiguration _configuration;
 
         public InMemoryDataStore DataStore = new InMemoryDataStore();
         public IServiceCollection Services = new ServiceCollection();
+        public IConfiguration Configuration { get; private set; }
 
         internal SillycoreAppBuilder()
         {
@@ -80,7 +80,7 @@ namespace Sillycore
 
         public SillycoreAppBuilder ConfigureServices(Action<IServiceCollection, IConfiguration> action)
         {
-            action.Invoke(Services, _configuration);
+            action.Invoke(Services, Configuration);
 
             return this;
         }
@@ -147,7 +147,7 @@ namespace Sillycore
 
         private void InitializeConfiguration()
         {
-            _configuration = new ConfigurationBuilder()
+            Configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", true, true)
                 .AddJsonFile("appsettings.ci.json", true, true)
@@ -157,14 +157,14 @@ namespace Sillycore
                 .AddEnvironmentVariables()
                 .Build();
 
-            if (!String.IsNullOrWhiteSpace(_configuration["ASPNETCORE_ENVIRONMENT"]))
+            if (!String.IsNullOrWhiteSpace(Configuration["ASPNETCORE_ENVIRONMENT"]))
             {
-                Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", _configuration["ASPNETCORE_ENVIRONMENT"]);
+                Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", Configuration["ASPNETCORE_ENVIRONMENT"]);
             }
 
-            Services.TryAdd(ServiceDescriptor.Singleton(_configuration));
+            Services.TryAdd(ServiceDescriptor.Singleton(Configuration));
 
-            DataStore.Set(Constants.Configuration, _configuration);
+            DataStore.Set(Constants.Configuration, Configuration);
         }
 
         private void InitializeDateTimeProvider()

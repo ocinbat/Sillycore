@@ -1,15 +1,21 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Sillycore.EntityFramework
 {
     public static class SillycoreAppBuilderExtensions
     {
-        public static SillycoreAppBuilder UseEntityFramework<TContext>(this SillycoreAppBuilder builder, string connectionStringKey = "ConnectionString")
+        public static SillycoreAppBuilder UseDataContext<TContext>(this SillycoreAppBuilder builder, string connectionStringKey)
             where TContext : DataContextBase
         {
-            builder.DataStore.Set(Constants.ConnectionStringKey, connectionStringKey);
+            string connectionString = builder.Configuration[connectionStringKey];
 
-            builder.Services.AddEntityFrameworkSqlServer().AddDbContext<TContext>();
+            builder.Services
+                .AddEntityFrameworkSqlServer()
+                .AddDbContext<TContext>((ob) =>
+                {
+                    ob.UseSqlServer(connectionString);
+                });
 
             return builder;
         }
