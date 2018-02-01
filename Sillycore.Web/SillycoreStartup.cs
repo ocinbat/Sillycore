@@ -1,12 +1,9 @@
-﻿using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Threading;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,12 +11,17 @@ using Newtonsoft.Json;
 using Sillycore.Web.Filters;
 using Sillycore.Web.Security;
 using Swashbuckle.AspNetCore.Swagger;
+using System;
 
 namespace Sillycore.Web
 {
-    public class Startup
+    public class SillycoreStartup
     {
-        public Startup(IConfiguration configuration)
+        public SillycoreStartup()
+        {
+        }
+
+        public SillycoreStartup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
@@ -85,6 +87,7 @@ namespace Sillycore.Web
                 ConfigureAuthorization(services);
             }
 
+            ConfigureServicesInner(services);
             SillycoreAppBuilder.Instance.Services = services;
         }
 
@@ -166,6 +169,8 @@ namespace Sillycore.Web
                 });
             }
 
+            ConfigureInner(app, env);
+
             app.UseDefaultFiles();
             app.UseStaticFiles();
             var applicationLifetime = app.ApplicationServices.GetRequiredService<IApplicationLifetime>();
@@ -177,5 +182,8 @@ namespace Sillycore.Web
             SillycoreApp.Instance.DataStore.Set(Constants.IsShuttingDown, true);
             Thread.Sleep(15000);
         }
+
+        public virtual void ConfigureServicesInner(IServiceCollection services) { }
+        public virtual void ConfigureInner(IApplicationBuilder app, IHostingEnvironment env) { }
     }
 }
