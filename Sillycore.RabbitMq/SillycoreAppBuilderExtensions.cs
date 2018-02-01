@@ -2,9 +2,9 @@
 {
     public static class SillycoreAppBuilderExtensions
     {
-        public static SillycoreRabbitMqBuilder UseRabbitMq(this SillycoreAppBuilder builder, string url, string username, string password)
+        public static SillycoreRabbitMqBuilder UseRabbitMq(this SillycoreAppBuilder builder, string urlConfigKey, string usernameConfigKey, string passwordConfigKey)
         {
-            return new SillycoreRabbitMqBuilder(builder, url, username, password);
+            return new SillycoreRabbitMqBuilder(builder, builder.Configuration[urlConfigKey], builder.Configuration[usernameConfigKey], builder.Configuration[passwordConfigKey]);
         }
     }
 }
