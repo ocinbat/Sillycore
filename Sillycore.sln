@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sillycore", "Sillycore\Sillycore.csproj", "{366EAE5E-8CB3-4DC7-84FA-DD78E2C77683}"
 EndProject
@@ -23,7 +23,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication", "Samples\W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sillycore.NLog", "Sillycore.NLog\Sillycore.NLog.csproj", "{9BF31944-09E3-47EC-9D62-69AD61F6CE79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sillycore.EntityFramework", "Sillycore.EntityFramework\Sillycore.EntityFramework.csproj", "{C1201FA9-5592-4032-8F1F-7D7CFC8FDBC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sillycore.EntityFramework", "Sillycore.EntityFramework\Sillycore.EntityFramework.csproj", "{C1201FA9-5592-4032-8F1F-7D7CFC8FDBC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sillycore.RabbitMq", "Sillycore.RabbitMq\Sillycore.RabbitMq.csproj", "{7458680C-28FE-46DD-9257-C0027E45AB72}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{C1201FA9-5592-4032-8F1F-7D7CFC8FDBC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1201FA9-5592-4032-8F1F-7D7CFC8FDBC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1201FA9-5592-4032-8F1F-7D7CFC8FDBC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7458680C-28FE-46DD-9257-C0027E45AB72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7458680C-28FE-46DD-9257-C0027E45AB72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7458680C-28FE-46DD-9257-C0027E45AB72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7458680C-28FE-46DD-9257-C0027E45AB72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
