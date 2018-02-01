@@ -72,6 +72,7 @@ namespace Sillycore.Web
                     c.SwaggerDoc("v1", new Info { Title = DataStore.Get<string>(Constants.ApplicationName), Version = "v1" });
                     c.DescribeAllEnumsAsStrings();
                     c.DescribeStringEnumsInCamelCase();
+                    c.DescribeAllParametersInCamelCase();
                     c.IgnoreObsoleteActions();
                     c.IgnoreObsoleteProperties();
                 });
