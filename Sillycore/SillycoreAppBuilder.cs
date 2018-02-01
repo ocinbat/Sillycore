@@ -25,6 +25,7 @@ namespace Sillycore
         public InMemoryDataStore DataStore = new InMemoryDataStore();
         public IServiceCollection Services = new ServiceCollection();
         public IConfiguration Configuration { get; private set; }
+        public ILoggerFactory LoggerFactory { get; private set; }
 
         internal SillycoreAppBuilder()
         {
@@ -138,6 +139,8 @@ namespace Sillycore
             var loggerFactory = new LoggerFactory();
             DataStore.Set(Constants.LoggerFactory, loggerFactory);
             loggerFactory.AddConsole();
+
+            LoggerFactory = loggerFactory;
 
             Services.AddOptions();
             Services.TryAdd(ServiceDescriptor.Singleton<ILoggerFactory>(loggerFactory));
