@@ -17,6 +17,7 @@ namespace Sillycore.Web
         private readonly SillycoreAppBuilder _sillycoreAppBuilder;
 
         private bool _withIisIntegration = false;
+        private Type _sillycoreStartup = null;
 
         public SillycoreWebhostBuilder(SillycoreAppBuilder sillycoreAppBuilder, string applicationName, string[] args)
         {
@@ -59,6 +60,16 @@ namespace Sillycore.Web
             return sillycoreAuthenticationBuilder;
         }
 
+        public SillycoreWebhostBuilder WithStartup(Type startup)
+        {
+            if (startup != null)
+            {
+                _sillycoreStartup = startup;
+            }
+
+            return this;
+        }
+
         public void Build()
         {
             _sillycoreAppBuilder.DataStore.Set(Constants.ApplicationName, _applicationName);
@@ -66,7 +77,7 @@ namespace Sillycore.Web
             _sillycoreAppBuilder.BeforeBuild(() =>
             {
                 IWebHost webhost = CreateDefaultBuilder(_args)
-                    .UseStartup<Startup>()
+                    .UseStartup(_sillycoreStartup == null ? typeof(SillycoreStartup) : _sillycoreStartup)
                     .Build();
 
                 _sillycoreAppBuilder.DataStore.Set(Constants.WebHost, webhost);
