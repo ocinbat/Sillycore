@@ -11,7 +11,7 @@ namespace Sillycore.NLog
     {
         public static SillycoreAppBuilder UseNLog(this SillycoreAppBuilder builder)
         {
-            builder.AfterBuild(() =>
+            builder.BeforeBuild(() =>
             {
                 IConfiguration configuration = builder.DataStore.Get<IConfiguration>(Constants.Configuration);
 
