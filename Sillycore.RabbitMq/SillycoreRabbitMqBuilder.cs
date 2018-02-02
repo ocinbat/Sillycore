@@ -48,6 +48,30 @@ namespace Sillycore.RabbitMq
             return this;
         }
 
+        public SillycoreRabbitMqBuilder RegisterConsumer<T, TFault>(string queue, ushort? prefetchCount = null) where T : class, IConsumer where TFault : class, IConsumer
+        {
+            _logger.LogDebug($"Registering consumer:{typeof(T)}");
+            ConsumerConfiguration configuration = new ConsumerConfiguration();
+            configuration.Queue = queue;
+            configuration.Type = typeof(T);
+
+            configuration.ConfigureAction = (c) =>
+            {
+                _logger.LogDebug($"Configuring consumer:{typeof(T)}");
+                ICachedConfigurator configurator = new SillycoreConsumerConfigurator<T>();
+                ICachedConfigurator faultConfigurator = new SillycoreConsumerConfigurator<TFault>();
+                configurator.Configure(c, null);
+                faultConfigurator.Configure(c, null);
+                c.PrefetchCount = prefetchCount ?? 32;
+                _logger.LogDebug($"Consumer:{typeof(T)} configured.");
+            };
+            _logger.LogDebug($"Consumer:{typeof(T)} registered.");
+
+            _consumerConfigurations.Add(configuration);
+
+            return this;
+        }
+
         public SillycoreAppBuilder Then()
         {
             _sillycoreAppBuilder.BeforeBuild(() =>
