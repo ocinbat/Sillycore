@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GreenPipes;
 using MassTransit;
 using MassTransit.ExtensionsDependencyInjectionIntegration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +27,7 @@ namespace Sillycore.RabbitMq
             _logger = _sillycoreAppBuilder.LoggerFactory.CreateLogger<SillycoreRabbitMqBuilder>();
         }
 
-        public SillycoreRabbitMqBuilder RegisterConsumer<T>(string queue, ushort? prefetchCount = null) where T : class, IConsumer
+        public SillycoreRabbitMqBuilder RegisterConsumer<T>(string queue, ushort? prefetchCount = null, int? concurrencyLimit = null) where T : class, IConsumer
         {
             _logger.LogDebug($"Registering consumer:{typeof(T)}");
             ConsumerConfiguration configuration = new ConsumerConfiguration();
@@ -39,6 +40,10 @@ namespace Sillycore.RabbitMq
                 ICachedConfigurator configurator = new SillycoreConsumerConfigurator<T>();
                 configurator.Configure(c, null);
                 c.PrefetchCount = prefetchCount ?? 32;
+                if (concurrencyLimit.HasValue)
+                {
+                    c.UseConcurrencyLimit(concurrencyLimit.Value);
+                }
                 _logger.LogDebug($"Consumer:{typeof(T)} configured.");
             };
             _logger.LogDebug($"Consumer:{typeof(T)} registered.");
@@ -48,7 +53,7 @@ namespace Sillycore.RabbitMq
             return this;
         }
 
-        public SillycoreRabbitMqBuilder RegisterConsumer<T, TFault>(string queue, ushort? prefetchCount = null) where T : class, IConsumer where TFault : class, IConsumer
+        public SillycoreRabbitMqBuilder RegisterConsumer<T, TFault>(string queue, ushort? prefetchCount = null, int? concurrencyLimit = null) where T : class, IConsumer where TFault : class, IConsumer
         {
             _logger.LogDebug($"Registering consumer:{typeof(T)}");
             ConsumerConfiguration configuration = new ConsumerConfiguration();
@@ -63,6 +68,11 @@ namespace Sillycore.RabbitMq
                 configurator.Configure(c, null);
                 faultConfigurator.Configure(c, null);
                 c.PrefetchCount = prefetchCount ?? 32;
+                if (concurrencyLimit.HasValue)
+                {
+                    c.UseConcurrencyLimit(concurrencyLimit.Value);
+                }
+
                 _logger.LogDebug($"Consumer:{typeof(T)} configured.");
             };
             _logger.LogDebug($"Consumer:{typeof(T)} registered.");
