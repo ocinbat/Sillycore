@@ -27,30 +27,19 @@ namespace Sillycore.RabbitMq
             _logger = _sillycoreAppBuilder.LoggerFactory.CreateLogger<SillycoreRabbitMqBuilder>();
         }
 
-        public SillycoreRabbitMqBuilder RegisterConsumer<T>(string queue, ushort? prefetchCount = null, int? concurrencyLimit = null) where T : class, IConsumer
+        public SillycoreConsumerBuilder<T> RegisterConsumer<T>(string queue) where T : class, IConsumer
         {
             _logger.LogDebug($"Registering consumer:{typeof(T)}");
-            ConsumerConfiguration configuration = new ConsumerConfiguration();
-            configuration.Queue = queue;
-            configuration.Type = typeof(T);
 
-            configuration.ConfigureAction = (c) =>
-            {
-                _logger.LogDebug($"Configuring consumer:{typeof(T)}");
-                ICachedConfigurator configurator = new SillycoreConsumerConfigurator<T>();
-                configurator.Configure(c, null);
-                c.PrefetchCount = prefetchCount ?? 32;
-                if (concurrencyLimit.HasValue)
-                {
-                    c.UseConcurrencyLimit(concurrencyLimit.Value);
-                }
-                _logger.LogDebug($"Consumer:{typeof(T)} configured.");
-            };
-            _logger.LogDebug($"Consumer:{typeof(T)} registered.");
+            var consumerBuilder = new SillycoreConsumerBuilder<T>(this, queue);
+            return consumerBuilder;
+        }
 
-            _consumerConfigurations.Add(configuration);
+        internal void AddConsumerConfiguration(ConsumerConfiguration consumerConfiguration)
+        {
+            _consumerConfigurations.Add((consumerConfiguration));
 
-            return this;
+            _logger.LogDebug($"Consumer:{consumerConfiguration.Type} registered.");
         }
 
         public SillycoreAppBuilder Then()
