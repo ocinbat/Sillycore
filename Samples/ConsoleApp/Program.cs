@@ -1,8 +1,6 @@
-﻿using System;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Sillycore;
+using Sillycore.Daemon;
 using Sillycore.NLog;
 
 namespace ConsoleApp
@@ -16,15 +14,10 @@ namespace ConsoleApp
             SillycoreAppBuilder.Instance
                 .UseUtcTimes()
                 .UseNLog()
+                .UseDaemon<Service>("ConsoleApp")
                 .Build();
 
             _logger = SillycoreApp.Instance.LoggerFactory.CreateLogger<Program>();
-            _logger.LogInformation("dsadsada");
-
-            IConfiguration configuration = SillycoreApp.Instance.ServiceProvider.GetService<IConfiguration>();
-
-            Console.Out.WriteLineAsync(SillycoreApp.Instance.Configuration["key"]);
-            Console.ReadKey();
         }
     }
 }

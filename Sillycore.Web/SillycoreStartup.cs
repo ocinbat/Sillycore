@@ -12,6 +12,8 @@ using Sillycore.Web.Filters;
 using Sillycore.Web.Security;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
+using System.Collections.Generic;
+using Sillycore.Extensions;
 
 namespace Sillycore.Web
 {
@@ -173,8 +175,31 @@ namespace Sillycore.Web
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            var applicationLifetime = app.ApplicationServices.GetRequiredService<IApplicationLifetime>();
-            applicationLifetime.ApplicationStopping.Register(OnShutdown);
+            
+            RegisterStartAndStopActions(app);
+        }
+
+        private void RegisterStartAndStopActions(IApplicationBuilder app)
+        {
+            IApplicationLifetime applicationLifetime = app.ApplicationServices.GetRequiredService<IApplicationLifetime>();
+
+            List<Action> onStartActions = DataStore.Get<List<Action>>(Constants.OnStartActions);
+            List<Action> onStopActions = DataStore.Get<List<Action>>(Constants.OnStopActions);
+
+            foreach (var onStartAction in onStartActions)
+            {
+                applicationLifetime.ApplicationStarted.Register(onStartAction);
+            }
+
+            if (onStopActions.IsEmpty())
+            {
+                onStopActions.Add(OnShutdown);
+            }
+
+            foreach (var onStopAction in onStopActions)
+            {
+                applicationLifetime.ApplicationStopping.Register(onStopAction);
+            }
         }
 
         private void OnShutdown()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
@@ -26,6 +27,8 @@ namespace Sillycore.Web
             _sillycoreAppBuilder.DataStore.Set(Constants.IsShuttingDown, false);
             _sillycoreAppBuilder.DataStore.Set(Constants.UseSwagger, false);
             _sillycoreAppBuilder.DataStore.Set(Constants.RequiresAuthentication, false);
+            _sillycoreAppBuilder.DataStore.Set(Constants.OnStartActions, new List<Action>());
+            _sillycoreAppBuilder.DataStore.Set(Constants.OnStopActions, new List<Action>());
         }
 
         public SillycoreWebhostBuilder WithUrl(string rootUrl)
@@ -34,6 +37,20 @@ namespace Sillycore.Web
             {
                 _sillycoreAppBuilder.DataStore.Set(Constants.ApiRootUrl, rootUrl.TrimEnd('/'));
             }
+
+            return this;
+        }
+
+        public SillycoreWebhostBuilder WithOnStartAction(Action action)
+        {
+            _sillycoreAppBuilder.DataStore.Get<List<Action>>(Constants.OnStartActions).Add(action);
+
+            return this;
+        }
+
+        public SillycoreWebhostBuilder WithOnStopAction(Action action)
+        {
+            _sillycoreAppBuilder.DataStore.Get<List<Action>>(Constants.OnStopActions).Add(action);
 
             return this;
         }
