@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Sillycore;
 using Sillycore.Daemon;
 using Sillycore.NLog;
@@ -13,11 +15,15 @@ namespace ConsoleApp
         {
             SillycoreAppBuilder.Instance
                 .UseUtcTimes()
+                .ConfigureServices(ConfigureServices)
                 .UseNLog()
                 .UseDaemon<Service>("ConsoleApp")
                 .Build();
+        }
 
-            _logger = SillycoreApp.Instance.LoggerFactory.CreateLogger<Program>();
+        public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddTransient<TestJob>();
         }
     }
 }
