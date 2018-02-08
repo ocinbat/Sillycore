@@ -85,7 +85,7 @@ namespace Sillycore.BackgroundProcessing
             }
             catch (Exception ex)
             {
-                Logger.LogError($"BackgroundJobManager: Error occured while activating job:{JobType.FullName}.", ex);
+                Logger.LogError(ex, $"BackgroundJobManager: Error occured while activating job:{JobType.FullName}.");
             }
             finally
             {
@@ -118,7 +118,7 @@ namespace Sillycore.BackgroundProcessing
             }
             catch (Exception ex)
             {
-                Logger.LogError($"BackgroundJobManager: Error occured while running job:{JobType.FullName}.", ex);
+                Logger.LogError(ex, $"BackgroundJobManager: Error occured while running job:{JobType.FullName}.");
             }
 
             GC.Collect();
