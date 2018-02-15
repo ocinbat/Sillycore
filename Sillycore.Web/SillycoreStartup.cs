@@ -14,6 +14,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
 using Sillycore.Extensions;
+using Sillycore.Web.Middlewares;
 
 namespace Sillycore.Web
 {
@@ -140,6 +141,13 @@ namespace Sillycore.Web
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             SillycoreAppBuilder.Instance.DataStore.Set(Sillycore.Constants.ServiceProvider, app.ApplicationServices);
+
+            string dockerImageName = Environment.GetEnvironmentVariable("Sillycore.DockerImageName");
+
+            if (!String.IsNullOrWhiteSpace(dockerImageName))
+            {
+                app.UseMiddleware<DockerImageVersionMiddleware>();
+            }
 
             if (env.IsDevelopment())
             {
