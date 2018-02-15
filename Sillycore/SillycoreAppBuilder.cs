@@ -69,6 +69,7 @@ namespace Sillycore
         {
             DataStore.Delete(Constants.DateTimeProvider);
             DataStore.Set(Constants.DateTimeProvider, new LocalDateTimeProvider());
+            Services.TryAddSingleton(DataStore.Get<IDateTimeProvider>(Constants.DateTimeProvider));
 
             return this;
         }
@@ -77,6 +78,7 @@ namespace Sillycore
         {
             DataStore.Delete(Constants.DateTimeProvider);
             DataStore.Set(Constants.DateTimeProvider, new UtcDateTimeProvider());
+            Services.TryAddSingleton(DataStore.Get<IDateTimeProvider>(Constants.DateTimeProvider));
 
             return this;
         }
