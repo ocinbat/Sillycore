@@ -15,7 +15,7 @@ namespace Sillycore.Web.Controllers
     [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
     public abstract class SillyController : Controller
     {
-        private static readonly ILogger<SillyController> Logger = SillycoreApp.Instance.LoggerFactory.CreateLogger<SillyController>();
+        private static readonly ILogger<SillyController> Logger = SillycoreApp.Instance?.LoggerFactory?.CreateLogger<SillyController>();
 
         protected IActionResult Page<T>(IPage<T> page)
         {
@@ -133,7 +133,7 @@ namespace Sillycore.Web.Controllers
                     }
                 }
 
-                Logger.LogError(message);
+                Logger?.LogError(message);
             }
 
             return StatusCode(HttpStatusCode.InternalServerError.ToInt(), errorResponse);
