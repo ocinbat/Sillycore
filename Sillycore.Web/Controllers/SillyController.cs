@@ -5,7 +5,6 @@ using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Sillycore.Domain.Abstractions;
-using Sillycore.Domain.Dtos;
 using Sillycore.Domain.Responses;
 using Sillycore.Extensions;
 using Sillycore.Web.Results;
@@ -43,6 +42,8 @@ namespace Sillycore.Web.Controllers
             errorResponse.ErrorCode = errorCode;
             errorResponse.AddErrorMessage(errorMessage);
 
+            Logger?.LogInformation($"InvalidRequest: {errorResponse.GetFullMessage()}");
+
             return BadRequest(errorResponse);
         }
 
@@ -57,6 +58,8 @@ namespace Sillycore.Web.Controllers
             errorResponse.ErrorCode = errorCode;
             errorResponse.AddErrorMessage(errorMessage);
 
+            Logger?.LogWarning($"Conflict: {errorResponse.GetFullMessage()}");
+
             return StatusCode(HttpStatusCode.Conflict.ToInt(), errorResponse);
         }
 
@@ -70,6 +73,8 @@ namespace Sillycore.Web.Controllers
             ErrorResponse errorResponse = new ErrorResponse();
             errorResponse.ErrorCode = errorCode;
             errorResponse.AddErrorMessage(errorMessage);
+
+            Logger?.LogWarning($"Forbidden: {errorResponse.GetFullMessage()}");
 
             return StatusCode(HttpStatusCode.Forbidden.ToInt(), errorResponse);
         }
@@ -111,6 +116,8 @@ namespace Sillycore.Web.Controllers
             errorResponse.AdditionalInfo = additionalInfo;
             errorResponse.AddErrorMessage(errorMessage);
 
+            Logger?.LogError($"InternalServerError: {errorResponse.GetFullMessage()}");
+
             return InternalServerError(errorResponse);
         }
 
@@ -118,22 +125,7 @@ namespace Sillycore.Web.Controllers
         {
             if (errorResponse != null)
             {
-                string message = $"{errorResponse.ErrorCode}";
-
-                if (!String.IsNullOrWhiteSpace(errorResponse.AdditionalInfo))
-                {
-                    message += $" - {errorResponse.AdditionalInfo}";
-                }
-
-                if (errorResponse.Messages.HasElements())
-                {
-                    foreach (MessageDto messageDto in errorResponse.Messages)
-                    {
-                        message += $" - {messageDto.Type}:{messageDto.Content}";
-                    }
-                }
-
-                Logger?.LogError(message);
+                Logger?.LogError($"InternalServerError: {errorResponse.GetFullMessage()}");
             }
 
             return StatusCode(HttpStatusCode.InternalServerError.ToInt(), errorResponse);
