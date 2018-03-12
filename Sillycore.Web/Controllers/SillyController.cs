@@ -116,8 +116,6 @@ namespace Sillycore.Web.Controllers
             errorResponse.AdditionalInfo = additionalInfo;
             errorResponse.AddErrorMessage(errorMessage);
 
-            Logger?.LogError($"InternalServerError: {errorResponse.GetFullMessage()}");
-
             return InternalServerError(errorResponse);
         }
 
