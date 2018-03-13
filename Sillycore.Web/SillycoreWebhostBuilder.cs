@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -87,25 +88,10 @@ namespace Sillycore.Web
             return this;
         }
 
-        public SillycoreWebhostBuilder WithHealthChecker<T>() where T : class, IHealthChecker
-        {
-            HealthCheckerContainer container = _sillycoreAppBuilder.DataStore.Get<HealthCheckerContainer>(Constants.HealthCheckerContainerDataKey);
-
-            if (container == null)
-            {
-                container = new HealthCheckerContainer();
-            }
-
-            container.AddHealthChecker(typeof(T));
-
-            _sillycoreAppBuilder.Services.AddTransient<T>();
-            _sillycoreAppBuilder.DataStore.Set(Constants.HealthCheckerContainerDataKey, container);
-
-            return this;
-        }
-
         public void Build()
         {
+            RegisterHealthCheckers();
+
             _sillycoreAppBuilder.DataStore.Set(Constants.ApplicationName, _applicationName);
 
             _sillycoreAppBuilder.BeforeBuild(() =>
@@ -124,6 +110,29 @@ namespace Sillycore.Web
             logger.LogInformation($"{_applicationName} started.");
 
             app.DataStore.Get<IWebHost>(Constants.WebHost).Run();
+        }
+
+        private void RegisterHealthCheckers()
+        {
+            HealthCheckerContainer container = _sillycoreAppBuilder.DataStore.Get<HealthCheckerContainer>(Constants.HealthCheckerContainerDataKey);
+
+            if (container == null)
+            {
+                container = new HealthCheckerContainer();
+            }
+
+            Assembly ass = Assembly.GetEntryAssembly();
+
+            foreach (TypeInfo ti in ass.DefinedTypes)
+            {
+                if (ti.ImplementedInterfaces.Contains(typeof(IHealthChecker)))
+                {
+                    container.AddHealthChecker(ti);
+
+                    _sillycoreAppBuilder.Services.AddTransient(ti);
+                    _sillycoreAppBuilder.DataStore.Set(Constants.HealthCheckerContainerDataKey, container);
+                }
+            }
         }
 
         public IWebHostBuilder CreateDefaultBuilder(string[] args)

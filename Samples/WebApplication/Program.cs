@@ -20,7 +20,6 @@ namespace WebApplication
                 .UseUtcTimes()
                 .UseNLog()
                 .UseWebApi("WebApplication")
-                    .WithHealthChecker<DatabaseHealthChecker>()
                     .WithSwagger()
                         /* .WithAuthentication()
                         .As("AuthServer")
