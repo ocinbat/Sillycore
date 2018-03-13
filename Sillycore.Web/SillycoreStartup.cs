@@ -53,6 +53,7 @@ namespace Sillycore.Web
                     o.OutputFormatters.RemoveType<XmlSerializerOutputFormatter>();
 
                     o.Filters.Add<GlobalExceptionFilter>();
+                    o.Filters.Add<ValidateModelStateFilter>();
                 })
                 .AddJsonOptions(o =>
                 {
@@ -82,7 +83,6 @@ namespace Sillycore.Web
                     c.IgnoreObsoleteProperties();
                 });
             }
-
 
             if (DataStore.Get<bool>(Constants.RequiresAuthentication))
             {
