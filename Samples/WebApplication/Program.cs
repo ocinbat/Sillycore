@@ -2,6 +2,7 @@
 using Sillycore.NLog;
 using Sillycore.Web;
 using Sillycore.Web.Security;
+using WebApplication.HealthCheckers;
 
 namespace WebApplication
 {
@@ -19,6 +20,7 @@ namespace WebApplication
                 .UseUtcTimes()
                 .UseNLog()
                 .UseWebApi("WebApplication")
+                    .WithHealthChecker<DatabaseHealthChecker>()
                     .WithSwagger()
                         /* .WithAuthentication()
                         .As("AuthServer")

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Sillycore.Web.HealthCheck;
 
 namespace Sillycore.Web
 {
@@ -81,6 +83,23 @@ namespace Sillycore.Web
             {
                 _sillycoreStartup = startup;
             }
+
+            return this;
+        }
+
+        public SillycoreWebhostBuilder WithHealthChecker<T>() where T : class, IHealthChecker
+        {
+            HealthCheckerContainer container = _sillycoreAppBuilder.DataStore.Get<HealthCheckerContainer>(Constants.HealthCheckerContainerDataKey);
+
+            if (container == null)
+            {
+                container = new HealthCheckerContainer();
+            }
+
+            container.AddHealthChecker(typeof(T));
+
+            _sillycoreAppBuilder.Services.AddTransient<T>();
+            _sillycoreAppBuilder.DataStore.Set(Constants.HealthCheckerContainerDataKey, container);
 
             return this;
         }

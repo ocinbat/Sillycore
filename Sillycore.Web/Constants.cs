@@ -14,5 +14,6 @@
         public const string AuthorizationOptions = "AuthorizationOptions";
         public const string OnStartActions = "OnStartActions";
         public const string OnStopActions = "OnStopActions";
+        public const string HealthCheckerContainerDataKey = "HealthCheckerContainerDataKey";
     }
 }
