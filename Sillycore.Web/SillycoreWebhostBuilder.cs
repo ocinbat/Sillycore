@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Sillycore.Web.HealthCheck;
@@ -141,34 +139,11 @@ namespace Sillycore.Web
 
             webHostBuilder.UseKestrel();
             webHostBuilder.UseContentRoot(Directory.GetCurrentDirectory());
-            webHostBuilder.ConfigureAppConfiguration((hostingContext, config) =>
-            {
-                IHostingEnvironment hostingEnvironment = hostingContext.HostingEnvironment;
-                config.AddJsonFile("appsettings.json", true, true).AddJsonFile(string.Format("appsettings.{0}.json", (object)hostingEnvironment.EnvironmentName), true, true);
-                if (hostingEnvironment.IsDevelopment())
-                {
-                    Assembly assembly = Assembly.Load(new AssemblyName(hostingEnvironment.ApplicationName));
-                    if (assembly != null)
-                        config.AddUserSecrets(assembly, true);
-                }
-                config.AddEnvironmentVariables();
-                if (args == null)
-                    return;
-                config.AddCommandLine(args);
-            });
-            webHostBuilder.ConfigureLogging((hostingContext, logging) =>
-            {
-                logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                logging.AddConsole();
-                logging.AddDebug();
-            });
 
             if (_withIisIntegration)
             {
                 webHostBuilder.UseIISIntegration();
             }
-
-            webHostBuilder.UseDefaultServiceProvider((context, options) => options.ValidateScopes = context.HostingEnvironment.IsDevelopment());
 
             return webHostBuilder;
         }
