@@ -122,7 +122,7 @@ namespace Sillycore.Web
         {
             var authenticationOptions = DataStore.Get<SillycoreAuthenticationOptions>(Constants.AuthenticationOptions);
 
-            var authority = Configuration.GetValue<string>(authenticationOptions.AuthorityConfigKey);
+            var authority = DataStore.Get<IConfiguration>(Sillycore.Constants.Configuration).GetValue<string>(authenticationOptions.AuthorityConfigKey);
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>

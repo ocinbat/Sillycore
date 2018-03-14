@@ -21,10 +21,10 @@ namespace WebApplication
                 .UseNLog()
                 .UseWebApi("WebApplication")
                     .WithSwagger()
-                        /* .WithAuthentication()
+                        .WithAuthentication()
                         .As("AuthServer")
                         .WithPolicy("defaultPolicy", "lookup")
-                        .Then() */
+                        .Then()
                     .Build();
         }
     }
