@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Sillycore;
+using Sillycore.BackgroundProcessing;
 using Sillycore.Web.Controllers;
+using WebApplication.BackgroundJobs;
 using WebApplication.Domain;
 
 namespace WebApplication.Controllers
@@ -16,11 +18,13 @@ namespace WebApplication.Controllers
     {
         private readonly ILogger<SamplesController> _logger;
         private readonly IConfiguration _configuration;
+        private readonly BackgroundJobManager _backgroundJobManager;
 
-        public SamplesController(ILogger<SamplesController> logger, IConfiguration configuration)
+        public SamplesController(ILogger<SamplesController> logger, IConfiguration configuration, BackgroundJobManager backgroundJobManager)
         {
             _logger = logger;
             _configuration = configuration;
+            _backgroundJobManager = backgroundJobManager;
         }
 
         [HttpGet("")]

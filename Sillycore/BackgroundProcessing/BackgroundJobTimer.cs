@@ -8,17 +8,28 @@ namespace Sillycore.BackgroundProcessing
 {
     public class BackgroundJobTimer : IDisposable
     {
+        public string Name { get; set; }
+        public BackgroundJobStatus Status { get; set; }
+        public long FailuresInARow { get; set; }
+        public string LastError { get; set; }
+        public DateTime? ExecutedOn { get; set; }
+
         private static readonly ILogger Logger = SillycoreApp.Instance.LoggerFactory.CreateLogger<ILogger>();
         private readonly int _intervalInMs;
+        private readonly int _failureThreshold;
         internal readonly Type JobType;
 
         private Timer _timer;
         private bool _isRunning;
 
-        public BackgroundJobTimer(Type jobType, int intervalInMs)
+        public BackgroundJobTimer(Type jobType, int intervalInMs, int? failureThreshold = 3)
         {
             JobType = jobType;
             _intervalInMs = intervalInMs;
+            _failureThreshold = failureThreshold ?? 3;
+            Name = jobType.Name;
+            Status = BackgroundJobStatus.Idle;
+            FailuresInARow = 0;
         }
 
         public void InitTimer()
@@ -76,20 +87,30 @@ namespace Sillycore.BackgroundProcessing
             }
 
             _isRunning = true;
+            Status = BackgroundJobStatus.Running;
 
             try
             {
                 Logger.LogDebug($"BackgroundJobManager: Trying to execute job:{JobType.FullName}.");
                 await RunTaskInNewThread();
-                Logger.LogDebug($"BackgroundJobManager: Execution of job:{JobType.FullName} successfull.");
+                Logger.LogDebug($"BackgroundJobManager: Execution of job:{JobType.FullName} finished.");
             }
             catch (Exception ex)
             {
+                FailuresInARow++;
                 Logger.LogError(ex, $"BackgroundJobManager: Error occured while activating job:{JobType.FullName}.");
+                LastError = ex.Message;
             }
             finally
             {
+                ExecutedOn = SillycoreApp.Instance.DateTimeProvider.Now;
+                Status = BackgroundJobStatus.Idle;
                 _isRunning = false;
+
+                if (FailuresInARow > _failureThreshold)
+                {
+                    Status = BackgroundJobStatus.Failing;
+                }
             }
         }
 
@@ -108,17 +129,23 @@ namespace Sillycore.BackgroundProcessing
                     {
                         Logger.LogDebug($"BackgroundJobManager: Running job:{JobType.FullName}.");
                         await job.Run();
-                        Logger.LogDebug($"BackgroundJobManager: Job:{JobType.FullName} run.");
+                        FailuresInARow = 0;
+                        LastError = null;
+                        Logger.LogDebug($"BackgroundJobManager: Job:{JobType.FullName} run successfully.");
                     }
                     else
                     {
+                        FailuresInARow++;
                         Logger.LogDebug($"BackgroundJobManager: Job:{JobType.FullName} cannot be initialized.");
+                        LastError = $"Job:{JobType.FullName} cannot be initialized.";
                     }
                 }
             }
             catch (Exception ex)
             {
+                FailuresInARow++;
                 Logger.LogError(ex, $"BackgroundJobManager: Error occured while running job:{JobType.FullName}.");
+                LastError = ex.Message;
             }
 
             GC.Collect();

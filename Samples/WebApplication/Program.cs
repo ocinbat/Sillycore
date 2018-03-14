@@ -1,8 +1,6 @@
 ﻿using Sillycore;
 using Sillycore.NLog;
 using Sillycore.Web;
-using Sillycore.Web.Security;
-using WebApplication.HealthCheckers;
 
 namespace WebApplication
 {

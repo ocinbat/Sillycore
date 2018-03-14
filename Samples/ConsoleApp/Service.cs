@@ -1,20 +1,28 @@
 ﻿using System.Threading.Tasks;
 using Sillycore;
+using Sillycore.BackgroundProcessing;
 using Sillycore.Daemon;
 
 namespace ConsoleApp
 {
     public class Service : ISillyDaemon
     {
+        private readonly BackgroundJobManager _backgroundJobManager;
+
+        public Service(BackgroundJobManager backgroundJobManager)
+        {
+            _backgroundJobManager = backgroundJobManager;
+        }
+
         public async Task Start()
         {
-            SillycoreApp.Instance.BackgroundJobManager.Register<TestJob>(1000);
-            await SillycoreApp.Instance.BackgroundJobManager.Start();
+            _backgroundJobManager.Register<TestJob>(1000);
+            await _backgroundJobManager.Start();
         }
 
         public async Task Stop()
         {
-            await SillycoreApp.Instance.BackgroundJobManager.Stop();
+            await _backgroundJobManager.Stop();
         }
     }
 }

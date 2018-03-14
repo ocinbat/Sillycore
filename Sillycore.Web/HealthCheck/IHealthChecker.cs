@@ -1,4 +1,6 @@
-﻿namespace Sillycore.Web.HealthCheck
+﻿using System.Threading.Tasks;
+
+namespace Sillycore.Web.HealthCheck
 {
     public interface IHealthChecker
     {
@@ -6,6 +8,6 @@
 
         bool IsCritical { get; }
 
-        bool CheckHealth();
+        Task<bool> CheckHealth();
     }
 }

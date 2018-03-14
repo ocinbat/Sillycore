@@ -1,4 +1,5 @@
-﻿using Sillycore.Web.HealthCheck;
+﻿using System.Threading.Tasks;
+using Sillycore.Web.HealthCheck;
 
 namespace WebApplication.HealthCheckers
 {
@@ -6,9 +7,9 @@ namespace WebApplication.HealthCheckers
     {
         public string Key => "sql";
         public bool IsCritical => true;
-        public bool CheckHealth()
+        public Task<bool> CheckHealth()
         {
-            return true;
+            return Task.FromResult(true);
         }
     }
 }
