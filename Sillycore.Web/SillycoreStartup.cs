@@ -142,6 +142,8 @@ namespace Sillycore.Web
         {
             SillycoreAppBuilder.Instance.DataStore.Set(Sillycore.Constants.ServiceProvider, app.ApplicationServices);
 
+            app.UseMiddleware<SillycoreMiddleware>();
+
             string dockerImageName = Environment.GetEnvironmentVariable("Sillycore.DockerImageName");
 
             if (!String.IsNullOrWhiteSpace(dockerImageName))
@@ -199,10 +201,21 @@ namespace Sillycore.Web
                 applicationLifetime.ApplicationStarted.Register(onStartAction);
             }
 
+            if (onStopActions.IsEmpty())
+            {
+                onStopActions.Add(OnShutdown);
+            }
+
             foreach (var onStopAction in onStopActions)
             {
                 applicationLifetime.ApplicationStopping.Register(onStopAction);
             }
+        }
+
+        private void OnShutdown()
+        {
+            SillycoreApp.Instance.DataStore.Set(Constants.IsShuttingDown, true);
+            Thread.Sleep(10000);
         }
 
         public virtual void ConfigureServicesInner(IServiceCollection services) { }
