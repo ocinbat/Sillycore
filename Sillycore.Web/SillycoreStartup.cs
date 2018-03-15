@@ -199,21 +199,10 @@ namespace Sillycore.Web
                 applicationLifetime.ApplicationStarted.Register(onStartAction);
             }
 
-            if (onStopActions.IsEmpty())
-            {
-                onStopActions.Add(OnShutdown);
-            }
-
             foreach (var onStopAction in onStopActions)
             {
                 applicationLifetime.ApplicationStopping.Register(onStopAction);
             }
-        }
-
-        private void OnShutdown()
-        {
-            SillycoreApp.Instance.DataStore.Set(Constants.IsShuttingDown, true);
-            Thread.Sleep(15000);
         }
 
         public virtual void ConfigureServicesInner(IServiceCollection services) { }
