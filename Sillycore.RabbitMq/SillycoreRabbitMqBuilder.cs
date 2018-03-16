@@ -18,6 +18,8 @@ namespace Sillycore.RabbitMq
 
         private readonly List<ConsumerConfiguration> _consumerConfigurations = new List<ConsumerConfiguration>();
 
+        private bool _useDelayedExchangeMessageScheduler = false;
+
         public SillycoreRabbitMqBuilder(SillycoreAppBuilder sillycoreAppBuilder, string url, string username, string password)
         {
             _sillycoreAppBuilder = sillycoreAppBuilder;
@@ -26,6 +28,14 @@ namespace Sillycore.RabbitMq
             _password = password;
             _logger = _sillycoreAppBuilder.LoggerFactory.CreateLogger<SillycoreRabbitMqBuilder>();
         }
+
+        public SillycoreRabbitMqBuilder UseDelayedExchangeMessageScheduler()
+        {
+            _useDelayedExchangeMessageScheduler = true;
+
+            return this;
+        }
+
 
         public SillycoreConsumerBuilder<T> RegisterConsumer<T>(string queue) where T : class, IConsumer
         {
@@ -62,6 +72,12 @@ namespace Sillycore.RabbitMq
                     }
 
                     cfg.UseExtensionsLogging(_sillycoreAppBuilder.LoggerFactory);
+
+                    if (_useDelayedExchangeMessageScheduler)
+                    {
+                        cfg.UseDelayedExchangeMessageScheduler();
+                    }
+
                     _logger.LogDebug($"Bus configured.");
                 });
                 
