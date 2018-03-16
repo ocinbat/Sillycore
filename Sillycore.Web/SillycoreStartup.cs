@@ -12,6 +12,9 @@ using Sillycore.Web.Filters;
 using Sillycore.Web.Security;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
+using System.Collections.Generic;
+using Sillycore.Extensions;
+using Sillycore.Web.Middlewares;
 
 namespace Sillycore.Web
 {
@@ -50,6 +53,7 @@ namespace Sillycore.Web
                     o.OutputFormatters.RemoveType<XmlSerializerOutputFormatter>();
 
                     o.Filters.Add<GlobalExceptionFilter>();
+                    o.Filters.Add<ValidateModelStateFilter>();
                 })
                 .AddJsonOptions(o =>
                 {
@@ -79,7 +83,6 @@ namespace Sillycore.Web
                     c.IgnoreObsoleteProperties();
                 });
             }
-
 
             if (DataStore.Get<bool>(Constants.RequiresAuthentication))
             {
@@ -119,7 +122,7 @@ namespace Sillycore.Web
         {
             var authenticationOptions = DataStore.Get<SillycoreAuthenticationOptions>(Constants.AuthenticationOptions);
 
-            var authority = Configuration.GetValue<string>(authenticationOptions.AuthorityConfigKey);
+            var authority = DataStore.Get<IConfiguration>(Sillycore.Constants.Configuration).GetValue<string>(authenticationOptions.AuthorityConfigKey);
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -138,6 +141,15 @@ namespace Sillycore.Web
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             SillycoreAppBuilder.Instance.DataStore.Set(Sillycore.Constants.ServiceProvider, app.ApplicationServices);
+
+            app.UseMiddleware<SillycoreMiddleware>();
+
+            string dockerImageName = Environment.GetEnvironmentVariable("Sillycore.DockerImageName");
+
+            if (!String.IsNullOrWhiteSpace(dockerImageName))
+            {
+                app.UseMiddleware<DockerImageVersionMiddleware>();
+            }
 
             if (env.IsDevelopment())
             {
@@ -173,14 +185,37 @@ namespace Sillycore.Web
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            var applicationLifetime = app.ApplicationServices.GetRequiredService<IApplicationLifetime>();
-            applicationLifetime.ApplicationStopping.Register(OnShutdown);
+            
+            RegisterStartAndStopActions(app);
+        }
+
+        private void RegisterStartAndStopActions(IApplicationBuilder app)
+        {
+            IApplicationLifetime applicationLifetime = app.ApplicationServices.GetRequiredService<IApplicationLifetime>();
+
+            List<Action> onStartActions = DataStore.Get<List<Action>>(Constants.OnStartActions);
+            List<Action> onStopActions = DataStore.Get<List<Action>>(Constants.OnStopActions);
+
+            foreach (var onStartAction in onStartActions)
+            {
+                applicationLifetime.ApplicationStarted.Register(onStartAction);
+            }
+
+            if (onStopActions.IsEmpty())
+            {
+                onStopActions.Add(OnShutdown);
+            }
+
+            foreach (var onStopAction in onStopActions)
+            {
+                applicationLifetime.ApplicationStopping.Register(onStopAction);
+            }
         }
 
         private void OnShutdown()
         {
             SillycoreApp.Instance.DataStore.Set(Constants.IsShuttingDown, true);
-            Thread.Sleep(15000);
+            Thread.Sleep(10000);
         }
 
         public virtual void ConfigureServicesInner(IServiceCollection services) { }

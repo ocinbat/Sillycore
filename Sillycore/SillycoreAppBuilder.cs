@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Sillycore.BackgroundProcessing;
 using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Objects.DateTimeProviders;
 
@@ -33,6 +34,7 @@ namespace Sillycore
             SetGlobalJsonSerializerSettings();
             InitializeLogger();
             InitializeDateTimeProvider();
+            InitializeBackgroundJobManager();
         }
 
         public SillycoreApp Build()
@@ -67,6 +69,7 @@ namespace Sillycore
         {
             DataStore.Delete(Constants.DateTimeProvider);
             DataStore.Set(Constants.DateTimeProvider, new LocalDateTimeProvider());
+            Services.TryAddSingleton(DataStore.Get<IDateTimeProvider>(Constants.DateTimeProvider));
 
             return this;
         }
@@ -75,6 +78,7 @@ namespace Sillycore
         {
             DataStore.Delete(Constants.DateTimeProvider);
             DataStore.Set(Constants.DateTimeProvider, new UtcDateTimeProvider());
+            Services.TryAddSingleton(DataStore.Get<IDateTimeProvider>(Constants.DateTimeProvider));
 
             return this;
         }
@@ -173,6 +177,11 @@ namespace Sillycore
         private void InitializeDateTimeProvider()
         {
             DataStore.Set(Constants.DateTimeProvider, new UtcDateTimeProvider());
+        }
+
+        private void InitializeBackgroundJobManager()
+        {
+            Services.AddSingleton<BackgroundJobManager>();
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Net;
 using System.Reflection;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Responses;
 using Sillycore.Extensions;
@@ -13,6 +14,8 @@ namespace Sillycore.Web.Controllers
     [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
     public abstract class SillyController : Controller
     {
+        private static readonly ILogger<SillyController> Logger = SillycoreApp.Instance?.LoggerFactory?.CreateLogger<SillyController>();
+
         protected IActionResult Page<T>(IPage<T> page)
         {
             if (page == null)
@@ -39,6 +42,8 @@ namespace Sillycore.Web.Controllers
             errorResponse.ErrorCode = errorCode;
             errorResponse.AddErrorMessage(errorMessage);
 
+            Logger?.LogInformation($"InvalidRequest: {errorResponse.GetFullMessage()}");
+
             return BadRequest(errorResponse);
         }
 
@@ -53,6 +58,8 @@ namespace Sillycore.Web.Controllers
             errorResponse.ErrorCode = errorCode;
             errorResponse.AddErrorMessage(errorMessage);
 
+            Logger?.LogWarning($"Conflict: {errorResponse.GetFullMessage()}");
+
             return StatusCode(HttpStatusCode.Conflict.ToInt(), errorResponse);
         }
 
@@ -66,6 +73,8 @@ namespace Sillycore.Web.Controllers
             ErrorResponse errorResponse = new ErrorResponse();
             errorResponse.ErrorCode = errorCode;
             errorResponse.AddErrorMessage(errorMessage);
+
+            Logger?.LogWarning($"Forbidden: {errorResponse.GetFullMessage()}");
 
             return StatusCode(HttpStatusCode.Forbidden.ToInt(), errorResponse);
         }
@@ -107,11 +116,16 @@ namespace Sillycore.Web.Controllers
             errorResponse.AdditionalInfo = additionalInfo;
             errorResponse.AddErrorMessage(errorMessage);
 
-            return StatusCode(HttpStatusCode.InternalServerError.ToInt(), errorResponse);
+            return InternalServerError(errorResponse);
         }
 
-        protected IActionResult InternalServerError<T>(T errorResponse)
+        protected IActionResult InternalServerError<T>(T errorResponse) where T : ErrorResponse
         {
+            if (errorResponse != null)
+            {
+                Logger?.LogError($"InternalServerError: {errorResponse.GetFullMessage()}");
+            }
+
             return StatusCode(HttpStatusCode.InternalServerError.ToInt(), errorResponse);
         }
 

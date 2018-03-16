@@ -1,7 +1,6 @@
 ﻿using Sillycore;
 using Sillycore.NLog;
 using Sillycore.Web;
-using Sillycore.Web.Security;
 
 namespace WebApplication
 {
@@ -20,10 +19,10 @@ namespace WebApplication
                 .UseNLog()
                 .UseWebApi("WebApplication")
                     .WithSwagger()
-                        /* .WithAuthentication()
+                        .WithAuthentication()
                         .As("AuthServer")
                         .WithPolicy("defaultPolicy", "lookup")
-                        .Then() */
+                        .Then()
                     .Build();
         }
     }

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Sillycore.Web.HealthCheck;
 
 namespace Sillycore.Web
 {
@@ -26,6 +28,8 @@ namespace Sillycore.Web
             _sillycoreAppBuilder.DataStore.Set(Constants.IsShuttingDown, false);
             _sillycoreAppBuilder.DataStore.Set(Constants.UseSwagger, false);
             _sillycoreAppBuilder.DataStore.Set(Constants.RequiresAuthentication, false);
+            _sillycoreAppBuilder.DataStore.Set(Constants.OnStartActions, new List<Action>());
+            _sillycoreAppBuilder.DataStore.Set(Constants.OnStopActions, new List<Action>());
         }
 
         public SillycoreWebhostBuilder WithUrl(string rootUrl)
@@ -34,6 +38,20 @@ namespace Sillycore.Web
             {
                 _sillycoreAppBuilder.DataStore.Set(Constants.ApiRootUrl, rootUrl.TrimEnd('/'));
             }
+
+            return this;
+        }
+
+        public SillycoreWebhostBuilder WithOnStartAction(Action action)
+        {
+            _sillycoreAppBuilder.DataStore.Get<List<Action>>(Constants.OnStartActions).Add(action);
+
+            return this;
+        }
+
+        public SillycoreWebhostBuilder WithOnStopAction(Action action)
+        {
+            _sillycoreAppBuilder.DataStore.Get<List<Action>>(Constants.OnStopActions).Add(action);
 
             return this;
         }
@@ -70,6 +88,8 @@ namespace Sillycore.Web
 
         public void Build()
         {
+            RegisterHealthCheckers();
+
             _sillycoreAppBuilder.DataStore.Set(Constants.ApplicationName, _applicationName);
 
             _sillycoreAppBuilder.BeforeBuild(() =>
@@ -90,40 +110,41 @@ namespace Sillycore.Web
             app.DataStore.Get<IWebHost>(Constants.WebHost).Run();
         }
 
+        private void RegisterHealthCheckers()
+        {
+            HealthCheckerContainer container = _sillycoreAppBuilder.DataStore.Get<HealthCheckerContainer>(Constants.HealthCheckerContainerDataKey);
+
+            if (container == null)
+            {
+                container = new HealthCheckerContainer();
+            }
+
+            Assembly ass = Assembly.GetEntryAssembly();
+
+            foreach (TypeInfo ti in ass.DefinedTypes)
+            {
+                if (ti.ImplementedInterfaces.Contains(typeof(IHealthChecker)))
+                {
+                    container.AddHealthChecker(ti);
+
+                    _sillycoreAppBuilder.Services.AddTransient(ti);
+                    _sillycoreAppBuilder.DataStore.Set(Constants.HealthCheckerContainerDataKey, container);
+                }
+            }
+        }
+
         public IWebHostBuilder CreateDefaultBuilder(string[] args)
         {
             var webHostBuilder = new WebHostBuilder();
 
             webHostBuilder.UseKestrel();
             webHostBuilder.UseContentRoot(Directory.GetCurrentDirectory());
-            webHostBuilder.ConfigureAppConfiguration((hostingContext, config) =>
-            {
-                IHostingEnvironment hostingEnvironment = hostingContext.HostingEnvironment;
-                config.AddJsonFile("appsettings.json", true, true).AddJsonFile(string.Format("appsettings.{0}.json", (object)hostingEnvironment.EnvironmentName), true, true);
-                if (hostingEnvironment.IsDevelopment())
-                {
-                    Assembly assembly = Assembly.Load(new AssemblyName(hostingEnvironment.ApplicationName));
-                    if (assembly != null)
-                        config.AddUserSecrets(assembly, true);
-                }
-                config.AddEnvironmentVariables();
-                if (args == null)
-                    return;
-                config.AddCommandLine(args);
-            });
-            webHostBuilder.ConfigureLogging((hostingContext, logging) =>
-            {
-                logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                logging.AddConsole();
-                logging.AddDebug();
-            });
+            webHostBuilder.UseConfiguration(SillycoreAppBuilder.Instance.Configuration);
 
             if (_withIisIntegration)
             {
                 webHostBuilder.UseIISIntegration();
             }
-
-            webHostBuilder.UseDefaultServiceProvider((context, options) => options.ValidateScopes = context.HostingEnvironment.IsDevelopment());
 
             return webHostBuilder;
         }

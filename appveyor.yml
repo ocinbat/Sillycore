@@ -12,6 +12,8 @@ build_script:
     dotnet build Sillycore.RabbitMq/Sillycore.RabbitMq.csproj
     
     dotnet build Sillycore.RestClient/Sillycore.RestClient.csproj
+
+    dotnet build Sillycore.Daemon/Sillycore.Daemon.csproj
 after_test:
 - ps: >-
     dotnet pack Sillycore/Sillycore.csproj -c Release --include-symbols
@@ -25,6 +27,8 @@ after_test:
     dotnet pack Sillycore.RabbitMq/Sillycore.RabbitMq.csproj -c Release --include-symbols
     
     dotnet pack Sillycore.RestClient/Sillycore.RestClient.csproj -c Release --include-symbols
+
+    dotnet pack Sillycore.Daemon/Sillycore.Daemon.csproj -c Release --include-symbols
 artifacts:
 - path: Sillycore/bin/Release/*.nupkg
   name: Sillycore
@@ -38,6 +42,8 @@ artifacts:
   name: Sillycore.RabbitMq
 - path: Sillycore.RestClient/bin/Release/*.nupkg
   name: Sillycore.RestClient
+- path: Sillycore.Daemon/bin/Release/*.nupkg
+  name: Sillycore.Daemon
 deploy:
 - provider: NuGet
   api_key:
