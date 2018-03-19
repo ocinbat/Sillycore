@@ -122,20 +122,21 @@ namespace Sillycore.Web
         {
             var authenticationOptions = DataStore.Get<SillycoreAuthenticationOptions>(Constants.AuthenticationOptions);
 
-            var authority = DataStore.Get<IConfiguration>(Sillycore.Constants.Configuration).GetValue<string>(authenticationOptions.AuthorityConfigKey);
+            if (authenticationOptions != null)
+            {
+                var authority = DataStore.Get<IConfiguration>(Sillycore.Constants.Configuration).GetValue<string>(authenticationOptions.AuthorityConfigKey);
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.Authority = authority;
-                    options.RequireHttpsMetadata = authenticationOptions.RequiresHttpsMetadata;
-                    if (authenticationOptions.LegacyAudienceValidation)
+                services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
                     {
-                        options.TokenValidationParameters.ValidateAudience = false;
-                    }
-                });
-
-
+                        options.Authority = authority;
+                        options.RequireHttpsMetadata = authenticationOptions.RequiresHttpsMetadata;
+                        if (authenticationOptions.LegacyAudienceValidation)
+                        {
+                            options.TokenValidationParameters.ValidateAudience = false;
+                        }
+                    });
+            }
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -166,6 +167,12 @@ namespace Sillycore.Web
                     r.MapRoute(name: "Default",
                         template: "",
                         defaults: new { controller = "Help", action = "Index" });
+                }
+                else
+                {
+                    r.MapRoute(name: "Default",
+                        template: "",
+                        defaults: new { controller = "Home", action = "Index" });
                 }
             });
 
