@@ -143,6 +143,8 @@ namespace Sillycore.Web
         {
             SillycoreAppBuilder.Instance.DataStore.Set(Sillycore.Constants.ServiceProvider, app.ApplicationServices);
 
+            app.UseMiddleware<SillycoreMiddleware>();
+
             string dockerImageName = Environment.GetEnvironmentVariable("Sillycore.DockerImageName");
 
             if (!String.IsNullOrWhiteSpace(dockerImageName))
@@ -220,7 +222,7 @@ namespace Sillycore.Web
         private void OnShutdown()
         {
             SillycoreApp.Instance.DataStore.Set(Constants.IsShuttingDown, true);
-            Thread.Sleep(15000);
+            Thread.Sleep(10000);
         }
 
         public virtual void ConfigureServicesInner(IServiceCollection services) { }
