@@ -13,6 +13,7 @@ using Sillycore.Web.Security;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
+using Microsoft.ApplicationInsights.Extensibility;
 using Sillycore.Extensions;
 using Sillycore.Web.Middlewares;
 
@@ -142,6 +143,16 @@ namespace Sillycore.Web
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             SillycoreAppBuilder.Instance.DataStore.Set(Sillycore.Constants.ServiceProvider, app.ApplicationServices);
+
+            try
+            {
+                TelemetryConfiguration telemetryConfiguration = app.ApplicationServices.GetService<TelemetryConfiguration>();
+                telemetryConfiguration.DisableTelemetry = true;
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"There was a problem while disabling ApplicationInsights.");
+            }
 
             app.UseMiddleware<SillycoreMiddleware>();
 
