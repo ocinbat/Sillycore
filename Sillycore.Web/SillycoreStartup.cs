@@ -40,6 +40,7 @@ namespace Sillycore.Web
                 services.Add(descriptor);
             }
 
+            services.AddCors();
             services.AddMvc()
                 .AddApplicationPart(Assembly.GetEntryAssembly())
                 .AddMvcOptions(o =>
@@ -154,6 +155,10 @@ namespace Sillycore.Web
                 Console.WriteLine($"There was a problem while disabling ApplicationInsights.");
             }
 
+            app.UseCors(
+                options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
+            );
+
             app.UseMiddleware<SillycoreMiddleware>();
 
             string dockerImageName = Environment.GetEnvironmentVariable("Sillycore.DockerImageName");
@@ -203,7 +208,7 @@ namespace Sillycore.Web
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            
+
             RegisterStartAndStopActions(app);
         }
 
