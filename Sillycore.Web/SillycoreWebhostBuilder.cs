@@ -128,9 +128,10 @@ namespace Sillycore.Web
                     container.AddHealthChecker(ti);
 
                     _sillycoreAppBuilder.Services.AddTransient(ti);
-                    _sillycoreAppBuilder.DataStore.Set(Constants.HealthCheckerContainerDataKey, container);
                 }
             }
+
+            _sillycoreAppBuilder.DataStore.Set(Constants.HealthCheckerContainerDataKey, container);
         }
 
         public IWebHostBuilder CreateDefaultBuilder(string[] args)

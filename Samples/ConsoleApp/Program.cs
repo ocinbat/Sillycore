@@ -23,7 +23,6 @@ namespace ConsoleApp
 
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<TestJob>();
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -181,6 +183,16 @@ namespace Sillycore
 
         private void InitializeBackgroundJobManager()
         {
+            Assembly ass = Assembly.GetEntryAssembly();
+
+            foreach (TypeInfo ti in ass.DefinedTypes)
+            {
+                if (ti.ImplementedInterfaces.Contains(typeof(IJob)))
+                {
+                    Services.AddTransient(ti);
+                }
+            }
+
             Services.AddSingleton<BackgroundJobManager>();
         }
     }
