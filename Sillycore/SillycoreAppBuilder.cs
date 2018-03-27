@@ -206,6 +206,7 @@ namespace Sillycore
             {
                 if (ti.ImplementedInterfaces.Contains(typeof(ITransient)))
                 {
+                    Services.AddTransient(ti);
                     foreach (Type implementedInterface in ti.ImplementedInterfaces.Where(i => i != typeof(ITransient)))
                     {
                         Services.AddTransient(implementedInterface, ti);
@@ -214,6 +215,7 @@ namespace Sillycore
 
                 if (ti.ImplementedInterfaces.Contains(typeof(IScoped)))
                 {
+                    Services.AddScoped(ti);
                     foreach (Type implementedInterface in ti.ImplementedInterfaces.Where(i => i != typeof(IScoped)))
                     {
                         Services.AddScoped(implementedInterface, ti);
@@ -222,6 +224,7 @@ namespace Sillycore
 
                 if (ti.ImplementedInterfaces.Contains(typeof(ISingleton)))
                 {
+                    Services.AddSingleton(ti);
                     foreach (Type implementedInterface in ti.ImplementedInterfaces.Where(i => i != typeof(ISingleton)))
                     {
                         Services.AddSingleton(implementedInterface, ti);
