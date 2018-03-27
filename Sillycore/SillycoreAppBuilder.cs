@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Sillycore.BackgroundProcessing;
+using Sillycore.DependencyInjection;
 using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Objects.DateTimeProviders;
 
@@ -37,6 +38,7 @@ namespace Sillycore
             InitializeLogger();
             InitializeDateTimeProvider();
             InitializeBackgroundJobManager();
+            InitializeDependencies();
         }
 
         public SillycoreApp Build()
@@ -194,6 +196,38 @@ namespace Sillycore
             }
 
             Services.AddSingleton<BackgroundJobManager>();
+        }
+
+        private void InitializeDependencies()
+        {
+            Assembly ass = Assembly.GetEntryAssembly();
+
+            foreach (TypeInfo ti in ass.DefinedTypes)
+            {
+                if (ti.ImplementedInterfaces.Contains(typeof(ITransient)))
+                {
+                    foreach (Type implementedInterface in ti.ImplementedInterfaces.Where(i => i != typeof(ITransient)))
+                    {
+                        Services.AddTransient(implementedInterface, ti);
+                    }
+                }
+
+                if (ti.ImplementedInterfaces.Contains(typeof(IScoped)))
+                {
+                    foreach (Type implementedInterface in ti.ImplementedInterfaces.Where(i => i != typeof(IScoped)))
+                    {
+                        Services.AddScoped(implementedInterface, ti);
+                    }
+                }
+
+                if (ti.ImplementedInterfaces.Contains(typeof(ISingleton)))
+                {
+                    foreach (Type implementedInterface in ti.ImplementedInterfaces.Where(i => i != typeof(ISingleton)))
+                    {
+                        Services.AddSingleton(implementedInterface, ti);
+                    }
+                }
+            }
         }
     }
 }
