@@ -13,7 +13,7 @@ namespace Sillycore.EntityFramework
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.AddEntityConfigurationsFromAssembly(GetType().GetTypeInfo().Assembly, GetType());
+            modelBuilder.AddEntityConfigurationsFromAssembly(GetType().GetTypeInfo().Assembly);
         }
     }
 }

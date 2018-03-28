@@ -5,8 +5,6 @@ using System.Reflection;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 
-
-
 namespace Sillycore.EntityFramework.Mapping
 {
     /// <summary>
@@ -25,19 +23,12 @@ namespace Sillycore.EntityFramework.Mapping
         }
 
         /// <seealso cref="https://github.com/aspnet/EntityFrameworkCore/issues/2805"/>
-        public static void AddEntityConfigurationsFromAssembly(this ModelBuilder modelBuilder, Assembly assembly, Type dbContextType)
+        public static void AddEntityConfigurationsFromAssembly(this ModelBuilder modelBuilder, Assembly assembly)
         {
-            IEnumerable<Type> mappingTypes = assembly.GetMappingTypes(typeof(IEntityMappingConfiguration<>));
+            var mappingTypes = assembly.GetMappingTypes(typeof(IEntityMappingConfiguration<>));
 
-            foreach (IEntityMappingConfiguration config in mappingTypes.Select(Activator.CreateInstance).Cast<IEntityMappingConfiguration>())
-            {
-                DataContextAttribute dataContextAttribute = config.GetType().GetTypeInfo().GetCustomAttribute<DataContextAttribute>();
-                if (dataContextAttribute == null || dataContextAttribute.Type == dbContextType)
-                {
-                    dynamic configurationInstance = Activator.CreateInstance(config.GetType());
-                    config.Map(configurationInstance);
-                }
-            }
+            foreach (var config in mappingTypes.Select(Activator.CreateInstance).Cast<IEntityMappingConfiguration>())
+                config.Map(modelBuilder);
         }
     }
 }
