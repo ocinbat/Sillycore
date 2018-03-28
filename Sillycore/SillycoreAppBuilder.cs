@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
+using System.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -15,11 +17,13 @@ using Sillycore.BackgroundProcessing;
 using Sillycore.DependencyInjection;
 using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Objects.DateTimeProviders;
+using Sillycore.Extensions;
 
 namespace Sillycore
 {
     public class SillycoreAppBuilder : ISillycoreAppBuilder
     {
+        private static HttpClient _httpClient = new HttpClient();
         private static SillycoreAppBuilder _appBuilder;
         public static SillycoreAppBuilder Instance => _appBuilder ?? (_appBuilder = new SillycoreAppBuilder());
 
@@ -84,6 +88,17 @@ namespace Sillycore
             DataStore.Set(Constants.DateTimeProvider, new UtcDateTimeProvider());
             Services.TryAddSingleton(DataStore.Get<IDateTimeProvider>(Constants.DateTimeProvider));
 
+            return this;
+        }
+
+        public SillycoreAppBuilder UseConfigServer(string configServerAddress, string appName, int defaultReloadTimeInMiliseconds = 180000)
+        {
+            DataStore.Set(Constants.ConfigServerAddress, configServerAddress);
+            DataStore.Set(Constants.ConfigServerAppName, appName);
+            DataStore.Set(Constants.ConfigServerReloadTimeInMiliseconds, defaultReloadTimeInMiliseconds);
+            DataStore.Set(Constants.ConfigServerReloadTimer, new Timer(ReloadConfigurationFromConfigServer, null, defaultReloadTimeInMiliseconds, defaultReloadTimeInMiliseconds));
+
+            ReloadConfigurationFromConfigServer(null);
             return this;
         }
 
@@ -231,6 +246,38 @@ namespace Sillycore
                     }
                 }
             }
+        }
+
+        private void ReloadConfigurationFromConfigServer(object state)
+        {
+            Timer timer = DataStore.Get<Timer>(Constants.ConfigServerReloadTimer);
+            timer.Change(-1, -1);
+
+            string configServerAddress = DataStore.Get<string>(Constants.ConfigServerAddress);
+            string appName = DataStore.Get<string>(Constants.ConfigServerAppName);
+            string environment = Configuration["ASPNETCORE_ENVIRONMENT"] ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "development";
+            string url = $"{configServerAddress?.TrimEnd('/')}/{appName?.ToLowerInvariant()}/{environment.ToLowerInvariant()}/master/config.json";
+
+            try
+            {
+                Dictionary<string, string> configurations = JsonConvert.DeserializeObject<Dictionary<string, string>>(_httpClient.GetStringAsync(url).Result);
+
+                if (configurations.HasElements())
+                {
+                    foreach (var pair in configurations)
+                    {
+                        Configuration[pair.Key] = pair.Value;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ILogger<SillycoreAppBuilder> logger = LoggerFactory.CreateLogger<SillycoreAppBuilder>();
+                logger.LogError(e, $"There was a problem while loading config from config server:{url}");
+            }
+
+            int reloadTime = DataStore.Get<int>(Constants.ConfigServerReloadTimeInMiliseconds);
+            timer.Change(reloadTime, reloadTime);
         }
     }
 }

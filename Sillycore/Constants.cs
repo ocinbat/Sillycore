@@ -17,5 +17,9 @@
         public const string LoggerFactory = "LoggerFactory";
         public const string Configuration = "Configuration";
         public const string BackgroundJobManager = "BackgroundJobManager";
+        public const string ConfigServerAddress = "ConfigServerAddress";
+        public const string ConfigServerAppName = "ConfigServerAppName";
+        public const string ConfigServerReloadTimer = "ConfigServerReloadTimer";
+        public const string ConfigServerReloadTimeInMiliseconds = "ConfigServerReloadTimeInMiliseconds";
     }
 }
