@@ -1,9 +1,7 @@
-﻿using System.IO;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RestSharp;
 using RestSharp.Deserializers;
 using RestSharp.Serializers;
-using Sillycore;
 
 namespace Sillycore.RestClient.Serialization
 {
@@ -11,7 +9,7 @@ namespace Sillycore.RestClient.Serialization
     {
         public string Serialize(object obj)
         {
-            return JsonConvert.SerializeObject(obj);
+            return JsonConvert.SerializeObject(obj, SillycoreApp.JsonSerializerSettings);
         }
 
         public T Deserialize<T>(IRestResponse response)

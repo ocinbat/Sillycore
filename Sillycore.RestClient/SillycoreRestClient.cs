@@ -130,7 +130,7 @@ namespace Sillycore.RestClient
         {
             DecoratedClient = new RestSharp.RestClient(baseUrl);
             DecoratedClient.AddHandler("application/json", new CustomJsonSerializer());
-            DecoratedClient.UserAgent = "Trendyol.App.RestClient";
+            DecoratedClient.UserAgent = "Sillycore.RestClient";
         }
     }
 }
