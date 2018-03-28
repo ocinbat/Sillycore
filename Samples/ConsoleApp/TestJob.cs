@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ConsoleApp.Data;
@@ -27,6 +28,11 @@ namespace ConsoleApp
         public async Task Run()
         {
             List<Sample> samples = await _context.Samples.ToListAsync();
+
+            _context.Samples.Remove(samples.First());
+
+            await _context.SaveChangesAsync();
+
             await Console.Out.WriteLineAsync(_configuration["TestConfig"]);
         }
     }

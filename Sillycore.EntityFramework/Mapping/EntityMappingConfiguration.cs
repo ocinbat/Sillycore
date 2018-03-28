@@ -17,8 +17,8 @@ namespace Sillycore.EntityFramework.Mapping
             {
                 ParameterExpression argParam = Expression.Parameter(typeof(T), "e");
                 Expression isDeletedProperty = Expression.Property(argParam, "IsDeleted");
-                ConstantExpression trueValue = Expression.Constant(true);
-                Expression expression = Expression.Equal(isDeletedProperty, trueValue);
+                ConstantExpression falseValue = Expression.Constant(false);
+                Expression expression = Expression.Equal(isDeletedProperty, falseValue);
                 Expression<Func<T, bool>> lambda = Expression.Lambda<Func<T, bool>>(expression, argParam);
 
                 builder.Entity<T>().HasQueryFilter(lambda);
