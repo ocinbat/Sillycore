@@ -8,9 +8,9 @@ namespace ConsoleApp
 {
     public class TestJob : IJob
     {
-        private readonly IHelper _helper;
+        private readonly SomeHelper _helper;
 
-        public TestJob(IHelper helper)
+        public TestJob(SomeHelper helper)
         {
             _helper = helper;
         }

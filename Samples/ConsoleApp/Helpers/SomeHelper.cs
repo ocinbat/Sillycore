@@ -3,7 +3,7 @@ using Sillycore.DependencyInjection;
 
 namespace ConsoleApp.Helpers
 {
-    public class SomeHelper : IHelper, ITransient
+    public class SomeHelper : ISingleton
     {
         public Task Help()
         {
