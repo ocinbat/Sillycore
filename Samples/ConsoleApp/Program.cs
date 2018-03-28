@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using ConsoleApp.Data;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Sillycore;
 using Sillycore.Daemon;
+using Sillycore.EntityFramework;
 using Sillycore.NLog;
 
 namespace ConsoleApp
@@ -17,6 +19,7 @@ namespace ConsoleApp
                 .UseUtcTimes()
                 .ConfigureServices(ConfigureServices)
                 .UseNLog()
+                .UseDataContext<DataContext>("DataContext")
                 .UseDaemon<Service>("ConsoleApp")
                 .Build();
         }

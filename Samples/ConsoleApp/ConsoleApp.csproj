@@ -7,8 +7,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Sillycore.Daemon\Sillycore.Daemon.csproj" />
+    <ProjectReference Include="..\..\Sillycore.EntityFramework\Sillycore.EntityFramework.csproj" />
     <ProjectReference Include="..\..\Sillycore.NLog\Sillycore.NLog.csproj" />
     <ProjectReference Include="..\..\Sillycore\Sillycore.csproj" />
+    <PackageReference Include="Castle.Core" Version="4.2.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.1" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.8.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,7 +21,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="nlog.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
