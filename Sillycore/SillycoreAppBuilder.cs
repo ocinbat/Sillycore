@@ -269,11 +269,18 @@ namespace Sillycore
                         Configuration[pair.Key] = pair.Value;
                     }
                 }
+
+                DataStore.Set(Constants.ConfigServerFirstLoadSucceeded, true);
             }
             catch (Exception e)
             {
                 ILogger<SillycoreAppBuilder> logger = LoggerFactory.CreateLogger<SillycoreAppBuilder>();
                 logger.LogError(e, $"There was a problem while loading config from config server:{url}");
+
+                if (!DataStore.Get<bool>(Constants.ConfigServerFirstLoadSucceeded))
+                {
+                    throw new ApplicationException($"There was a problem while loading config from config server:{url}", e);
+                }
             }
 
             int reloadTime = DataStore.Get<int>(Constants.ConfigServerReloadTimeInMiliseconds);

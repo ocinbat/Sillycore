@@ -21,5 +21,6 @@
         public const string ConfigServerAppName = "ConfigServerAppName";
         public const string ConfigServerReloadTimer = "ConfigServerReloadTimer";
         public const string ConfigServerReloadTimeInMiliseconds = "ConfigServerReloadTimeInMiliseconds";
+        public const string ConfigServerFirstLoadSucceeded = "ConfigServerFirstLoadSucceeded";
     }
 }
