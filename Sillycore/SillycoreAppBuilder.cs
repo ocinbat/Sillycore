@@ -95,15 +95,17 @@ namespace Sillycore
         {
             string environment = Configuration["ASPNETCORE_ENVIRONMENT"] ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "development";
 
-            if (environment.ToLowerInvariant() != "development")
+            if (environment.ToLowerInvariant() == "development" || environment.ToLowerInvariant() == "ci")
             {
-                DataStore.Set(Constants.ConfigServerAddress, configServerAddress);
-                DataStore.Set(Constants.ConfigServerAppName, appName);
-                DataStore.Set(Constants.ConfigServerReloadTimeInMiliseconds, defaultReloadTimeInMiliseconds);
-                DataStore.Set(Constants.ConfigServerReloadTimer, new Timer(ReloadConfigurationFromConfigServer, null, defaultReloadTimeInMiliseconds, defaultReloadTimeInMiliseconds));
-
-                ReloadConfigurationFromConfigServer(null);
+                return this;
             }
+
+            DataStore.Set(Constants.ConfigServerAddress, configServerAddress);
+            DataStore.Set(Constants.ConfigServerAppName, appName);
+            DataStore.Set(Constants.ConfigServerReloadTimeInMiliseconds, defaultReloadTimeInMiliseconds);
+            DataStore.Set(Constants.ConfigServerReloadTimer, new Timer(ReloadConfigurationFromConfigServer, null, defaultReloadTimeInMiliseconds, defaultReloadTimeInMiliseconds));
+
+            ReloadConfigurationFromConfigServer(null);
 
             return this;
         }
