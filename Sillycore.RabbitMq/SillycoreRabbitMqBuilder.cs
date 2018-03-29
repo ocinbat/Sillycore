@@ -37,11 +37,11 @@ namespace Sillycore.RabbitMq
         }
 
 
-        public SillycoreConsumerBuilder<T> RegisterConsumer<T>(string queue) where T : class, IConsumer
+        public SillycoreConsumerBuilder<T> RegisterConsumer<T>(string queue, string exchange=null) where T : class, IConsumer
         {
             _logger.LogDebug($"Registering consumer:{typeof(T)}");
 
-            var consumerBuilder = new SillycoreConsumerBuilder<T>(this, queue);
+            var consumerBuilder = new SillycoreConsumerBuilder<T>(this, queue, exchange);
             return consumerBuilder;
         }
 
