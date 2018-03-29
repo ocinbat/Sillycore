@@ -93,12 +93,18 @@ namespace Sillycore
 
         public SillycoreAppBuilder UseConfigServer(string configServerAddress, string appName, int defaultReloadTimeInMiliseconds = 180000)
         {
-            DataStore.Set(Constants.ConfigServerAddress, configServerAddress);
-            DataStore.Set(Constants.ConfigServerAppName, appName);
-            DataStore.Set(Constants.ConfigServerReloadTimeInMiliseconds, defaultReloadTimeInMiliseconds);
-            DataStore.Set(Constants.ConfigServerReloadTimer, new Timer(ReloadConfigurationFromConfigServer, null, defaultReloadTimeInMiliseconds, defaultReloadTimeInMiliseconds));
+            string environment = Configuration["ASPNETCORE_ENVIRONMENT"] ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "development";
 
-            ReloadConfigurationFromConfigServer(null);
+            if (environment.ToLowerInvariant() != "development")
+            {
+                DataStore.Set(Constants.ConfigServerAddress, configServerAddress);
+                DataStore.Set(Constants.ConfigServerAppName, appName);
+                DataStore.Set(Constants.ConfigServerReloadTimeInMiliseconds, defaultReloadTimeInMiliseconds);
+                DataStore.Set(Constants.ConfigServerReloadTimer, new Timer(ReloadConfigurationFromConfigServer, null, defaultReloadTimeInMiliseconds, defaultReloadTimeInMiliseconds));
+
+                ReloadConfigurationFromConfigServer(null);
+            }
+
             return this;
         }
 
