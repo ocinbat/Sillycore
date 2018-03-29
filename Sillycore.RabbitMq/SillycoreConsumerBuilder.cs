@@ -11,16 +11,18 @@ namespace Sillycore.RabbitMq
     public class SillycoreConsumerBuilder<T> where T: class, IConsumer
     {
         private readonly string _queue;
+        private readonly string _exchange;
         private readonly SillycoreRabbitMqBuilder _sillycoreRabbitMqBuilder;
 
         private ushort _prefetchCount = 32;
         private int? _concurrencyLimit;
         private int? _numberOfImmediateRetries;
 
-        public SillycoreConsumerBuilder(SillycoreRabbitMqBuilder sillycoreRabbitMqBuilder, string queue)
+        public SillycoreConsumerBuilder(SillycoreRabbitMqBuilder sillycoreRabbitMqBuilder, string queue, string exchange=null)
         {
             _sillycoreRabbitMqBuilder = sillycoreRabbitMqBuilder;
             _queue = queue;
+            _exchange = exchange;
         }
 
         public SillycoreConsumerBuilder<T> WithPrefetchCount(ushort prefetchCount)
@@ -52,6 +54,12 @@ namespace Sillycore.RabbitMq
                     ICachedConfigurator configurator = new SillycoreConsumerConfigurator<T>();
                     configurator.Configure(c, null);
                     c.PrefetchCount = _prefetchCount;
+
+                    if (string.IsNullOrEmpty(_exchange))
+                    {
+                        c.Bind(_exchange);
+                    }
+
                     if (_concurrencyLimit.HasValue)
                     {
                         c.UseConcurrencyLimit(_concurrencyLimit.Value);
