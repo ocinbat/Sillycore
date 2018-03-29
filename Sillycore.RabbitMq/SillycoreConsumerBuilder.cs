@@ -55,7 +55,7 @@ namespace Sillycore.RabbitMq
                     configurator.Configure(c, null);
                     c.PrefetchCount = _prefetchCount;
 
-                    if (string.IsNullOrEmpty(_exchange))
+                    if (!string.IsNullOrEmpty(_exchange))
                     {
                         c.Bind(_exchange);
                     }
