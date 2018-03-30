@@ -136,7 +136,7 @@ namespace Sillycore.BackgroundProcessing
                     else
                     {
                         FailuresInARow++;
-                        Logger.LogDebug($"BackgroundJobManager: Job:{JobType.FullName} cannot be initialized.");
+                        Logger.LogError($"BackgroundJobManager: Job:{JobType.FullName} cannot be initialized.");
                         LastError = $"Job:{JobType.FullName} cannot be initialized.";
                     }
                 }
