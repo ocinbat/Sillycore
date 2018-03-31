@@ -169,7 +169,7 @@ namespace Sillycore
 
             var loggerFactory = new LoggerFactory();
             DataStore.Set(Constants.LoggerFactory, loggerFactory);
-            loggerFactory.AddConsole();
+            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
 
             LoggerFactory = loggerFactory;
 
