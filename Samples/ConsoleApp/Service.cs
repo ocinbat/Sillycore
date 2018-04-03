@@ -16,7 +16,7 @@ namespace ConsoleApp
 
         public async Task Start()
         {
-            _backgroundJobManager.Register<TestJob>(1000);
+            _backgroundJobManager.Register<TestJob>("TestJobIntervalInMs");
             await _backgroundJobManager.Start();
         }
 

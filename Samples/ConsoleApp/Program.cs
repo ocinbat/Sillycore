@@ -1,4 +1,5 @@
-﻿using ConsoleApp.Data;
+﻿using System;
+using ConsoleApp.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

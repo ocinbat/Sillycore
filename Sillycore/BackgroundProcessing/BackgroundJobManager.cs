@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Sillycore.BackgroundProcessing
@@ -58,6 +57,12 @@ namespace Sillycore.BackgroundProcessing
         {
             _logger.LogDebug($"BackgroundJobManager: Registering timer for job:{typeof(T).FullName}.");
             JobTimers.Add(new BackgroundJobTimer(typeof(T), jobIntervalInMs));
+        }
+
+        public void Register<T>(string configurationKeyForJobIntervalInMs) where T : IJob
+        {
+            _logger.LogDebug($"BackgroundJobManager: Registering timer for job:{typeof(T).FullName}.");
+            JobTimers.Add(new BackgroundJobTimer(typeof(T), configurationKeyForJobIntervalInMs));
         }
     }
 }

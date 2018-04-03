@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Sillycore.Extensions;
 
 namespace Sillycore.BackgroundProcessing
 {
@@ -15,12 +17,21 @@ namespace Sillycore.BackgroundProcessing
         public DateTime? ExecutedOn { get; set; }
 
         private static readonly ILogger Logger = SillycoreApp.Instance.LoggerFactory.CreateLogger<ILogger>();
-        private readonly int _intervalInMs;
+        private static readonly IConfiguration Configuration = SillycoreApp.Instance.Configuration;
+
+        private readonly string _configurationKeyForIntervalInMs;
         private readonly int _failureThreshold;
         internal readonly Type JobType;
 
         private Timer _timer;
         private bool _isRunning;
+        private int _intervalInMs;
+
+        public BackgroundJobTimer(Type jobType, string configurationKeyForIntervalInMs, int? failureThreshold = 3) :
+            this(jobType, Configuration[configurationKeyForIntervalInMs].ToInt(), failureThreshold)
+        {
+            _configurationKeyForIntervalInMs = configurationKeyForIntervalInMs;
+        }
 
         public BackgroundJobTimer(Type jobType, int intervalInMs, int? failureThreshold = 3)
         {
@@ -73,6 +84,11 @@ namespace Sillycore.BackgroundProcessing
 
             if (_timer != null)
             {
+                if (!String.IsNullOrWhiteSpace(_configurationKeyForIntervalInMs))
+                {
+                    _intervalInMs = Configuration[_configurationKeyForIntervalInMs].ToInt();
+                }
+
                 _timer.Change(_intervalInMs, _intervalInMs);
             }
         }
