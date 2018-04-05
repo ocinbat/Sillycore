@@ -264,7 +264,7 @@ namespace Sillycore
             string configServerAddress = DataStore.Get<string>(Constants.ConfigServerAddress);
             string appName = DataStore.Get<string>(Constants.ConfigServerAppName);
             string environment = Configuration["ASPNETCORE_ENVIRONMENT"] ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "development";
-            string url = $"{configServerAddress?.TrimEnd('/')}/{appName?.ToLowerInvariant()}/{environment.ToLowerInvariant()}/master/config.json";
+            string url = $"{configServerAddress?.TrimEnd('/')}/{appName}/{environment.ToLowerInvariant()}/master/config.json";
 
             try
             {
