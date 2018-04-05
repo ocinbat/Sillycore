@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <PackageId>Sillycore.NLog</PackageId>
-    <PackageVersion>0.7.4</PackageVersion>
+    <PackageVersion>1.0.0</PackageVersion>
     <Authors>Ömer Cinbat</Authors>
     <Description></Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NLog.Extensions.Logging" Version="1.0.0-rtm-beta7" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.0.0" />
     <PackageReference Include="NLog.Targets.Graylog" Version="0.0.1" />
   </ItemGroup>
 

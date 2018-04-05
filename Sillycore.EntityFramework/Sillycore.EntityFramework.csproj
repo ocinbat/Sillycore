@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
 	<PackageId>Sillycore.EntityFramework</PackageId>
-    <PackageVersion>0.7.0</PackageVersion>
+    <PackageVersion>1.0.0</PackageVersion>
     <Authors>Metehan Şenol, Ömer Cinbat, Kutlu Araslı</Authors>
     <Description></Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -14,9 +14,9 @@
 
   <ItemGroup>
     <PackageReference Include="Castle.Core" Version="4.2.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.1" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.8.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.2" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.8.3" />
   </ItemGroup>
 
   <ItemGroup>
