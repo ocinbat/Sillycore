@@ -34,6 +34,11 @@ namespace Sillycore.RestClient.ResponseHandlers
             return Status(HttpStatusCode.OK, action);
         }
 
+        public RestResponseHandler Created(Action<IRestResponse> action)
+        {
+            return Status(HttpStatusCode.Created, action);
+        }
+
         public RestResponseHandler Conflict(Action<IRestResponse> action)
         {
             return Status(HttpStatusCode.Conflict, action);
