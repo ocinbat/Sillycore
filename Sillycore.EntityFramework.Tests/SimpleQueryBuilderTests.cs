@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AutoFixture;
 using FluentAssertions;
 using NUnit.Framework;
 using Sillycore.EntityFramework.Utils;
@@ -9,15 +8,11 @@ namespace Sillycore.EntityFramework.Tests
 {
     public class SimpleQueryBuilderTests
     {
-        private Fixture _fixture;
-        private Generator<int> _numberGenerator;
         private FakeRepository _fakeRepository;
 
         [SetUp]
         public void SetUp()
         {
-            _fixture = new Fixture();
-            _numberGenerator = _fixture.Create<Generator<int>>();
             _fakeRepository = new FakeRepository();
         }
 
