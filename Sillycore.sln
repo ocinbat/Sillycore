@@ -34,7 +34,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sillycore.RestClient.Tests"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sillycore.Daemon", "Sillycore.Daemon\Sillycore.Daemon.csproj", "{DC6FE474-299E-4505-9272-604E92D9D8BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sillycore.EntityFramework.Tests", "Sillycore.EntityFramework.Tests\Sillycore.EntityFramework.Tests.csproj", "{BA98D558-CD0D-40CB-A0B9-ED49EB680379}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sillycore.EntityFramework.Tests", "Sillycore.EntityFramework.Tests\Sillycore.EntityFramework.Tests.csproj", "{BA98D558-CD0D-40CB-A0B9-ED49EB680379}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sillycore.AppMetrics", "Sillycore.AppMetrics\Sillycore.AppMetrics.csproj", "{775A1B4D-DA59-4434-924C-4C25206A27CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,10 +84,14 @@ Global
 		{DC6FE474-299E-4505-9272-604E92D9D8BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC6FE474-299E-4505-9272-604E92D9D8BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC6FE474-299E-4505-9272-604E92D9D8BB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D3ADB8FE-AF53-4EC3-877C-82DD27DEC8FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D3ADB8FE-AF53-4EC3-877C-82DD27DEC8FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D3ADB8FE-AF53-4EC3-877C-82DD27DEC8FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D3ADB8FE-AF53-4EC3-877C-82DD27DEC8FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA98D558-CD0D-40CB-A0B9-ED49EB680379}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA98D558-CD0D-40CB-A0B9-ED49EB680379}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA98D558-CD0D-40CB-A0B9-ED49EB680379}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA98D558-CD0D-40CB-A0B9-ED49EB680379}.Release|Any CPU.Build.0 = Release|Any CPU
+		{775A1B4D-DA59-4434-924C-4C25206A27CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{775A1B4D-DA59-4434-924C-4C25206A27CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{775A1B4D-DA59-4434-924C-4C25206A27CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{775A1B4D-DA59-4434-924C-4C25206A27CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
