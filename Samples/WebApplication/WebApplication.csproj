@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Sillycore.AppMetrics\Sillycore.AppMetrics.csproj" />
     <ProjectReference Include="..\..\Sillycore.NLog\Sillycore.NLog.csproj" />
     <ProjectReference Include="..\..\Sillycore.Web\Sillycore.Web.csproj" />
     <ProjectReference Include="..\..\Sillycore\Sillycore.csproj" />

@@ -14,29 +14,32 @@ namespace Sillycore.Web
     {
         private readonly string[] _args;
         private readonly string _applicationName;
-        private readonly SillycoreAppBuilder _sillycoreAppBuilder;
+        public readonly SillycoreAppBuilder SillycoreAppBuilder;
 
         private bool _withIisIntegration = false;
         private Type _sillycoreStartup = null;
 
         public SillycoreWebhostBuilder(SillycoreAppBuilder sillycoreAppBuilder, string applicationName, string[] args)
         {
-            _sillycoreAppBuilder = sillycoreAppBuilder;
+            SillycoreAppBuilder = sillycoreAppBuilder;
             _applicationName = applicationName;
             _args = args;
+            IWebHostBuilder webhostBuilder = CreateDefaultBuilder(_args);
 
-            _sillycoreAppBuilder.DataStore.Set(Constants.IsShuttingDown, false);
-            _sillycoreAppBuilder.DataStore.Set(Constants.UseSwagger, false);
-            _sillycoreAppBuilder.DataStore.Set(Constants.RequiresAuthentication, false);
-            _sillycoreAppBuilder.DataStore.Set(Constants.OnStartActions, new List<Action>());
-            _sillycoreAppBuilder.DataStore.Set(Constants.OnStopActions, new List<Action>());
+            SillycoreAppBuilder.DataStore.Set(Constants.ApplicationName, _applicationName);
+            SillycoreAppBuilder.DataStore.Set(Constants.WebHostBuilder, webhostBuilder);
+            SillycoreAppBuilder.DataStore.Set(Constants.IsShuttingDown, false);
+            SillycoreAppBuilder.DataStore.Set(Constants.UseSwagger, false);
+            SillycoreAppBuilder.DataStore.Set(Constants.RequiresAuthentication, false);
+            SillycoreAppBuilder.DataStore.Set(Constants.OnStartActions, new List<Action>());
+            SillycoreAppBuilder.DataStore.Set(Constants.OnStopActions, new List<Action>());
         }
 
         public SillycoreWebhostBuilder WithUrl(string rootUrl)
         {
             if (!String.IsNullOrEmpty(rootUrl))
             {
-                _sillycoreAppBuilder.DataStore.Set(Constants.ApiRootUrl, rootUrl.TrimEnd('/'));
+                SillycoreAppBuilder.DataStore.Set(Constants.ApiRootUrl, rootUrl.TrimEnd('/'));
             }
 
             return this;
@@ -44,21 +47,21 @@ namespace Sillycore.Web
 
         public SillycoreWebhostBuilder WithOnStartAction(Action action)
         {
-            _sillycoreAppBuilder.DataStore.Get<List<Action>>(Constants.OnStartActions).Add(action);
+            SillycoreAppBuilder.DataStore.Get<List<Action>>(Constants.OnStartActions).Add(action);
 
             return this;
         }
 
         public SillycoreWebhostBuilder WithOnStopAction(Action action)
         {
-            _sillycoreAppBuilder.DataStore.Get<List<Action>>(Constants.OnStopActions).Add(action);
+            SillycoreAppBuilder.DataStore.Get<List<Action>>(Constants.OnStopActions).Add(action);
 
             return this;
         }
 
         public SillycoreWebhostBuilder WithSwagger()
         {
-            _sillycoreAppBuilder.DataStore.Set(Constants.UseSwagger, true);
+            SillycoreAppBuilder.DataStore.Set(Constants.UseSwagger, true);
 
             return this;
         }
@@ -71,8 +74,8 @@ namespace Sillycore.Web
 
         public SillycoreAuthenticationBuilder WithAuthentication()
         {
-            _sillycoreAppBuilder.DataStore.Set(Constants.RequiresAuthentication, true);
-            var sillycoreAuthenticationBuilder = new SillycoreAuthenticationBuilder(this, _sillycoreAppBuilder.DataStore);
+            SillycoreAppBuilder.DataStore.Set(Constants.RequiresAuthentication, true);
+            var sillycoreAuthenticationBuilder = new SillycoreAuthenticationBuilder(this, SillycoreAppBuilder.DataStore);
             return sillycoreAuthenticationBuilder;
         }
 
@@ -90,29 +93,25 @@ namespace Sillycore.Web
         {
             RegisterHealthCheckers();
 
-            _sillycoreAppBuilder.DataStore.Set(Constants.ApplicationName, _applicationName);
-
-            _sillycoreAppBuilder.BeforeBuild(() =>
+            SillycoreAppBuilder.BeforeBuild(() =>
             {
-                IWebHost webhost = CreateDefaultBuilder(_args)
-                    .UseStartup(_sillycoreStartup == null ? typeof(SillycoreStartup) : _sillycoreStartup)
-                    .Build();
-
-                _sillycoreAppBuilder.DataStore.Set(Constants.WebHost, webhost);
+                IWebHostBuilder webhostBuilder = SillycoreAppBuilder.DataStore.Get<IWebHostBuilder>(Constants.WebHostBuilder)
+                    .UseStartup(_sillycoreStartup == null ? typeof(SillycoreStartup) : _sillycoreStartup);
+                SillycoreAppBuilder.DataStore.Set(Constants.WebHostBuilder, webhostBuilder);
             });
 
-            SillycoreApp app = _sillycoreAppBuilder.Build();
+            SillycoreApp app = SillycoreAppBuilder.Build();
 
             ServiceProvider serviceProvider = app.DataStore.Get<ServiceProvider>(Sillycore.Constants.ServiceProvider);
             ILogger<SillycoreWebhostBuilder> logger = serviceProvider.GetService<ILogger<SillycoreWebhostBuilder>>();
             logger.LogInformation($"{_applicationName} started.");
 
-            app.DataStore.Get<IWebHost>(Constants.WebHost).Run();
+            app.DataStore.Get<IWebHostBuilder>(Constants.WebHostBuilder).Build().Run();
         }
 
         private void RegisterHealthCheckers()
         {
-            HealthCheckerContainer container = _sillycoreAppBuilder.DataStore.Get<HealthCheckerContainer>(Constants.HealthCheckerContainerDataKey);
+            HealthCheckerContainer container = SillycoreAppBuilder.DataStore.Get<HealthCheckerContainer>(Constants.HealthCheckerContainerDataKey);
 
             if (container == null)
             {
@@ -127,11 +126,11 @@ namespace Sillycore.Web
                 {
                     container.AddHealthChecker(ti);
 
-                    _sillycoreAppBuilder.Services.AddTransient(ti);
+                    SillycoreAppBuilder.Services.AddTransient(ti);
                 }
             }
 
-            _sillycoreAppBuilder.DataStore.Set(Constants.HealthCheckerContainerDataKey, container);
+            SillycoreAppBuilder.DataStore.Set(Constants.HealthCheckerContainerDataKey, container);
         }
 
         public IWebHostBuilder CreateDefaultBuilder(string[] args)
