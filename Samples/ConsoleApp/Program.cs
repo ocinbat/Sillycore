@@ -18,15 +18,10 @@ namespace ConsoleApp
         {
             SillycoreAppBuilder.Instance
                 .UseUtcTimes()
-                .ConfigureServices(ConfigureServices)
                 .UseNLog()
                 .UseDataContext<DataContext>("DataContext")
                 .UseDaemon<Service>("ConsoleApp")
                 .Build();
-        }
-
-        public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
-        {
         }
     }
 }

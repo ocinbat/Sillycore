@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading;
+using Anetta.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -14,7 +15,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Sillycore.BackgroundProcessing;
-using Sillycore.DependencyInjection;
 using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Objects.DateTimeProviders;
 using Sillycore.Extensions;
@@ -42,7 +42,6 @@ namespace Sillycore
             InitializeLogger();
             InitializeDateTimeProvider();
             InitializeBackgroundJobManager();
-            InitializeDependencies();
         }
 
         public SillycoreApp Build()
@@ -155,7 +154,7 @@ namespace Sillycore
         {
             if (DataStore.Get(Constants.ServiceProvider) == null)
             {
-                ServiceProvider serviceProvider = Services.BuildServiceProvider();
+                IServiceProvider serviceProvider = Services.BuildAnettaServiceProvider();
                 DataStore.Set(Constants.ServiceProvider, serviceProvider);
             }
         }
@@ -219,41 +218,6 @@ namespace Sillycore
             }
 
             Services.AddSingleton<BackgroundJobManager>();
-        }
-
-        private void InitializeDependencies()
-        {
-            Assembly ass = Assembly.GetEntryAssembly();
-
-            foreach (TypeInfo ti in ass.DefinedTypes)
-            {
-                if (ti.ImplementedInterfaces.Contains(typeof(ITransient)))
-                {
-                    Services.AddTransient((Type)ti);
-                    foreach (Type implementedInterface in ti.ImplementedInterfaces.Where(i => i != typeof(ITransient)))
-                    {
-                        Services.AddTransient(implementedInterface, ti);
-                    }
-                }
-
-                if (ti.ImplementedInterfaces.Contains(typeof(IScoped)))
-                {
-                    Services.AddScoped((Type)ti);
-                    foreach (Type implementedInterface in ti.ImplementedInterfaces.Where(i => i != typeof(IScoped)))
-                    {
-                        Services.AddScoped(implementedInterface, ti);
-                    }
-                }
-
-                if (ti.ImplementedInterfaces.Contains(typeof(ISingleton)))
-                {
-                    Services.AddSingleton((Type)ti);
-                    foreach (Type implementedInterface in ti.ImplementedInterfaces.Where(i => i != typeof(ISingleton)))
-                    {
-                        Services.AddSingleton(implementedInterface, ti);
-                    }
-                }
-            }
         }
 
         private void ReloadConfigurationFromConfigServer(object state)

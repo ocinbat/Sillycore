@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Sillycore.DependencyInjection;
+using Anetta.Attributes;
 
 namespace ConsoleApp.Helpers
 {
-    public class SomeHelper : ISingleton
+    [Singleton]
+    public class SomeHelper
     {
         public Task Help()
         {

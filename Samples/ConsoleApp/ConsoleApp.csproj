@@ -17,6 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Anetta">
+      <HintPath>..\..\..\..\Users\ocinbat\.nuget\packages\anetta\0.0.2\lib\netcoreapp2.0\Anetta.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

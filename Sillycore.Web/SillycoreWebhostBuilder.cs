@@ -102,7 +102,7 @@ namespace Sillycore.Web
 
             SillycoreApp app = SillycoreAppBuilder.Build();
 
-            ServiceProvider serviceProvider = app.DataStore.Get<ServiceProvider>(Sillycore.Constants.ServiceProvider);
+            IServiceProvider serviceProvider = app.DataStore.Get<IServiceProvider>(Sillycore.Constants.ServiceProvider);
             ILogger<SillycoreWebhostBuilder> logger = serviceProvider.GetService<ILogger<SillycoreWebhostBuilder>>();
             logger.LogInformation($"{_applicationName} started.");
 

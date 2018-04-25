@@ -13,6 +13,7 @@ using Sillycore.Web.Security;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
+using Anetta.Extensions;
 using Microsoft.ApplicationInsights.Extensibility;
 using Sillycore.Extensions;
 using Sillycore.Web.Middlewares;
@@ -31,9 +32,10 @@ namespace Sillycore.Web
         }
 
         public IConfiguration Configuration { get; }
+        public IServiceProvider ServiceProvider { get; set; }
         public InMemoryDataStore DataStore => SillycoreAppBuilder.Instance.DataStore;
 
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             foreach (ServiceDescriptor descriptor in SillycoreAppBuilder.Instance.Services)
             {
@@ -94,6 +96,9 @@ namespace Sillycore.Web
 
             ConfigureServicesInner(services);
             SillycoreAppBuilder.Instance.Services = services;
+            ServiceProvider = services.BuildAnettaServiceProvider();
+            SillycoreAppBuilder.Instance.DataStore.Set(Sillycore.Constants.ServiceProvider, ServiceProvider);
+            return ServiceProvider;
         }
 
         private void ConfigureAuthorization(IServiceCollection services)
@@ -143,8 +148,6 @@ namespace Sillycore.Web
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            SillycoreAppBuilder.Instance.DataStore.Set(Sillycore.Constants.ServiceProvider, app.ApplicationServices);
-
             try
             {
                 TelemetryConfiguration telemetryConfiguration = app.ApplicationServices.GetService<TelemetryConfiguration>();
