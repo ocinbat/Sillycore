@@ -11,26 +11,18 @@ namespace WebApplication.HealthCheckers
 {
     public static class MetricsRegistry
     {
-        public static CounterOptions SamplesGetCounter => new CounterOptions
+
+        public static CounterOptions GlobalCounter => new CounterOptions
         {
-            Name = "QuerySamples Get Counter",
             MeasurementUnit = Unit.Calls
         };
-        public static TimerOptions SamplesGetTimer => new TimerOptions
-        {
-            Name = "QuerySamples Get Timer",
-            Reservoir = () => new DefaultAlgorithmRReservoir()
-        };
 
-        public static CounterOptions SamplesPostCounter => new CounterOptions
+        public static TimerOptions GlobalTimer => new TimerOptions
         {
-            Name = "QuerySamples Post Counter",
-            MeasurementUnit = Unit.Calls
+            Reservoir = () => new DefaultAlgorithmRReservoir(),
+            MeasurementUnit = Unit.Requests,
+            DurationUnit = TimeUnit.Milliseconds,
+            RateUnit = TimeUnit.Minutes
         };
-        public static TimerOptions SamplesPostTimer => new TimerOptions
-        {
-            Name = "QuerySamples Post Timer"
-        };
-
     }
 }

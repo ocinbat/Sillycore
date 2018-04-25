@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using App.Metrics.Scheduling;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Sillycore;
 using Sillycore.AppMetrics;

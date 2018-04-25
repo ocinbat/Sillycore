@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using App.Metrics;
+using App.Metrics.Formatters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -37,8 +38,8 @@ namespace WebApplication.Controllers
         {
             List<Sample> samples = new List<Sample>();
             _logger.LogDebug("QuerySamples called.");
-            _metrics.Measure.Counter.Increment(MetricsRegistry.SamplesGetCounter);
-            using (_metrics.Measure.Timer.Time(MetricsRegistry.SamplesGetTimer))
+            _metrics.Measure.Counter.Increment(MetricsRegistry.GlobalCounter, new MetricTags("MethodName", "QuerySamples"));
+            using (_metrics.Measure.Timer.Time(MetricsRegistry.GlobalTimer, new MetricTags("MethodName", "QuerySamples")))
             {
                 samples.Add(new Sample()
                 {
@@ -55,10 +56,11 @@ namespace WebApplication.Controllers
         [ProducesResponseType(typeof(Sample), (int)HttpStatusCode.Created)]
         public IActionResult CreateSample([FromBody]Sample request)
         {
-            _metrics.Measure.Counter.Increment(MetricsRegistry.SamplesPostCounter);
-            using (_metrics.Measure.Timer.Time(MetricsRegistry.SamplesPostTimer))
+            _metrics.Measure.Counter.Increment(MetricsRegistry.GlobalCounter, new MetricTags("MethodName", "CreateSample"));
+            using (_metrics.Measure.Timer.Time(MetricsRegistry.GlobalTimer,
+                new MetricTags("MethodName", "CreateSample")))
             {
-                return Created(request);
+                    return Created(request);
             }
         }
     }
