@@ -41,12 +41,7 @@ namespace WebApplication.Controllers
             _metrics.Measure.Counter.Increment(MetricsRegistry.GlobalCounter, new MetricTags("MethodName", "QuerySamples"));
             using (_metrics.Measure.Timer.Time(MetricsRegistry.GlobalTimer, new MetricTags("MethodName", "QuerySamples")))
             {
-                samples.Add(new Sample()
-                {
-                    Id = Guid.NewGuid(),
-                    Name = Convert.ToBase64String(Guid.NewGuid().ToByteArray()),
-                    CreatedOn = SillycoreApp.Instance.DateTimeProvider.Now
-                });
+                samples.Add(CreateNewSample());
 
             }
             return Ok(samples);
@@ -62,6 +57,22 @@ namespace WebApplication.Controllers
             {
                     return Created(request);
             }
+        }
+
+        [HttpGet("test")]
+        public IActionResult Test()
+        {
+            return Ok();
+        }
+
+        private Sample CreateNewSample()
+        {
+            return new Sample()
+            {
+                Id = Guid.NewGuid(),
+                Name = Convert.ToBase64String(Guid.NewGuid().ToByteArray()),
+                CreatedOn = SillycoreApp.Instance.DateTimeProvider.Now
+            };
         }
     }
 }

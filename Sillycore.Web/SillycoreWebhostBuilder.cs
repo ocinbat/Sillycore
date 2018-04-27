@@ -140,6 +140,7 @@ namespace Sillycore.Web
             webHostBuilder.UseKestrel();
             webHostBuilder.UseContentRoot(Directory.GetCurrentDirectory());
             webHostBuilder.UseConfiguration(SillycoreAppBuilder.Instance.Configuration);
+            webHostBuilder.UseApplicationInsights();
 
             if (_withIisIntegration)
             {

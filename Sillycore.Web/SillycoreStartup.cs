@@ -148,16 +148,6 @@ namespace Sillycore.Web
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            try
-            {
-                TelemetryConfiguration telemetryConfiguration = app.ApplicationServices.GetService<TelemetryConfiguration>();
-                telemetryConfiguration.DisableTelemetry = true;
-            }
-            catch (Exception)
-            {
-                Console.WriteLine($"There was a problem while disabling ApplicationInsights.");
-            }
-
             app.UseCors(
                 options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
             );
@@ -241,7 +231,7 @@ namespace Sillycore.Web
         private void OnShutdown()
         {
             SillycoreApp.Instance.DataStore.Set(Constants.IsShuttingDown, true);
-            Thread.Sleep(10000);
+            Thread.Sleep(30000);
         }
 
         public virtual void ConfigureServicesInner(IServiceCollection services) { }
