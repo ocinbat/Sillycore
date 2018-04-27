@@ -41,6 +41,12 @@ namespace Sillycore.Web.Controllers
 
                 response.DockerImageName = Environment.GetEnvironmentVariable("Sillycore.DockerImageName");
 
+                if (SillycoreApp.Instance.DataStore.Get<bool>(Constants.IsShuttingDown))
+                {
+                    response.AddErrorMessage("Shutting down...");
+                    return StatusCode(503, response);
+                }
+
                 HealthCheckerContainer container = SillycoreApp.Instance.DataStore.Get<HealthCheckerContainer>(Constants.HealthCheckerContainerDataKey);
 
                 if (container != null && container.HealthCheckers.HasElements())
