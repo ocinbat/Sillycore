@@ -152,6 +152,9 @@ namespace Sillycore.Web
                 options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
             );
 
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
             app.UseMiddleware<SillycoreMiddleware>();
 
             string dockerImageName = Environment.GetEnvironmentVariable("Sillycore.DockerImageName");
@@ -198,9 +201,6 @@ namespace Sillycore.Web
             }
 
             ConfigureInner(app, env);
-
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
 
             RegisterStartAndStopActions(app);
         }
