@@ -14,7 +14,6 @@ using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
 using Anetta.Extensions;
-using Microsoft.ApplicationInsights.Extensibility;
 using Sillycore.Extensions;
 using Sillycore.Web.Middlewares;
 
@@ -195,7 +194,8 @@ namespace Sillycore.Web
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", DataStore.Get<string>(Constants.ApplicationName));
+                    // TODO
                     //c.InjectOnCompleteJavaScript("");
                 });
             }
