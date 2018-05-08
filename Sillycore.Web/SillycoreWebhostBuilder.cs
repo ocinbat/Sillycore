@@ -106,6 +106,13 @@ namespace Sillycore.Web
             ILogger<SillycoreWebhostBuilder> logger = serviceProvider.GetService<ILogger<SillycoreWebhostBuilder>>();
             logger.LogInformation($"{_applicationName} started.");
 
+            List<Action> onStartActions = app.DataStore.Get<List<Action>>(Constants.OnStartActions);
+
+            foreach (Action onStartAction in onStartActions)
+            {
+                onStartAction.Invoke();
+            }
+
             app.DataStore.Get<IWebHostBuilder>(Constants.WebHostBuilder).Build().Run();
         }
 
