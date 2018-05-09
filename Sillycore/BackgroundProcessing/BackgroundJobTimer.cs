@@ -16,7 +16,7 @@ namespace Sillycore.BackgroundProcessing
         public string LastError { get; set; }
         public DateTime? ExecutedOn { get; set; }
 
-        private static readonly ILogger Logger = SillycoreApp.Instance.LoggerFactory.CreateLogger<ILogger>();
+        private static readonly ILogger<BackgroundJobTimer> Logger = SillycoreApp.Instance.LoggerFactory.CreateLogger<BackgroundJobTimer>();
         private static readonly IConfiguration Configuration = SillycoreApp.Instance.Configuration;
 
         private readonly string _configurationKeyForIntervalInMs;

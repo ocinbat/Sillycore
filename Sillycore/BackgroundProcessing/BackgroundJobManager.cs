@@ -27,8 +27,9 @@ namespace Sillycore.BackgroundProcessing
                 _logger.LogDebug($"BackgroundJobManager: {JobTimers.Count} job found.");
                 foreach (BackgroundJobTimer timer in JobTimers)
                 {
-                    _logger.LogDebug($"BackgroundJobManager: Creating timer for job:{timer.JobType.FullName}.");
+                    _logger.LogDebug($"BackgroundJobManager: Initializing timer for job:{timer.JobType.FullName}.");
                     timer.InitTimer();
+                    _logger.LogDebug($"BackgroundJobManager: Initialized timer for job:{timer.JobType.FullName}.");
                 }
             }
 

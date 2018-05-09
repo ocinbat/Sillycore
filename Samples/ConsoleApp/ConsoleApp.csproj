@@ -10,16 +10,6 @@
     <ProjectReference Include="..\..\Sillycore.EntityFramework\Sillycore.EntityFramework.csproj" />
     <ProjectReference Include="..\..\Sillycore.NLog\Sillycore.NLog.csproj" />
     <ProjectReference Include="..\..\Sillycore\Sillycore.csproj" />
-    <PackageReference Include="Castle.Core" Version="4.2.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.2" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.8.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Anetta">
-      <HintPath>..\..\..\..\Users\ocinbat\.nuget\packages\anetta\0.0.2\lib\netcoreapp2.0\Anetta.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
