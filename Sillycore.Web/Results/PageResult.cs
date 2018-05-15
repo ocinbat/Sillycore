@@ -33,6 +33,8 @@ namespace Sillycore.Web.Results
             context.HttpContext.Response.Headers.Add("X-Paging-HasPreviousPage", _page.HasPreviousPage.ToString().ToLowerInvariant());
             context.HttpContext.Response.Headers.Add("X-Paging-HasNextPage", _page.HasNextPage.ToString().ToLowerInvariant());
             context.HttpContext.Response.Headers.Add("Link", GetLinkHeaderForPageResult(context.HttpContext.Request, _page));
+            context.HttpContext.Response.Headers.Add("Access-Control-Expose-Headers", "X-Paging-Index, X-Paging-Size, X-Paging-TotalCount, X-Paging-TotalPages, X-Paging-HasPreviousPage, X-Paging-HasNextPage, Link");
+
         }
 
         private string GetLinkHeaderForPageResult<T>(HttpRequest request, IPage<T> page)
