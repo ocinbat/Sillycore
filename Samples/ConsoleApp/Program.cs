@@ -15,7 +15,7 @@ namespace ConsoleApp
         static void Main(string[] args)
         {
             SillycoreAppBuilder.Instance
-                .UseConfigServer("https://config-server.trendyol.com", "Silkroad.ReservationCleaner", 10000)
+                .UseConfigServer("https://config-server.trendyol.com", "Silkroad.ReservationCleaner", 5000)
                 .UseUtcTimes()
                 .UseNLog()
                 .UseDataContext<DataContext>("DataContext")

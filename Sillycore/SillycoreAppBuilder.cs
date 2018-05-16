@@ -200,9 +200,6 @@ namespace Sillycore
         private void InitializeConfiguration()
         {
             string baseDirectory = Directory.GetCurrentDirectory();
-            string appsettingsConfigServerPath = Path.Combine(baseDirectory, "appsettings.config-server.json");
-
-            File.WriteAllText(appsettingsConfigServerPath, "{}");
 
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(baseDirectory)
