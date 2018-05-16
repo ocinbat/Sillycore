@@ -12,9 +12,7 @@ using Sillycore.Web.Filters;
 using Sillycore.Web.Security;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
-using System.Collections.Generic;
 using Anetta.Extensions;
-using Sillycore.Extensions;
 using Sillycore.Web.Middlewares;
 
 namespace Sillycore.Web
@@ -80,12 +78,12 @@ namespace Sillycore.Web
                 {
                     c.SwaggerDoc("v1", new Info { Title = DataStore.Get<string>(Constants.ApplicationName), Version = "v1" });
                     c.AddSecurityDefinition("Bearer", new ApiKeyScheme
-                                                      {
-                                                          Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                                                          Name = "Authorization",
-                                                          In = "header",
-                                                          Type = "apiKey"
-                                                      });
+                    {
+                        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                        Name = "Authorization",
+                        In = "header",
+                        Type = "apiKey"
+                    });
                     c.DescribeAllEnumsAsStrings();
                     c.DescribeStringEnumsInCamelCase();
                     c.DescribeAllParametersInCamelCase();
@@ -202,37 +200,28 @@ namespace Sillycore.Web
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", DataStore.Get<string>(Constants.ApplicationName));
-                    // TODO
-                    //c.InjectOnCompleteJavaScript("");
                 });
             }
 
             ConfigureInner(app, env);
 
-            RegisterStartAndStopActions(app);
-        }
-
-        private void RegisterStartAndStopActions(IApplicationBuilder app)
-        {
             IApplicationLifetime applicationLifetime = app.ApplicationServices.GetRequiredService<IApplicationLifetime>();
 
-            List<Action> onStopActions = DataStore.Get<List<Action>>(Constants.OnStopActions);
-
-            if (onStopActions.IsEmpty())
+            applicationLifetime.ApplicationStopping.Register(() =>
             {
-                onStopActions.Add(OnShutdown);
-            }
+                if (SillycoreApp.Instance.DataStore.Get<bool>(Sillycore.Constants.UseShutDownDelay))
+                {
+                    SillycoreApp.Instance.DataStore.Set(Constants.IsShuttingDown, true);
+                    Thread.Sleep(30000);
+                }
 
-            foreach (var onStopAction in onStopActions)
+                SillycoreApp.Instance.Stopping();
+            });
+
+            applicationLifetime.ApplicationStopped.Register(() =>
             {
-                applicationLifetime.ApplicationStopping.Register(onStopAction);
-            }
-        }
-
-        private void OnShutdown()
-        {
-            SillycoreApp.Instance.DataStore.Set(Constants.IsShuttingDown, true);
-            Thread.Sleep(30000);
+                SillycoreApp.Instance.Stopped();
+            });
         }
 
         public virtual void ConfigureServicesInner(IServiceCollection services) { }

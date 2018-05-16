@@ -31,8 +31,6 @@ namespace Sillycore.Web
             SillycoreAppBuilder.DataStore.Set(Constants.IsShuttingDown, false);
             SillycoreAppBuilder.DataStore.Set(Constants.UseSwagger, false);
             SillycoreAppBuilder.DataStore.Set(Constants.RequiresAuthentication, false);
-            SillycoreAppBuilder.DataStore.Set(Constants.OnStartActions, new List<Action>());
-            SillycoreAppBuilder.DataStore.Set(Constants.OnStopActions, new List<Action>());
         }
 
         public SillycoreWebhostBuilder WithUrl(string rootUrl)
@@ -41,20 +39,6 @@ namespace Sillycore.Web
             {
                 SillycoreAppBuilder.DataStore.Set(Constants.ApiRootUrl, rootUrl.TrimEnd('/'));
             }
-
-            return this;
-        }
-
-        public SillycoreWebhostBuilder WithOnStartAction(Action action)
-        {
-            SillycoreAppBuilder.DataStore.Get<List<Action>>(Constants.OnStartActions).Add(action);
-
-            return this;
-        }
-
-        public SillycoreWebhostBuilder WithOnStopAction(Action action)
-        {
-            SillycoreAppBuilder.DataStore.Get<List<Action>>(Constants.OnStopActions).Add(action);
 
             return this;
         }
@@ -91,6 +75,7 @@ namespace Sillycore.Web
 
         public void Build()
         {
+            SillycoreAppBuilder.DataStore.Set(Sillycore.Constants.UseShutDownDelay, true);
             RegisterHealthCheckers();
 
             SillycoreAppBuilder.BeforeBuild(() =>
@@ -105,13 +90,6 @@ namespace Sillycore.Web
             IServiceProvider serviceProvider = app.DataStore.Get<IServiceProvider>(Sillycore.Constants.ServiceProvider);
             ILogger<SillycoreWebhostBuilder> logger = serviceProvider.GetService<ILogger<SillycoreWebhostBuilder>>();
             logger.LogInformation($"{_applicationName} started.");
-
-            List<Action> onStartActions = app.DataStore.Get<List<Action>>(Constants.OnStartActions);
-
-            foreach (Action onStartAction in onStartActions)
-            {
-                onStartAction.Invoke();
-            }
 
             app.DataStore.Get<IWebHostBuilder>(Constants.WebHostBuilder).Build().Run();
         }

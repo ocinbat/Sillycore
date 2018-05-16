@@ -11,6 +11,7 @@
         }
 
         public const string DateTimeProvider = "DateTimeProvider";
+        public const string UseShutDownDelay = "UseShutDownDelay";
         public const string ConfigManager = "ConfigManager";
         public const string ServiceCollection = "Services";
         public const string ServiceProvider = "ServiceProvider";
@@ -22,5 +23,7 @@
         public const string ConfigServerReloadTimer = "ConfigServerReloadTimer";
         public const string ConfigServerReloadTimeInMiliseconds = "ConfigServerReloadTimeInMiliseconds";
         public const string ConfigServerFirstLoadSucceeded = "ConfigServerFirstLoadSucceeded";
+        public const string OnStartActions = "OnStartActions";
+        public const string OnStopActions = "OnStopActions";
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -24,6 +25,27 @@ namespace Sillycore
         public SillycoreApp(InMemoryDataStore dataStore)
         {
             DataStore = dataStore;
+        }
+
+        public void Started()
+        {
+            foreach (Action action in DataStore.Get<List<Action>>(Constants.OnStartActions))
+            {
+                action.Invoke();
+            }
+        }
+
+        public void Stopping()
+        {
+            foreach (Action action in DataStore.Get<List<Action>>(Constants.OnStopActions))
+            {
+                action.Invoke();
+            }
+        }
+
+        public void Stopped()
+        {
+
         }
     }
 }

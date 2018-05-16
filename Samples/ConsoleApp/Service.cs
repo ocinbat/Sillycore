@@ -1,6 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
-using Sillycore;
+﻿using System.Threading.Tasks;
+using MassTransit;
 using Sillycore.BackgroundProcessing;
 using Sillycore.Daemon;
 
@@ -8,11 +7,13 @@ namespace ConsoleApp
 {
     public class Service : ISillyDaemon
     {
+        private readonly IBusControl _busControl;
         private readonly BackgroundJobManager _backgroundJobManager;
 
-        public Service(BackgroundJobManager backgroundJobManager)
+        public Service(BackgroundJobManager backgroundJobManager, IBusControl busControl)
         {
             _backgroundJobManager = backgroundJobManager;
+            _busControl = busControl;
         }
 
         public async Task Start()
@@ -24,6 +25,7 @@ namespace ConsoleApp
         public async Task Stop()
         {
             await _backgroundJobManager.Stop();
+            await _busControl.StopAsync();
         }
     }
 }

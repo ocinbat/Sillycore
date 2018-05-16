@@ -1,12 +1,10 @@
-﻿using System;
-using ConsoleApp.Data;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using ConsoleApp.Data;
 using Microsoft.Extensions.Logging;
 using Sillycore;
 using Sillycore.Daemon;
 using Sillycore.EntityFramework;
 using Sillycore.NLog;
+using Sillycore.RabbitMq;
 
 namespace ConsoleApp
 {
@@ -20,6 +18,7 @@ namespace ConsoleApp
                 .UseUtcTimes()
                 .UseNLog()
                 .UseDataContext<DataContext>("DataContext")
+                .UseRabbitMq()
                 .UseDaemon<Service>("ConsoleApp")
                 .Build();
         }

@@ -37,8 +37,7 @@ namespace Sillycore.RabbitMq
 
         public IConsumerScopeContext<TConsumer, T> GetScope<TConsumer, T>(ConsumeContext<T> context) where TConsumer : class where T : class
         {
-            IServiceScope payload;
-            if (context.TryGetPayload<IServiceScope>(out payload))
+            if (context.TryGetPayload<IServiceScope>(out var payload))
             {
                 TConsumer service = payload.ServiceProvider.GetService<TConsumer>();
                 if ((object)service == null)

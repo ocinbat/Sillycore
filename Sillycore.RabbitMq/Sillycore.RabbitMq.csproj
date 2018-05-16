@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
 	  <PackageId>Sillycore.RabbitMq</PackageId>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>2.0.0</PackageVersion>
     <Authors>Ömer Cinbat, Burak Çelenk</Authors>
     <Description></Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -17,10 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MassTransit" Version="4.0.1" />
-    <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="4.0.1" />
-    <PackageReference Include="MassTransit.Extensions.Logging" Version="4.0.1" />
-    <PackageReference Include="MassTransit.RabbitMQ" Version="4.0.1" />
+    <PackageReference Include="MassTransit" Version="5.1.0" />
+    <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="5.1.0" />
+    <PackageReference Include="MassTransit.Extensions.Logging" Version="5.1.0" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="5.1.0" />
   </ItemGroup>
 
   <ItemGroup>

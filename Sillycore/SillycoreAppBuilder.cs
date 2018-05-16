@@ -17,6 +17,7 @@ using Newtonsoft.Json.Serialization;
 using Sillycore.BackgroundProcessing;
 using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Objects.DateTimeProviders;
+using Sillycore.Domain.Requests;
 using Sillycore.Extensions;
 
 namespace Sillycore
@@ -37,6 +38,8 @@ namespace Sillycore
 
         internal SillycoreAppBuilder()
         {
+            DataStore.Set(Constants.OnStartActions, new List<Action>());
+            DataStore.Set(Constants.OnStopActions, new List<Action>());
             InitializeConfiguration();
             SetGlobalJsonSerializerSettings();
             InitializeLogger();
@@ -58,6 +61,8 @@ namespace Sillycore
             {
                 task.Invoke();
             }
+
+            SillycoreApp.Instance.Started();
 
             return SillycoreApp.Instance;
         }
@@ -105,6 +110,20 @@ namespace Sillycore
             DataStore.Set(Constants.ConfigServerReloadTimer, new Timer(ReloadConfigurationFromConfigServer, null, defaultReloadTimeInMiliseconds, defaultReloadTimeInMiliseconds));
 
             ReloadConfigurationFromConfigServer(null);
+
+            return this;
+        }
+
+        public SillycoreAppBuilder WithOnStartAction(Action action)
+        {
+            DataStore.Get<List<Action>>(Constants.OnStartActions).Add(action);
+
+            return this;
+        }
+
+        public SillycoreAppBuilder WithOnStopAction(Action action)
+        {
+            DataStore.Get<List<Action>>(Constants.OnStopActions).Add(action);
 
             return this;
         }

@@ -9,6 +9,8 @@ namespace Sillycore.Daemon
     {
         private readonly SillycoreAppBuilder _sillycoreAppBuilder;
         private readonly string _serviceName;
+        private static ILogger _logger;
+        private static ISillyDaemon _daemon;
 
         public SillycoreDaemonBuilder(SillycoreAppBuilder sillycoreAppBuilder, string serviceName)
         {
@@ -18,40 +20,39 @@ namespace Sillycore.Daemon
 
         public void Build()
         {
-            _sillycoreAppBuilder.UseWebApi(_serviceName)
+            _sillycoreAppBuilder
                 .WithOnStartAction(OnStart)
                 .WithOnStopAction(OnStop)
+                .UseWebApi(_serviceName)
                 .Build();
         }
 
         private static void OnStart()
         {
-            ILogger logger = SillycoreApp.Instance.LoggerFactory.CreateLogger<ILogger>();
-            ISillyDaemon daemon = SillycoreApp.Instance.ServiceProvider.GetService<ISillyDaemon>();
+            SillycoreApp.Instance.DataStore.Set(Constants.UseShutDownDelay, false);
+            _logger = SillycoreApp.Instance.LoggerFactory.CreateLogger<ILogger>();
+            _daemon = SillycoreApp.Instance.ServiceProvider.GetService<ISillyDaemon>();
 
             try
             {
-                daemon.Start().Wait();
+                _daemon.Start().Wait();
             }
             catch (Exception e)
             {
-                logger.LogError(e, $"There was a problem while starting service.");
+                _logger.LogError(e, $"There was a problem while starting service.");
                 throw;
             }
         }
 
         private static void OnStop()
         {
-            ILogger logger = SillycoreApp.Instance.LoggerFactory.CreateLogger<ILogger>();
-            ISillyDaemon daemon = SillycoreApp.Instance.ServiceProvider.GetService<ISillyDaemon>();
-
             try
             {
-                daemon.Stop().Wait();
+                _daemon.Stop().Wait();
             }
             catch (Exception e)
             {
-                logger.LogError(e, $"There was a problem while stopping service.");
+                _logger.LogError(e, $"There was a problem while stopping service.");
                 throw;
             }
         }
