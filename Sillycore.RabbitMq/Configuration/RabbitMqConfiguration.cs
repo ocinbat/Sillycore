@@ -6,5 +6,6 @@
         public string Username { get; set; }
         public string Password { get; set; }
         public bool UseDelayedExchangeMessageScheduler { get; set; }
+        public RetryConfiguration Retry { get; set; }
     }
 }

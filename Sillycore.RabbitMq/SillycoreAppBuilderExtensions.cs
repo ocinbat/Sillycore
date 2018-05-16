@@ -48,6 +48,14 @@ namespace Sillycore.RabbitMq
 
                     cfg.UseExtensionsLogging(builder.LoggerFactory);
 
+                    if (rabbitMqConfiguration.Retry != null)
+                    {
+                        if (rabbitMqConfiguration.Retry.Incremental != null)
+                        {
+                            cfg.UseRetry(rp => { rp.Incremental(rabbitMqConfiguration.Retry.Incremental.RetryLimit, rabbitMqConfiguration.Retry.Incremental.InitialInterval, rabbitMqConfiguration.Retry.Incremental.IntervalIncrement); });
+                        }
+                    }
+
                     if (rabbitMqConfiguration.UseDelayedExchangeMessageScheduler)
                     {
                         cfg.UseDelayedExchangeMessageScheduler();
