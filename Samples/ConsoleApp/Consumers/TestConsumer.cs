@@ -7,7 +7,7 @@ using Sillycore.RabbitMq.Attributes;
 
 namespace ConsoleApp.Consumers
 {
-    [Consumer(QueueName = "sillycore.do_something_when_some_event_occured", ConcurrenyLimit = 1)]
+    [Consumer(QueueName = "sillycore.do_something_when_some_event_occured")]
     public class TestConsumer : IConsumer<SomeEvent>
     {
         private readonly IConfiguration _configuration;
@@ -19,7 +19,7 @@ namespace ConsoleApp.Consumers
 
         public async Task Consume(ConsumeContext<SomeEvent> context)
         {
-            await Console.Out.WriteLineAsync($"Event:{context.Message.Data} processed.");
+            await Console.Out.WriteLineAsync($"{context.Message.Data} sillycore.do_something_when_some_event_occured");
         }
     }
 }

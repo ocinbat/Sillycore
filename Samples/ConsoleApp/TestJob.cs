@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using ConsoleApp.Commands;
 using ConsoleApp.Data;
 using ConsoleApp.Events;
 using ConsoleApp.Helpers;
@@ -30,17 +31,16 @@ namespace ConsoleApp
         public async Task Run()
         {
             string data = Guid.NewGuid().ToString();
-            await _busControl.Publish(message: new SomeEvent()
+
+            await _busControl.Publish(new SomeEvent()
             {
                 Data = data
             });
 
-            await _busControlProvider.GetBusControl("RabbitMq").Publish(message: new SomeEvent()
+            await _busControl.Send(new SomeCommand()
             {
                 Data = data
-            });
-
-            await Console.Out.WriteLineAsync($"Event:{data} published.");
+            }, "superb_command_queue");
         }
     }
 }
