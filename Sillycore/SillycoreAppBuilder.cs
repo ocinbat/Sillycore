@@ -199,14 +199,20 @@ namespace Sillycore
 
         private void InitializeConfiguration()
         {
+            string baseDirectory = Directory.GetCurrentDirectory();
+            string appsettingsConfigServerPath = Path.Combine(baseDirectory, "appsettings.config-server.json");
+
+            File.WriteAllText(appsettingsConfigServerPath, "{}");
+
             Configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(baseDirectory)
                 .AddJsonFile("appsettings.json", true, true)
                 .AddJsonFile("appsettings.ci.json", true, true)
                 .AddJsonFile("appsettings.test.json", true, true)
                 .AddJsonFile("appsettings.staging.json", true, true)
                 .AddJsonFile("appsettings.production.json", true, true)
                 .AddEnvironmentVariables()
+                .AddJsonFile("appsettings.config-server.json", true, true)
                 .Build();
 
             if (!String.IsNullOrWhiteSpace(Configuration["ASPNETCORE_ENVIRONMENT"]))
@@ -251,15 +257,10 @@ namespace Sillycore
 
             try
             {
-                Dictionary<string, string> configurations = JsonConvert.DeserializeObject<Dictionary<string, string>>(_httpClient.GetStringAsync(url).Result);
+                string baseDirectory = Directory.GetCurrentDirectory();
+                string appsettingsConfigServerPath = Path.Combine(baseDirectory, "appsettings.config-server.json");
 
-                if (configurations.HasElements())
-                {
-                    foreach (var pair in configurations)
-                    {
-                        Configuration[pair.Key] = pair.Value;
-                    }
-                }
+                File.WriteAllText(appsettingsConfigServerPath, _httpClient.GetStringAsync(url).Result);
 
                 DataStore.Set(Constants.ConfigServerFirstLoadSucceeded, true);
             }
