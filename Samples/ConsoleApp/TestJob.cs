@@ -6,6 +6,7 @@ using ConsoleApp.Helpers;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Sillycore.BackgroundProcessing;
+using Sillycore.RabbitMq;
 
 namespace ConsoleApp
 {
@@ -15,19 +16,26 @@ namespace ConsoleApp
         private readonly IConfiguration _configuration;
         private readonly DataContext _context;
         private readonly IBusControl _busControl;
+        private readonly IBusControlProvider _busControlProvider;
 
-        public TestJob(SomeHelper helper, IConfiguration configuration, DataContext context, IBusControl busControl)
+        public TestJob(SomeHelper helper, IConfiguration configuration, DataContext context, IBusControl busControl, IBusControlProvider busControlProvider)
         {
             _helper = helper;
             _configuration = configuration;
             _context = context;
             _busControl = busControl;
+            _busControlProvider = busControlProvider;
         }
 
         public async Task Run()
         {
             string data = Guid.NewGuid().ToString();
             await _busControl.Publish(message: new SomeEvent()
+            {
+                Data = data
+            });
+
+            await _busControlProvider.GetBusControl("RabbitMq").Publish(message: new SomeEvent()
             {
                 Data = data
             });

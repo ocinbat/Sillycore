@@ -9,5 +9,6 @@ namespace Sillycore.RabbitMq.Attributes
         public ushort PrefetchCount { get; set; }
         public int ConcurrenyLimit { get; set; }
         public int ImmediateRetry { get; set; }
+        public string RabbitMq { get; set; }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using GreenPipes;
 using MassTransit;
 using MassTransit.ExtensionsDependencyInjectionIntegration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Sillycore.RabbitMq.Attributes;
 using Sillycore.RabbitMq.Configuration;
 
@@ -13,6 +15,8 @@ namespace Sillycore.RabbitMq
 {
     public static class SillycoreAppBuilderExtensions
     {
+        private static readonly BusControlProvider BusControlProvider = new BusControlProvider();
+
         public static SillycoreAppBuilder UseRabbitMq(this SillycoreAppBuilder builder, string configKey = "RabbitMq")
         {
             RabbitMqConfiguration rabbitMqConfiguration = builder.Configuration.GetSection(configKey).Get<RabbitMqConfiguration>();
@@ -23,12 +27,23 @@ namespace Sillycore.RabbitMq
             {
                 ConsumerAttribute consumerAttribute = typeInfo.GetCustomAttribute<ConsumerAttribute>();
 
-                if (consumerAttribute != null)
+                if (consumerAttribute != null && (String.IsNullOrWhiteSpace(consumerAttribute.RabbitMq) || consumerAttribute.RabbitMq.Equals(configKey)))
                 {
                     ConsumerConfiguration consumerConfiguration = CreateConsumerConfigurationForType(typeInfo.AsType(), consumerAttribute);
                     consumerConfigurations.Add(consumerConfiguration);
                 }
             }
+
+            builder.Services.AddSingleton<IBusControlProvider>(BusControlProvider);
+            builder.Services.TryAddSingleton(sp =>
+            {
+                if (BusControlProvider.GetBusControls().Count > 1)
+                {
+                    throw new ConfigurationException($"You cannot resolve IBusControl when there are multiple RabbitMq instances registered to services collection. Instead try to resolve IBusControlProvider and use GetBusControl method with config name you set for your desired RabbitMq instance.");
+                }
+
+                return BusControlProvider.GetBusControls().First();
+            });
 
             builder.BeforeBuild(() =>
             {
@@ -62,7 +77,7 @@ namespace Sillycore.RabbitMq
                     }
                 });
 
-                builder.Services.AddSingleton(busControl);
+                BusControlProvider.AddBusControl(configKey, busControl);
                 busControl.Start();
             });
 

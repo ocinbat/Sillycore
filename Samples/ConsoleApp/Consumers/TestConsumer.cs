@@ -19,7 +19,6 @@ namespace ConsoleApp.Consumers
 
         public async Task Consume(ConsumeContext<SomeEvent> context)
         {
-            await Console.Out.WriteLineAsync(_configuration["ReservationCleaningJobIntervalInMs"]);
             await Console.Out.WriteLineAsync($"Event:{context.Message.Data} processed.");
         }
     }
