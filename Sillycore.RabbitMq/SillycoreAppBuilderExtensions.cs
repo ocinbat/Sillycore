@@ -76,9 +76,10 @@ namespace Sillycore.RabbitMq
                         cfg.UseDelayedExchangeMessageScheduler();
                     }
 
-#if DEBUG
-                    cfg.UseConcurrencyLimit(1);
-#endif
+                    if (builder.Configuration["ASPNETCORE_ENVIRONMENT"].ToLower() == "development")
+                    {
+                        cfg.UseConcurrencyLimit(1);
+                    }
                 });
 
                 BusControlProvider.AddBusControl(configKey, busControl);
