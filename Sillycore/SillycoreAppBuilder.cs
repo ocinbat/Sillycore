@@ -33,7 +33,7 @@ namespace Sillycore
 
         public InMemoryDataStore DataStore = new InMemoryDataStore();
         public IServiceCollection Services = new ServiceCollection();
-        public IConfiguration Configuration { get; private set; }
+        public IConfigurationRoot Configuration { get; private set; }
         public ILoggerFactory LoggerFactory { get; private set; }
 
         internal SillycoreAppBuilder()
@@ -258,6 +258,7 @@ namespace Sillycore
                 string appsettingsConfigServerPath = Path.Combine(baseDirectory, "appsettings.config-server.json");
 
                 File.WriteAllText(appsettingsConfigServerPath, _httpClient.GetStringAsync(url).Result);
+                Configuration.Reload();
 
                 DataStore.Set(Constants.ConfigServerFirstLoadSucceeded, true);
             }
