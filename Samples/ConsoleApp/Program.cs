@@ -10,12 +10,9 @@ namespace ConsoleApp
 {
     class Program
     {
-        static ILogger<Program> _logger;
-
         static void Main(string[] args)
         {
             SillycoreAppBuilder.Instance
-                .UseConfigServer("https://config-server.trendyol.com", "Silkroad.ReservationCleaner", 5000)
                 .UseUtcTimes()
                 .UseNLog()
                 .UseDataContext<DataContext>("DataContext")

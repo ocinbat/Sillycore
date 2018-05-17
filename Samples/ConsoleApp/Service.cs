@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using MassTransit;
 using Sillycore.BackgroundProcessing;
 using Sillycore.Daemon;
+using Sillycore.RabbitMq;
 
 namespace ConsoleApp
 {
@@ -10,10 +12,10 @@ namespace ConsoleApp
         private readonly IBusControl _busControl;
         private readonly BackgroundJobManager _backgroundJobManager;
 
-        public Service(BackgroundJobManager backgroundJobManager, IBusControl busControl)
+        public Service(BackgroundJobManager backgroundJobManager, IBusControlProvider busControlProvider)
         {
             _backgroundJobManager = backgroundJobManager;
-            _busControl = busControl;
+            _busControl = busControlProvider.GetBusControls().First();
         }
 
         public async Task Start()

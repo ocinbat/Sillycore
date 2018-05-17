@@ -218,6 +218,7 @@ namespace Sillycore
             }
 
             Services.TryAdd(ServiceDescriptor.Singleton(Configuration));
+            Services.TryAdd(ServiceDescriptor.Singleton<IConfiguration>(Configuration));
 
             DataStore.Set(Constants.Configuration, Configuration);
         }

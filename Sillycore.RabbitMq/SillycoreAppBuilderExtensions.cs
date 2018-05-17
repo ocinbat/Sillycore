@@ -21,6 +21,11 @@ namespace Sillycore.RabbitMq
         {
             RabbitMqConfiguration rabbitMqConfiguration = builder.Configuration.GetSection(configKey).Get<RabbitMqConfiguration>();
 
+            if (rabbitMqConfiguration == null)
+            {
+                throw new ConfigurationException($"No rabbit mq configuration found at section:{configKey}.");
+            }
+
             List<ConsumerConfiguration> consumerConfigurations = new List<ConsumerConfiguration>();
 
             foreach (TypeInfo typeInfo in Assembly.GetEntryAssembly().DefinedTypes)

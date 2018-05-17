@@ -15,15 +15,13 @@ namespace ConsoleApp
     {
         private readonly SomeHelper _helper;
         private readonly IConfiguration _configuration;
-        private readonly DataContext _context;
         private readonly IBusControl _busControl;
         private readonly IBusControlProvider _busControlProvider;
 
-        public TestJob(SomeHelper helper, IConfiguration configuration, DataContext context, IBusControl busControl, IBusControlProvider busControlProvider)
+        public TestJob(SomeHelper helper, IConfiguration configuration, IBusControl busControl, IBusControlProvider busControlProvider)
         {
             _helper = helper;
             _configuration = configuration;
-            _context = context;
             _busControl = busControl;
             _busControlProvider = busControlProvider;
         }
