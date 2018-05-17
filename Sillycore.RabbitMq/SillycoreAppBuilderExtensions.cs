@@ -75,6 +75,10 @@ namespace Sillycore.RabbitMq
                     {
                         cfg.UseDelayedExchangeMessageScheduler();
                     }
+
+#if DEBUG
+                    cfg.UseConcurrencyLimit(1);
+#endif
                 });
 
                 BusControlProvider.AddBusControl(configKey, busControl);
