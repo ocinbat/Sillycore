@@ -7,5 +7,6 @@
         public string Password { get; set; }
         public bool UseDelayedExchangeMessageScheduler { get; set; }
         public RetryConfiguration Retry { get; set; }
+        public int ConcurrencyLimit { get; set; }
     }
 }

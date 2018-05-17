@@ -76,9 +76,9 @@ namespace Sillycore.RabbitMq
                         cfg.UseDelayedExchangeMessageScheduler();
                     }
 
-                    if (builder.Configuration["ASPNETCORE_ENVIRONMENT"].ToLower() == "development")
+                    if (rabbitMqConfiguration.ConcurrencyLimit > 0)
                     {
-                        cfg.UseConcurrencyLimit(1);
+                        cfg.UseConcurrencyLimit(rabbitMqConfiguration.ConcurrencyLimit);
                     }
                 });
 
