@@ -19,16 +19,6 @@ namespace Sillycore.Web
 {
     public class SillycoreStartup
     {
-        public SillycoreStartup()
-        {
-        }
-
-        public SillycoreStartup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; }
         public IServiceProvider ServiceProvider { get; set; }
         public InMemoryDataStore DataStore => SillycoreAppBuilder.Instance.DataStore;
 
@@ -211,7 +201,7 @@ namespace Sillycore.Web
             {
                 if (SillycoreApp.Instance.DataStore.Get<bool>(Sillycore.Constants.UseShutDownDelay))
                 {
-                    if (Configuration["ASPNETCORE_ENVIRONMENT"].ToLowerInvariant() != "development")
+                    if (SillycoreAppBuilder.Instance.Configuration["ASPNETCORE_ENVIRONMENT"].ToLowerInvariant() != "development")
                     {
                         SillycoreApp.Instance.DataStore.Set(Constants.IsShuttingDown, true);
                         Thread.Sleep(30000);
