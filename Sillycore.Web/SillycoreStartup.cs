@@ -211,8 +211,11 @@ namespace Sillycore.Web
             {
                 if (SillycoreApp.Instance.DataStore.Get<bool>(Sillycore.Constants.UseShutDownDelay))
                 {
-                    SillycoreApp.Instance.DataStore.Set(Constants.IsShuttingDown, true);
-                    Thread.Sleep(30000);
+                    if (Configuration["ASPNETCORE_ENVIRONMENT"].ToLowerInvariant() != "development")
+                    {
+                        SillycoreApp.Instance.DataStore.Set(Constants.IsShuttingDown, true);
+                        Thread.Sleep(30000);
+                    }
                 }
 
                 SillycoreApp.Instance.Stopping();
