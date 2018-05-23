@@ -14,6 +14,7 @@ namespace Sillycore.Web.Mvc
         {
             services.AddMvc()
                 .AddApplicationPart(Assembly.GetEntryAssembly())
+                .AddApplicationPart(GetType().Assembly)
                 .AddMvcOptions(o =>
                 {
                     o.InputFormatters.RemoveType<XmlDataContractSerializerInputFormatter>();

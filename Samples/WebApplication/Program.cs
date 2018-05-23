@@ -28,7 +28,7 @@ namespace WebApplication
                 .UseUtcTimes()
                 .UseNLog()
                 .UseWebApi("WebApplication")
-                    //.WithAppMetrics()
+                    .WithAppMetrics()
                     .WithSwagger()
                     .WithAuthentication()
                         .As("AuthServer")
