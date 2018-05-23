@@ -45,7 +45,10 @@ namespace Sillycore
 
         public void Stopped()
         {
-
+            foreach (Action action in DataStore.Get<List<Action>>(Constants.OnStoppedActions))
+            {
+                action.Invoke();
+            }
         }
     }
 }

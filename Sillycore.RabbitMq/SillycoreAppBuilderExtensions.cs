@@ -88,7 +88,8 @@ namespace Sillycore.RabbitMq
                 });
 
                 BusControlProvider.AddBusControl(configKey, busControl);
-                builder.WithOnStartAction(() => busControl.Start());
+                builder.WhenStart(() => busControl.Start());
+                builder.WhenStopped(() => busControl.Stop());
             });
 
             return builder;

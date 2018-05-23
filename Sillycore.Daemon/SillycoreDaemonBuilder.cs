@@ -21,8 +21,8 @@ namespace Sillycore.Daemon
         public void Build()
         {
             _sillycoreAppBuilder
-                .WithOnStartAction(OnStart)
-                .WithOnStopAction(OnStop)
+                .WhenStart(OnStart)
+                .WhenStopping(OnStop)
                 .UseWebApi(_serviceName)
                 .Build();
         }

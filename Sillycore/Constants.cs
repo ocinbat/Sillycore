@@ -25,5 +25,6 @@
         public const string ConfigServerFirstLoadSucceeded = "ConfigServerFirstLoadSucceeded";
         public const string OnStartActions = "OnStartActions";
         public const string OnStopActions = "OnStopActions";
+        public const string OnStoppedActions = "OnStoppedActions";
     }
 }

@@ -42,6 +42,7 @@ namespace Sillycore
         {
             DataStore.Set(Constants.OnStartActions, new List<Action>());
             DataStore.Set(Constants.OnStopActions, new List<Action>());
+            DataStore.Set(Constants.OnStoppedActions, new List<Action>());
             InitializeConfiguration();
             SetGlobalJsonSerializerSettings();
             InitializeLogger();
@@ -122,16 +123,23 @@ namespace Sillycore
             return this;
         }
 
-        public SillycoreAppBuilder WithOnStartAction(Action action)
+        public SillycoreAppBuilder WhenStart(Action action)
         {
             DataStore.Get<List<Action>>(Constants.OnStartActions).Add(action);
 
             return this;
         }
 
-        public SillycoreAppBuilder WithOnStopAction(Action action)
+        public SillycoreAppBuilder WhenStopping(Action action)
         {
             DataStore.Get<List<Action>>(Constants.OnStopActions).Add(action);
+
+            return this;
+        }
+
+        public SillycoreAppBuilder WhenStopped(Action action)
+        {
+            DataStore.Get<List<Action>>(Constants.OnStoppedActions).Add(action);
 
             return this;
         }
