@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -61,16 +60,6 @@ namespace Sillycore.Web
             SillycoreAppBuilder.DataStore.Set(Constants.RequiresAuthentication, true);
             var sillycoreAuthenticationBuilder = new SillycoreAuthenticationBuilder(this, SillycoreAppBuilder.DataStore);
             return sillycoreAuthenticationBuilder;
-        }
-
-        public SillycoreWebhostBuilder WithStartup(Type startup)
-        {
-            if (startup != null)
-            {
-                _sillycoreStartup = startup;
-            }
-
-            return this;
         }
 
         public void Build()

@@ -14,17 +14,19 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Sillycore.Abstractions;
 using Sillycore.BackgroundProcessing;
 using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Objects.DateTimeProviders;
 using Sillycore.Domain.Requests;
 using Sillycore.Extensions;
+using Sillycore.Infrastructure;
 
 namespace Sillycore
 {
     public class SillycoreAppBuilder : ISillycoreAppBuilder
     {
-        private static HttpClient _httpClient = new HttpClient();
+        private static readonly HttpClient HttpClient = new HttpClient();
         private static SillycoreAppBuilder _appBuilder;
         public static SillycoreAppBuilder Instance => _appBuilder ?? (_appBuilder = new SillycoreAppBuilder());
 
@@ -49,6 +51,12 @@ namespace Sillycore
 
         public SillycoreApp Build()
         {
+            foreach (Type type in AssemblyScanner.GetAllTypesOfInterface<IServiceConfigurator>())
+            {
+                IServiceConfigurator configurator = (IServiceConfigurator)Activator.CreateInstance(type);
+                configurator.Configure(Services, Configuration);
+            }
+
             foreach (var task in _beforeBuildTasks)
             {
                 task.Invoke();
@@ -124,13 +132,6 @@ namespace Sillycore
         public SillycoreAppBuilder WithOnStopAction(Action action)
         {
             DataStore.Get<List<Action>>(Constants.OnStopActions).Add(action);
-
-            return this;
-        }
-
-        public SillycoreAppBuilder ConfigureServices(Action<IServiceCollection, IConfiguration> action)
-        {
-            action.Invoke(Services, Configuration);
 
             return this;
         }
@@ -258,7 +259,7 @@ namespace Sillycore
                 string baseDirectory = Directory.GetCurrentDirectory();
                 string appsettingsConfigServerPath = Path.Combine(baseDirectory, "appsettings.config-server.json");
 
-                File.WriteAllText(appsettingsConfigServerPath, _httpClient.GetStringAsync(url).Result);
+                File.WriteAllText(appsettingsConfigServerPath, HttpClient.GetStringAsync(url).Result);
                 Configuration.Reload();
 
                 DataStore.Set(Constants.ConfigServerFirstLoadSucceeded, true);

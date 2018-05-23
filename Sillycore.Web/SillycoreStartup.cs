@@ -12,7 +12,12 @@ using Sillycore.Web.Filters;
 using Sillycore.Web.Security;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Anetta.Extensions;
+using Sillycore.Abstractions;
+using Sillycore.Infrastructure;
+using Sillycore.Web.Abstractions;
 using Sillycore.Web.Middlewares;
 
 namespace Sillycore.Web
@@ -20,7 +25,6 @@ namespace Sillycore.Web
     public class SillycoreStartup
     {
         public IServiceProvider ServiceProvider { get; set; }
-        public InMemoryDataStore DataStore => SillycoreAppBuilder.Instance.DataStore;
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
@@ -29,195 +33,26 @@ namespace Sillycore.Web
                 services.Add(descriptor);
             }
 
-            services.AddCors();
-            services.AddMvc()
-                .AddApplicationPart(Assembly.GetEntryAssembly())
-                .AddMvcOptions(o =>
-                {
-                    o.InputFormatters.RemoveType<XmlDataContractSerializerInputFormatter>();
-                    o.InputFormatters.RemoveType<XmlSerializerInputFormatter>();
-
-                    o.OutputFormatters.RemoveType<HttpNoContentOutputFormatter>();
-                    o.OutputFormatters.RemoveType<StreamOutputFormatter>();
-                    o.OutputFormatters.RemoveType<StringOutputFormatter>();
-                    o.OutputFormatters.RemoveType<XmlDataContractSerializerOutputFormatter>();
-                    o.OutputFormatters.RemoveType<XmlSerializerOutputFormatter>();
-
-                    o.Filters.Add<GlobalExceptionFilter>();
-                    o.Filters.Add<ValidateModelStateFilter>();
-                })
-                .AddJsonOptions(o =>
-                {
-                    o.SerializerSettings.ContractResolver = SillycoreApp.JsonSerializerSettings.ContractResolver;
-                    o.SerializerSettings.Formatting = SillycoreApp.JsonSerializerSettings.Formatting;
-                    o.SerializerSettings.NullValueHandling = SillycoreApp.JsonSerializerSettings.NullValueHandling;
-                    o.SerializerSettings.DefaultValueHandling = SillycoreApp.JsonSerializerSettings.DefaultValueHandling;
-                    o.SerializerSettings.ReferenceLoopHandling = SillycoreApp.JsonSerializerSettings.ReferenceLoopHandling;
-                    o.SerializerSettings.DateTimeZoneHandling = SillycoreApp.JsonSerializerSettings.DateTimeZoneHandling;
-                    o.SerializerSettings.Converters.Clear();
-
-                    foreach (JsonConverter converter in SillycoreApp.JsonSerializerSettings.Converters)
-                    {
-                        o.SerializerSettings.Converters.Add(converter);
-                    }
-                });
-
-            if (DataStore.Get<bool>(Constants.UseSwagger))
-            {
-                services.AddSwaggerGen(c =>
-                {
-                    c.SwaggerDoc("v1", new Info { Title = DataStore.Get<string>(Constants.ApplicationName), Version = "v1" });
-                    c.AddSecurityDefinition("Bearer", new ApiKeyScheme
-                    {
-                        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                        Name = "Authorization",
-                        In = "header",
-                        Type = "apiKey"
-                    });
-                    c.DescribeAllEnumsAsStrings();
-                    c.DescribeStringEnumsInCamelCase();
-                    c.DescribeAllParametersInCamelCase();
-                    c.IgnoreObsoleteActions();
-                    c.IgnoreObsoleteProperties();
-                });
-            }
-
-            if (DataStore.Get<bool>(Constants.RequiresAuthentication))
-            {
-                ConfigureAuthentication(services);
-                ConfigureAuthorization(services);
-            }
-
-            ConfigureServicesInner(services);
             SillycoreAppBuilder.Instance.Services = services;
             ServiceProvider = services.BuildAnettaServiceProvider();
             SillycoreAppBuilder.Instance.DataStore.Set(Sillycore.Constants.ServiceProvider, ServiceProvider);
             return ServiceProvider;
         }
 
-        private void ConfigureAuthorization(IServiceCollection services)
-        {
-            var authorizationOptions = DataStore.Get<SillycoreAuthorizationOptions>(Constants.AuthorizationOptions);
-            if (authorizationOptions != null)
-            {
-                services.AddAuthorization(options =>
-                {
-                    ConfigureAuthorizationPolicies(authorizationOptions, options);
-                });
-            }
-        }
-
-        private static void ConfigureAuthorizationPolicies(SillycoreAuthorizationOptions authorizationOptions,
-            AuthorizationOptions options)
-        {
-            foreach (var authorizationPolicy in authorizationOptions.Policies)
-            {
-                options.AddPolicy(authorizationPolicy.Name, builder =>
-                {
-                    builder.RequireClaim("scope", authorizationPolicy.RequiredScopes);
-                });
-            }
-        }
-
-        private void ConfigureAuthentication(IServiceCollection services)
-        {
-            var authenticationOptions = DataStore.Get<SillycoreAuthenticationOptions>(Constants.AuthenticationOptions);
-
-            if (authenticationOptions != null)
-            {
-                var authority = DataStore.Get<IConfiguration>(Sillycore.Constants.Configuration).GetValue<string>(authenticationOptions.AuthorityConfigKey);
-
-                services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(options =>
-                    {
-                        options.Authority = authority;
-                        options.RequireHttpsMetadata = authenticationOptions.RequiresHttpsMetadata;
-                        if (authenticationOptions.LegacyAudienceValidation)
-                        {
-                            options.TokenValidationParameters.ValidateAudience = false;
-                        }
-                    });
-            }
-        }
-
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseCors(
-                options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
-            );
+            List<IApplicationConfigurator> configurators = new List<IApplicationConfigurator>();
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-
-            app.UseMiddleware<SillycoreMiddleware>();
-
-            string dockerImageName = Environment.GetEnvironmentVariable("Sillycore.DockerImageName");
-
-            if (!String.IsNullOrWhiteSpace(dockerImageName))
+            foreach (Type type in AssemblyScanner.GetAllTypesOfInterface<IApplicationConfigurator>())
             {
-                app.UseMiddleware<DockerImageVersionMiddleware>();
+                IApplicationConfigurator configurator = (IApplicationConfigurator)Activator.CreateInstance(type);
+                configurators.Add(configurator);
             }
 
-            if (env.IsDevelopment())
+            foreach (IApplicationConfigurator configurator in configurators.OrderBy(c => c.Order))
             {
-                app.UseDeveloperExceptionPage();
+                configurator.Configure(app, env, SillycoreAppBuilder.Instance.Configuration, app.ApplicationServices);
             }
-
-            if (DataStore.Get<bool>(Constants.RequiresAuthentication))
-            {
-                app.UseAuthentication();
-            }
-
-            app.UseMvc(r =>
-            {
-                if (DataStore.Get<bool>(Constants.UseSwagger))
-                {
-                    r.MapRoute(name: "Default",
-                        template: "",
-                        defaults: new { controller = "Help", action = "Index" });
-                }
-                else
-                {
-                    r.MapRoute(name: "Default",
-                        template: "",
-                        defaults: new { controller = "Home", action = "Index" });
-                }
-            });
-
-            if (DataStore.Get<bool>(Constants.UseSwagger))
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", DataStore.Get<string>(Constants.ApplicationName));
-                });
-            }
-
-            ConfigureInner(app, env);
-
-            IApplicationLifetime applicationLifetime = app.ApplicationServices.GetRequiredService<IApplicationLifetime>();
-
-            applicationLifetime.ApplicationStopping.Register(() =>
-            {
-                if (SillycoreApp.Instance.DataStore.Get<bool>(Sillycore.Constants.UseShutDownDelay))
-                {
-                    if (SillycoreAppBuilder.Instance.Configuration["ASPNETCORE_ENVIRONMENT"].ToLowerInvariant() != "development")
-                    {
-                        SillycoreApp.Instance.DataStore.Set(Constants.IsShuttingDown, true);
-                        Thread.Sleep(30000);
-                    }
-                }
-
-                SillycoreApp.Instance.Stopping();
-            });
-
-            applicationLifetime.ApplicationStopped.Register(() =>
-            {
-                SillycoreApp.Instance.Stopped();
-            });
         }
-
-        public virtual void ConfigureServicesInner(IServiceCollection services) { }
-        public virtual void ConfigureInner(IApplicationBuilder app, IHostingEnvironment env) { }
     }
 }

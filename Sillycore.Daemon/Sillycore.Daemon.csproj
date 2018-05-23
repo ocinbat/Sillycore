@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <PackageId>Sillycore.Daemon</PackageId>
-    <PackageVersion>2.3.0</PackageVersion>
+    <PackageVersion>4.0.0</PackageVersion>
     <Authors>Ömer Cinbat</Authors>
     <Description>A worker with on start and on stop actions for windows/linux and macOs.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
