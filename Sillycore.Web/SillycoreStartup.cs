@@ -1,24 +1,12 @@
-﻿using System.Reflection;
-using System.Threading;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Sillycore.Web.Filters;
-using Sillycore.Web.Security;
-using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Anetta.Extensions;
-using Sillycore.Abstractions;
 using Sillycore.Infrastructure;
 using Sillycore.Web.Abstractions;
-using Sillycore.Web.Middlewares;
 
 namespace Sillycore.Web
 {
