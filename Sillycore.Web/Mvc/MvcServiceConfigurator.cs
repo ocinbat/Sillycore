@@ -27,7 +27,6 @@ namespace Sillycore.Web.Mvc
                     o.OutputFormatters.RemoveType<XmlSerializerOutputFormatter>();
 
                     o.Filters.Add<GlobalExceptionFilter>();
-                    o.Filters.Add<ValidateModelStateFilter>();
                 })
                 .AddJsonOptions(o =>
                 {

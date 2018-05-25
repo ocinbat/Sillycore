@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <PackageId>Sillycore.Web</PackageId>
-    <PackageVersion>4.2.0</PackageVersion>
+    <PackageVersion>4.3.0</PackageVersion>
     <Authors>Ömer Cinbat, Burç Erdil</Authors>
     <Description></Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
