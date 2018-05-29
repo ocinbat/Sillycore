@@ -39,7 +39,7 @@ namespace Sillycore.Web.Results
 
         private string GetLinkHeaderForPageResult<T>(HttpRequest request, IPage<T> page)
         {
-            var requestUrl = request.GetUri().ToString();
+            var requestUrl = request.GetUri().AbsoluteUri;
             string headerValue = String.Empty;
 
             if (page.HasNextPage)
