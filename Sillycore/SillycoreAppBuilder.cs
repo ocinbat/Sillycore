@@ -213,18 +213,10 @@ namespace Sillycore
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(baseDirectory)
                 .AddJsonFile("appsettings.json", true, true)
-                .AddJsonFile("appsettings.ci.json", true, true)
-                .AddJsonFile("appsettings.test.json", true, true)
-                .AddJsonFile("appsettings.staging.json", true, true)
-                .AddJsonFile("appsettings.production.json", true, true)
+                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT").ToLowerInvariant()}.json", true, true)
                 .AddEnvironmentVariables()
                 .AddJsonFile("appsettings.config-server.json", true, true)
                 .Build();
-
-            if (!String.IsNullOrWhiteSpace(Configuration["ASPNETCORE_ENVIRONMENT"]))
-            {
-                Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", Configuration["ASPNETCORE_ENVIRONMENT"]);
-            }
 
             Services.TryAdd(ServiceDescriptor.Singleton(Configuration));
             Services.TryAdd(ServiceDescriptor.Singleton<IConfiguration>(Configuration));
