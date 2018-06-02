@@ -209,11 +209,17 @@ namespace Sillycore
         private void InitializeConfiguration()
         {
             string baseDirectory = Directory.GetCurrentDirectory();
+            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+            if (String.IsNullOrWhiteSpace(environment))
+            {
+                throw new Exception("ASPNETCORE_ENVIRONMENT environment variable is not set. Sillycore cannot determine which settings file to load.");
+            }
 
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(baseDirectory)
                 .AddJsonFile("appsettings.json", true, true)
-                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT").ToLowerInvariant()}.json", true, true)
+                .AddJsonFile($"appsettings.{environment.ToLowerInvariant()}.json", true, true)
                 .AddEnvironmentVariables()
                 .AddJsonFile("appsettings.config-server.json", true, true)
                 .Build();
