@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Sillycore;
 using Sillycore.BackgroundProcessing;
+using Sillycore.Extensions;
 using Sillycore.Web.Controllers;
 using WebApplication.BackgroundJobs;
 using WebApplication.Domain;
