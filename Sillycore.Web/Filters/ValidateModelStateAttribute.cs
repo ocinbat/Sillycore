@@ -8,9 +8,9 @@ using Sillycore.Web.Extensions;
 
 namespace Sillycore.Web.Filters
 {
-    public class ValidateModelStateFilter : ActionFilterAttribute
+    public class ValidateModelStateAttribute : ActionFilterAttribute
     {
-        public static readonly ILogger<ValidateModelStateFilter> Logger = SillycoreApp.Instance?.LoggerFactory?.CreateLogger<ValidateModelStateFilter>();
+        public static readonly ILogger<ValidateModelStateAttribute> Logger = SillycoreApp.Instance?.LoggerFactory?.CreateLogger<ValidateModelStateAttribute>();
 
         public override void OnActionExecuting(ActionExecutingContext actionContext)
         {

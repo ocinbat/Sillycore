@@ -3,10 +3,12 @@ using System.Net;
 using System.Reflection;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Responses;
 using Sillycore.Extensions;
+using Sillycore.Web.Extensions;
 using Sillycore.Web.Results;
 
 namespace Sillycore.Web.Controllers
@@ -34,6 +36,32 @@ namespace Sillycore.Web.Controllers
         protected IActionResult InvalidRequest(string errorMessage)
         {
             return InvalidRequest(errorMessage, String.Empty);
+        }
+
+        protected IActionResult InvalidRequest(ModelStateDictionary modelState)
+        {
+            ErrorResponse errorResponse = new ErrorResponse();
+            errorResponse.ErrorCode = "BadRequest";
+
+            if (modelState.IsValid)
+            {
+                throw new Exception("You cannot call InvalidRequest with a valid ModelState.");
+            }
+
+            foreach (var state in modelState.Values)
+            {
+                if (state.Errors.HasElements())
+                {
+                    foreach (ModelError modelStateError in state.Errors)
+                    {
+                        errorResponse.AddErrorMessage(modelStateError.GetErrorMessage());
+                    }
+                }
+            }
+
+            Logger?.LogInformation($"InvalidRequest: {errorResponse.GetFullMessage()}");
+
+            return BadRequest(errorResponse);
         }
 
         protected IActionResult InvalidRequest(string errorMessage, string errorCode)
