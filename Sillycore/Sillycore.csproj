@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <PackageId>Sillycore</PackageId>
-    <PackageVersion>4.5.1</PackageVersion>
+    <PackageVersion>4.6.0</PackageVersion>
     <Authors>Ömer Cinbat</Authors>
     <Description></Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>

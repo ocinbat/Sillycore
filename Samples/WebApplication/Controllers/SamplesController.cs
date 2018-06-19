@@ -11,6 +11,7 @@ using Sillycore.BackgroundProcessing;
 using Sillycore.Extensions;
 using Sillycore.Web.Controllers;
 using WebApplication.BackgroundJobs;
+using WebApplication.Configuration;
 using WebApplication.Domain;
 using WebApplication.HealthCheckers;
 
@@ -20,17 +21,17 @@ namespace WebApplication.Controllers
     [Route("samples")]
     public class SamplesController : SillyController
     {
-        private readonly IMetrics _metrics;
         private readonly ILogger<SamplesController> _logger;
         private readonly IConfiguration _configuration;
         private readonly BackgroundJobManager _backgroundJobManager;
+        private readonly AppSettings _appSettings;
 
-        public SamplesController(ILogger<SamplesController> logger, IConfiguration configuration, BackgroundJobManager backgroundJobManager, IMetrics metrics)
+        public SamplesController(ILogger<SamplesController> logger, IConfiguration configuration, BackgroundJobManager backgroundJobManager, AppSettings appSettings)
         {
             _logger = logger;
             _configuration = configuration;
             _backgroundJobManager = backgroundJobManager;
-            _metrics = metrics;
+            _appSettings = appSettings;
         }
 
         [HttpGet("")]
@@ -39,12 +40,7 @@ namespace WebApplication.Controllers
         {
             List<Sample> samples = new List<Sample>();
             _logger.LogDebug("QuerySamples called.");
-            _metrics.Measure.Counter.Increment(MetricsRegistry.GlobalCounter, new MetricTags("MethodName", "QuerySamples"));
-            using (_metrics.Measure.Timer.Time(MetricsRegistry.GlobalTimer, new MetricTags("MethodName", "QuerySamples")))
-            {
-                samples.Add(CreateNewSample());
-
-            }
+            samples.Add(CreateNewSample());
             return Ok(samples);
         }
 
@@ -52,12 +48,7 @@ namespace WebApplication.Controllers
         [ProducesResponseType(typeof(Sample), (int)HttpStatusCode.Created)]
         public IActionResult CreateSample([FromBody]Sample request)
         {
-            _metrics.Measure.Counter.Increment(MetricsRegistry.GlobalCounter, new MetricTags("MethodName", "CreateSample"));
-            using (_metrics.Measure.Timer.Time(MetricsRegistry.GlobalTimer,
-                new MetricTags("MethodName", "CreateSample")))
-            {
-                    return Created(request);
-            }
+            return Created(request);
         }
 
         [HttpGet("test")]

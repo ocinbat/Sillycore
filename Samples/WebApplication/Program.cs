@@ -22,13 +22,11 @@ namespace WebApplication
              *  1) Comment in the WithAuthentication and its following options
              *  2) Comment in the Authorization attribute above the SampleController class declaration
              */
-            RunRequestsToWebApplication();
 
             SillycoreAppBuilder.Instance
                 .UseUtcTimes()
                 .UseNLog()
                 .UseWebApi("WebApplication")
-                    .WithAppMetrics()
                     .WithSwagger()
                     .WithAuthentication()
                         .As("AuthServer")

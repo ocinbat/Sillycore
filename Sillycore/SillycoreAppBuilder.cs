@@ -213,7 +213,7 @@ namespace Sillycore
 
             if (String.IsNullOrWhiteSpace(environment))
             {
-                throw new Exception("ASPNETCORE_ENVIRONMENT environment variable is not set. Sillycore cannot determine which settings file to load.");
+                environment = "development";
             }
 
             Configuration = new ConfigurationBuilder()
