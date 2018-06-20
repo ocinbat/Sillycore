@@ -10,6 +10,7 @@ using Sillycore;
 using Sillycore.BackgroundProcessing;
 using Sillycore.Extensions;
 using Sillycore.Web.Controllers;
+using Sillycore.Web.Filters;
 using WebApplication.BackgroundJobs;
 using WebApplication.Configuration;
 using WebApplication.Domain;
@@ -36,6 +37,8 @@ namespace WebApplication.Controllers
 
         [HttpGet("")]
         [ProducesResponseType(typeof(List<Sample>), (int)HttpStatusCode.OK)]
+        [TransformException(typeof(Exception), HttpStatusCode.Conflict, "Bu arkadaş var hacı.", "TestErrorCode")]
+        [TransformException(typeof(NotImplementedException), HttpStatusCode.InternalServerError, "Patladık.", "TestErrorCode")]
         public IActionResult QuerySamples(string name = null)
         {
             List<Sample> samples = new List<Sample>();
