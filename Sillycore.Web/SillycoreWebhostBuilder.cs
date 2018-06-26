@@ -41,9 +41,10 @@ namespace Sillycore.Web
             return this;
         }
 
-        public SillycoreWebhostBuilder WithSwagger()
+        public SillycoreWebhostBuilder WithSwagger(bool redirectRootToSwagger = true)
         {
             SillycoreAppBuilder.DataStore.Set(Constants.UseSwagger, true);
+            SillycoreAppBuilder.DataStore.Set(Constants.RedirectRootToSwagger, redirectRootToSwagger);
 
             return this;
         }

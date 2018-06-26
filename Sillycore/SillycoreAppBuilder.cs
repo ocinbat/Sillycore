@@ -44,7 +44,6 @@ namespace Sillycore
             DataStore.Set(Constants.OnStopActions, new List<Action>());
             DataStore.Set(Constants.OnStoppedActions, new List<Action>());
             InitializeConfiguration();
-            SetGlobalJsonSerializerSettings();
             InitializeLogger();
             InitializeDateTimeProvider();
             InitializeBackgroundJobManager();
@@ -88,6 +87,7 @@ namespace Sillycore
 
         public SillycoreAppBuilder UseLocalTimes()
         {
+            SillycoreApp.JsonSerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Local;
             DataStore.Delete(Constants.DateTimeProvider);
             DataStore.Set(Constants.DateTimeProvider, new LocalDateTimeProvider());
             Services.TryAddSingleton(DataStore.Get<IDateTimeProvider>(Constants.DateTimeProvider));
@@ -142,40 +142,6 @@ namespace Sillycore
             DataStore.Get<List<Action>>(Constants.OnStoppedActions).Add(action);
 
             return this;
-        }
-
-        private void SetGlobalJsonSerializerSettings()
-        {
-            IDateTimeProvider dateTimeProvider = DataStore.Get<IDateTimeProvider>(Constants.DateTimeProvider);
-
-            if (dateTimeProvider != null && dateTimeProvider.Kind == DateTimeKind.Local)
-            {
-                SillycoreApp.JsonSerializerSettings = GetJsonSerializerSettings(DateTimeZoneHandling.Local);
-            }
-            else if (dateTimeProvider != null && dateTimeProvider.Kind == DateTimeKind.Utc)
-            {
-                SillycoreApp.JsonSerializerSettings = GetJsonSerializerSettings(DateTimeZoneHandling.Utc);
-            }
-            else
-            {
-                SillycoreApp.JsonSerializerSettings = GetJsonSerializerSettings();
-            }
-        }
-
-        private JsonSerializerSettings GetJsonSerializerSettings(DateTimeZoneHandling dateTimeZoneHandling = DateTimeZoneHandling.Utc)
-        {
-            var settings = new JsonSerializerSettings()
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                Formatting = Formatting.Indented,
-                NullValueHandling = NullValueHandling.Ignore,
-                DefaultValueHandling = DefaultValueHandling.Ignore,
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-                DateTimeZoneHandling = dateTimeZoneHandling
-            };
-
-            settings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
-            return settings;
         }
 
         private void BuildServiceProvider()

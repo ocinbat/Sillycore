@@ -25,7 +25,14 @@ namespace Sillycore
 
         public T Get<T>(string key)
         {
-            return (T)Get(key);
+            var @object = Get(key);
+
+            if (@object == null)
+            {
+                return default(T);
+            }
+
+            return (T)@object;
         }
 
         public void Delete(string key)

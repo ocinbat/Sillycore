@@ -27,7 +27,7 @@ namespace WebApplication
                 .UseUtcTimes()
                 .UseNLog()
                 .UseWebApi("WebApplication")
-                    .WithSwagger()
+                    .WithSwagger(false)
                     .WithAuthentication()
                         .As("AuthServer")
                         .WithPolicy("defaultPolicy", "lookup")

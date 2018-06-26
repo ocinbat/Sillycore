@@ -13,7 +13,7 @@ namespace Sillycore.Web.Mvc
         {
             app.UseMvc(r =>
             {
-                if (SillycoreAppBuilder.Instance.DataStore.Get<bool>(Constants.UseSwagger))
+                if (SillycoreAppBuilder.Instance.DataStore.Get<bool>(Constants.RedirectRootToSwagger))
                 {
                     r.MapRoute(name: "Default",
                         template: "",

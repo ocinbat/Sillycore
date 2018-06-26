@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using Sillycore.BackgroundProcessing;
 using Sillycore.Domain.Abstractions;
 
@@ -11,7 +13,17 @@ namespace Sillycore
 {
     public class SillycoreApp
     {
-        public static JsonSerializerSettings JsonSerializerSettings { get; set; }
+        public static JsonSerializerSettings JsonSerializerSettings { get; set; } = new JsonSerializerSettings()
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            Formatting = Formatting.Indented,
+            NullValueHandling = NullValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.Ignore,
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+            Converters = new List<JsonConverter> {new StringEnumConverter {CamelCaseText = true}}
+        };
+
         public static SillycoreApp Instance { get; set; }
 
         public InMemoryDataStore DataStore { get; set; }

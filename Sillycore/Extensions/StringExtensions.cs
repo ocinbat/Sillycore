@@ -300,6 +300,16 @@ namespace Sillycore.Extensions
             }
         }
 
+        public static T Deserialize<T>(this string value)
+        {
+            if (String.IsNullOrWhiteSpace(value))
+            {
+                return default(T);
+            }
+
+            return JsonConvert.DeserializeObject<T>(value, SillycoreApp.JsonSerializerSettings);
+        }
+
         #region Helpers
 
         private static Dictionary<string, string> GenerateHtmlReplacementCharacters()

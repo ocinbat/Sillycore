@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Enums;
 using Sillycore.Domain.Objects;
 using Sillycore.Domain.Requests;
-using Sillycore.EntityFramework.DynamicFiltering;
+using Sillycore.DynamicFiltering;
 
-namespace Sillycore.EntityFramework.Extensions
+namespace Sillycore.Extensions
 {
     public static class QueryableExtensions
     {
-        public static async Task<IPage<T>> ToPageAsync<T>(this IQueryable<T> source, PagedRequest request)
+        public static IPage<T> ToPage<T>(this IQueryable<T> source, PagedRequest request)
         {
             if (source == null)
             {
@@ -39,13 +37,15 @@ namespace Sillycore.EntityFramework.Extensions
                     }
                 }
 
-                return new Page<T>(await source.ToListAsync(), 0, 0, 0);
+                return new Page<T>(source, 0, 0, 0);
             }
 
             if (String.IsNullOrEmpty(request.OrderBy))
             {
                 throw new InvalidOperationException($"In order to use paging extensions you need to supply an OrderBy parameter.");
             }
+
+            int totalItemCount = source.Count();
 
             if (request.Order == OrderType.Asc)
             {
@@ -58,15 +58,14 @@ namespace Sillycore.EntityFramework.Extensions
 
             int skip = (request.Page - 1) * request.PageSize;
             int take = request.PageSize;
-            int totalItemCount = await source.CountAsync();
 
-            return new Page<T>(await source.Skip(skip).Take(take).ToListAsync(), request.Page, request.PageSize, totalItemCount);
+            return new Page<T>(source.Skip(skip).Take(take), request.Page, request.PageSize, totalItemCount);
         }
 
-        public static IAsyncFilteredExpressionQuery<TResult> Select<TResult>(this IQueryable<TResult> source, string fields)
+        public static IFilteredExpressionQuery<TResult> Select<TResult>(this IQueryable<TResult> source, string fields)
             where TResult : class
         {
-            return new AsyncFilteredExpressionQuery<TResult>(source.AsNoTracking(), fields);
+            return new FilteredExpressionQuery<TResult>(source, fields);
         }
     }
 }

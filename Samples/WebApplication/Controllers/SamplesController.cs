@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Net;
 using App.Metrics;
 using App.Metrics.Formatters;
@@ -8,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Sillycore;
 using Sillycore.BackgroundProcessing;
+using Sillycore.DynamicFiltering;
 using Sillycore.Extensions;
 using Sillycore.Web.Controllers;
 using Sillycore.Web.Filters;
@@ -15,6 +18,7 @@ using WebApplication.BackgroundJobs;
 using WebApplication.Configuration;
 using WebApplication.Domain;
 using WebApplication.HealthCheckers;
+using WebApplication.Requests;
 
 namespace WebApplication.Controllers
 {
@@ -39,12 +43,11 @@ namespace WebApplication.Controllers
         [ProducesResponseType(typeof(List<Sample>), (int)HttpStatusCode.OK)]
         [TransformException(typeof(Exception), HttpStatusCode.Conflict, "Bu arkadaş var hacı.", "TestErrorCode")]
         [TransformException(typeof(NotImplementedException), HttpStatusCode.InternalServerError, "Patladık.", "TestErrorCode")]
-        public IActionResult QuerySamples(string name = null)
+        public IActionResult QuerySamples([FromQuery]QuerySamplesRequest request)
         {
             List<Sample> samples = new List<Sample>();
-            _logger.LogDebug("QuerySamples called.");
             samples.Add(CreateNewSample());
-            return Ok(samples);
+            return Ok(samples.AsQueryable().Select(request.Fields).ToList());
         }
 
         [HttpPost("")]
