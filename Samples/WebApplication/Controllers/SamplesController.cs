@@ -41,13 +41,12 @@ namespace WebApplication.Controllers
 
         [HttpGet("")]
         [ProducesResponseType(typeof(List<Sample>), (int)HttpStatusCode.OK)]
-        [TransformException(typeof(Exception), HttpStatusCode.Conflict, "Bu arkadaş var hacı.", "TestErrorCode")]
         [TransformException(typeof(NotImplementedException), HttpStatusCode.InternalServerError, "Patladık.", "TestErrorCode")]
         public IActionResult QuerySamples([FromQuery]QuerySamplesRequest request)
         {
             List<Sample> samples = new List<Sample>();
             samples.Add(CreateNewSample());
-            return Ok(samples.AsQueryable().Select(request.Fields).ToList());
+            return Page(samples.Select(request.Fields).ToPage(request));
         }
 
         [HttpPost("")]

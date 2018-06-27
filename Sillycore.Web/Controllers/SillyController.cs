@@ -8,12 +8,15 @@ using Microsoft.Extensions.Logging;
 using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Responses;
 using Sillycore.Extensions;
+using Sillycore.Paging;
 using Sillycore.Web.Extensions;
+using Sillycore.Web.Filters;
 using Sillycore.Web.Results;
 
 namespace Sillycore.Web.Controllers
 {
     [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
+    [TransformException(typeof(PagingException), HttpStatusCode.BadRequest, "There was a problem while processing your paging request. Please double check paging parameters.")]
     public abstract class SillyController : Controller
     {
         private static readonly ILogger<SillyController> Logger = SillycoreApp.Instance?.LoggerFactory?.CreateLogger<SillyController>();

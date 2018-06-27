@@ -49,6 +49,7 @@ namespace Sillycore.Web.Filters
             ErrorResponse errorResponse = new ErrorResponse();
             errorResponse.ErrorCode = Code;
             errorResponse.AddErrorMessage(Message);
+            errorResponse.AdditionalInfo = context.Exception.Message;
 
             ObjectResult objectResult = new ObjectResult(errorResponse) {StatusCode = (int) StatusCode};
 

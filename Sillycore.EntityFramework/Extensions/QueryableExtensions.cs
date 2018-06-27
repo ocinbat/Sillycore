@@ -8,6 +8,7 @@ using Sillycore.Domain.Enums;
 using Sillycore.Domain.Objects;
 using Sillycore.Domain.Requests;
 using Sillycore.EntityFramework.DynamicFiltering;
+using Sillycore.Paging;
 
 namespace Sillycore.EntityFramework.Extensions
 {
@@ -17,12 +18,12 @@ namespace Sillycore.EntityFramework.Extensions
         {
             if (source == null)
             {
-                throw new ArgumentNullException($"You cannot pageinate on a null object reference. The parameter source should be initialized.", nameof(source));
+                throw new PagingException($"You cannot pageinate on a null object reference. The parameter source should be initialized.");
             }
 
             if (request == null)
             {
-                throw new ArgumentNullException($"You need to initialize a paging request before paging on a list. The parameter request should be initialized.", nameof(request));
+                throw new PagingException($"You need to initialize a paging request before paging on a list. The parameter request should be initialized.");
             }
 
             if (request.Page == 0)
@@ -44,7 +45,7 @@ namespace Sillycore.EntityFramework.Extensions
 
             if (String.IsNullOrEmpty(request.OrderBy))
             {
-                throw new InvalidOperationException($"In order to use paging extensions you need to supply an OrderBy parameter.");
+                throw new PagingException($"In order to use paging extensions you need to supply an OrderBy parameter.");
             }
 
             if (request.Order == OrderType.Asc)

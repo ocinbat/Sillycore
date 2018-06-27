@@ -11,6 +11,7 @@ using Sillycore.Domain.Enums;
 using Sillycore.Domain.Objects;
 using Sillycore.Domain.Requests;
 using Sillycore.DynamicFiltering;
+using Sillycore.Paging;
 
 namespace Sillycore.EntityFramework.DynamicFiltering
 {
@@ -95,7 +96,7 @@ namespace Sillycore.EntityFramework.DynamicFiltering
         {
             if (request == null)
             {
-                throw new ArgumentNullException($"You need to initialize a paging request before paging on a list. The parameter request should be initialized.", nameof(request));
+                throw new PagingException($"You need to initialize a paging request before paging on a list. The parameter request should be initialized.");
             }
 
             if (request.Page == 0)
@@ -115,9 +116,9 @@ namespace Sillycore.EntityFramework.DynamicFiltering
                 return new Page<TResult>(await ToListAsync(), 0, 0, 0);
             }
 
-            if (string.IsNullOrEmpty(request.OrderBy))
+            if (String.IsNullOrEmpty(request.OrderBy))
             {
-                throw new InvalidOperationException($"In order to use paging extensions you need to supply an OrderBy parameter.");
+                throw new PagingException($"In order to use paging extensions you need to supply an OrderBy parameter.");
             }
 
             if (request.Order == OrderType.Asc)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Sillycore.DynamicFiltering;
 
 namespace Sillycore.Extensions
 {
@@ -25,6 +26,12 @@ namespace Sillycore.Extensions
         public static bool HasElements<T>(this IEnumerable<T> source)
         {
             return !IsEmpty(source);
+        }
+
+        public static IFilteredExpressionQuery<TResult> Select<TResult>(this IEnumerable<TResult> source, string fields)
+            where TResult : class
+        {
+            return new FilteredExpressionQuery<TResult>(source.AsQueryable(), fields);
         }
 
         /// <summary>
