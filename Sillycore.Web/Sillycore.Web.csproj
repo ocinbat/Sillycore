@@ -3,13 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <PackageId>Sillycore.Web</PackageId>
-    <PackageVersion>5.1.0</PackageVersion>
+    <PackageVersion>5.2.0</PackageVersion>
     <Authors>Ömer Cinbat, Burç Erdil</Authors>
-    <Description></Description>
+    <Description>A helper library to kickstart API developments on top of Sillycore.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Copyright></Copyright>
     <PackageTags></PackageTags>
+    <PackageIconUrl>https://raw.githubusercontent.com/ocinbat/Sillycore/master/sillycore-logo.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
