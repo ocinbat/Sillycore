@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.IO;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.PlatformAbstractions;
 using Sillycore.Abstractions;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -26,6 +28,13 @@ namespace Sillycore.Web.Swagger
                     c.DescribeAllParametersInCamelCase();
                     c.IgnoreObsoleteActions();
                     c.IgnoreObsoleteProperties();
+
+                    string filePath = Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, $"{SillycoreAppBuilder.Instance.DataStore.Get<string>(Constants.ApplicationName)}.xml");
+
+                    if (File.Exists(filePath))
+                    {
+                        c.IncludeXmlComments(filePath);
+                    }
                 });
             }
         }
