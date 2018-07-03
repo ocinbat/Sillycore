@@ -22,7 +22,7 @@ after_test:
 
     dotnet pack Sillycore.Web/Sillycore.Web.csproj -c Release --include-symbols
 
-    dotnet build Sillycore.AppMetrics/Sillycore.AppMetrics.csproj -c Release --include-symbols
+    dotnet pack Sillycore.AppMetrics/Sillycore.AppMetrics.csproj -c Release --include-symbols
 
     dotnet pack Sillycore.NLog/Sillycore.NLog.csproj -c Release --include-symbols
 
