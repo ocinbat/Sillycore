@@ -13,7 +13,7 @@ namespace Sillycore.AppMetrics
 {
     public static class SillycoreWebhostBuilderExtensions
     {
-        public static SillycoreWebhostBuilder WithAppMetrics(this SillycoreWebhostBuilder builder)
+        public static SillycoreAppBuilder WithAppMetrics(this SillycoreAppBuilder builder)
         {
             IMetricsRoot metrics = App.Metrics.AppMetrics.CreateDefaultBuilder()
                 .OutputMetrics.AsPrometheusPlainText()
@@ -21,10 +21,10 @@ namespace Sillycore.AppMetrics
                 .Build();
 
 
-            builder.SillycoreAppBuilder.Services.AddMetrics();
-            builder.SillycoreAppBuilder.BeforeBuild(() =>
+            builder.Services.AddMetrics();
+            builder.BeforeBuild(() =>
             {
-                IWebHostBuilder webhostBuilder = builder.SillycoreAppBuilder.DataStore
+                IWebHostBuilder webhostBuilder = builder.DataStore
                     .Get<IWebHostBuilder>(Web.Constants.WebHostBuilder)
                     .ConfigureMetrics(metrics)
                     .UseMetrics(
@@ -37,7 +37,7 @@ namespace Sillycore.AppMetrics
                             };
                         });
 
-                builder.SillycoreAppBuilder.DataStore.Set(Web.Constants.WebHostBuilder, webhostBuilder);
+                builder.DataStore.Set(Web.Constants.WebHostBuilder, webhostBuilder);
             });
 
             return builder;
