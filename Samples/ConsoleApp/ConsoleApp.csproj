@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Sillycore.AppMetrics\Sillycore.AppMetrics.csproj" />
     <ProjectReference Include="..\..\Sillycore.Daemon\Sillycore.Daemon.csproj" />
     <ProjectReference Include="..\..\Sillycore.EntityFramework\Sillycore.EntityFramework.csproj" />
     <ProjectReference Include="..\..\Sillycore.NLog\Sillycore.NLog.csproj" />
