@@ -46,6 +46,7 @@ namespace WebApplication.Controllers
         {
             List<Sample> samples = new List<Sample>();
             samples.Add(CreateNewSample());
+            samples.First().CreatedOn.AddWorkDays(1);
             return Page(samples.Select(request.Fields).ToPage(request));
         }
 

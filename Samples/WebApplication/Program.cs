@@ -27,7 +27,6 @@ namespace WebApplication
             SillycoreAppBuilder.Instance
                 .UseUtcTimes()
                 .UseNLog()
-                .WithAppMetrics()
                 .UseWebApi("WebApplication")
                     .WithSwagger(false)
                     .WithAuthentication()
