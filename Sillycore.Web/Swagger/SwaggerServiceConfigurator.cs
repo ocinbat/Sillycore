@@ -15,7 +15,11 @@ namespace Sillycore.Web.Swagger
             {
                 services.AddSwaggerGen(c =>
                 {
-                    c.SwaggerDoc("v1", new Info { Title = SillycoreAppBuilder.Instance.DataStore.Get<string>(Constants.ApplicationName), Version = "v1" });
+                    SwaggerConfiguration swaggerConfiguration = new SwaggerConfiguration();
+                    configuration.Bind("Sillycore:Swagger", swaggerConfiguration);
+
+                    c.SwaggerDoc(swaggerConfiguration.Version, swaggerConfiguration.GetSwaggerInfo());
+
                     c.AddSecurityDefinition("Bearer", new ApiKeyScheme
                     {
                         Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
