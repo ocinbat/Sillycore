@@ -107,7 +107,7 @@ namespace Sillycore.EntityFramework.DynamicFiltering
                     {
                         Source = Source.OrderBy(request.OrderBy);
                     }
-                    else
+                    else if (request.Order == OrderType.Desc)
                     {
                         Source = Source.OrderBy(request.OrderBy + " descending");
                     }
@@ -125,7 +125,7 @@ namespace Sillycore.EntityFramework.DynamicFiltering
             {
                 Source = Source.OrderBy(request.OrderBy);
             }
-            else
+            else if (request.Order == OrderType.Desc)
             {
                 Source = Source.OrderBy(request.OrderBy + " descending");
             }

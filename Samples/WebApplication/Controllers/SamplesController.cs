@@ -40,8 +40,12 @@ namespace WebApplication.Controllers
         public IActionResult QuerySamples([FromQuery]QuerySamplesRequest request)
         {
             List<Sample> samples = new List<Sample>();
-            samples.Add(CreateNewSample());
-            samples.First().CreatedOn.AddWorkDays(1);
+
+            for (int i = 0; i < 100; i++)
+            {
+                samples.Add(CreateNewSample());
+            }
+
             return Page(samples.Select(request.Fields).ToPage(request));
         }
 

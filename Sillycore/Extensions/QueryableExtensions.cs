@@ -32,7 +32,7 @@ namespace Sillycore.Extensions
                     {
                         source = source.OrderBy(request.OrderBy);
                     }
-                    else
+                    else if (request.Order == OrderType.Desc)
                     {
                         source = source.OrderBy(request.OrderBy + " descending");
                     }
@@ -52,7 +52,7 @@ namespace Sillycore.Extensions
             {
                 source = source.OrderBy(request.OrderBy);
             }
-            else
+            else if (request.Order == OrderType.Desc)
             {
                 source = source.OrderBy(request.OrderBy + " descending");
             }

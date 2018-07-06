@@ -116,7 +116,7 @@ namespace Sillycore.DynamicFiltering
                     {
                         Source = Source.OrderBy(request.OrderBy);
                     }
-                    else
+                    else if (request.Order == OrderType.Desc)
                     {
                         Source = Source.OrderBy(request.OrderBy + " descending");
                     }
@@ -125,16 +125,11 @@ namespace Sillycore.DynamicFiltering
                 return new Page<TResult>(ToList(), 0, 0, 0);
             }
 
-            if (string.IsNullOrEmpty(request.OrderBy))
-            {
-                throw new PagingException($"In order to use paging extensions you need to supply an OrderBy parameter.");
-            }
-
             if (request.Order == OrderType.Asc)
             {
                 Source = Source.OrderBy(request.OrderBy);
             }
-            else
+            else if (request.Order == OrderType.Desc)
             {
                 Source = Source.OrderBy(request.OrderBy + " descending");
             }
