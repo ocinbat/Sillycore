@@ -8,20 +8,20 @@ using Sillycore.Domain.Abstractions;
 
 namespace Sillycore.Web.Results
 {
-    public class PageResult<T> : IActionResult
+    public class PageResult<T> : OkObjectResult
     {
         private readonly IPage<T> _page;
 
         public PageResult(IPage<T> page)
+            : base(page.Items)
         {
             _page = page;
         }
 
-        public async Task ExecuteResultAsync(ActionContext context)
+        public override async Task ExecuteResultAsync(ActionContext context)
         {
             SetHeaders(context);
-            await context.HttpContext.Response.WriteAsync(JsonConvert.SerializeObject(_page.Items,
-                SillycoreApp.JsonSerializerSettings));
+            await base.ExecuteResultAsync(context);
         }
 
         private void SetHeaders(ActionContext context)
@@ -34,7 +34,6 @@ namespace Sillycore.Web.Results
             context.HttpContext.Response.Headers.Add("X-Paging-HasNextPage", _page.HasNextPage.ToString().ToLowerInvariant());
             context.HttpContext.Response.Headers.Add("Link", GetLinkHeaderForPageResult(context.HttpContext.Request, _page));
             context.HttpContext.Response.Headers.Add("Access-Control-Expose-Headers", "X-Paging-Index, X-Paging-Size, X-Paging-TotalCount, X-Paging-TotalPages, X-Paging-HasPreviousPage, X-Paging-HasNextPage, Link");
-
         }
 
         private string GetLinkHeaderForPageResult<T>(HttpRequest request, IPage<T> page)
