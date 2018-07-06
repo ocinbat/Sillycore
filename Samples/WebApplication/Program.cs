@@ -3,10 +3,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using App.Metrics.Scheduling;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Sillycore;
-using Sillycore.AppMetrics;
 using Sillycore.NLog;
 using Sillycore.Web;
 using WebApplication.Domain;
@@ -22,17 +20,13 @@ namespace WebApplication
              *  1) Comment in the WithAuthentication and its following options
              *  2) Comment in the Authorization attribute above the SampleController class declaration
              */
-            RunRequestsToWebApplication();
+            //RunRequestsToWebApplication();
 
             SillycoreAppBuilder.Instance
                 .UseUtcTimes()
                 .UseNLog()
                 .UseWebApi("WebApplication")
-                    .WithSwagger(false)
-                    .WithAuthentication()
-                        .As("AuthServer")
-                        .WithPolicy("defaultPolicy", "lookup")
-                        .Then()
+                    .WithSwagger()
                     .Build();
             
         }

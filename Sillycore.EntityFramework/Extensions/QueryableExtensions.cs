@@ -26,7 +26,7 @@ namespace Sillycore.EntityFramework.Extensions
                 throw new PagingException($"You need to initialize a paging request before paging on a list. The parameter request should be initialized.");
             }
 
-            if (request.Page == 0)
+            if (!request.Page.HasValue)
             {
                 if (!String.IsNullOrEmpty(request.OrderBy))
                 {
@@ -57,11 +57,11 @@ namespace Sillycore.EntityFramework.Extensions
                 source = source.OrderBy(request.OrderBy + " descending");
             }
 
-            int skip = (request.Page - 1) * request.PageSize;
-            int take = request.PageSize;
+            int skip = (request.Page.Value - 1) * request.PageSize.Value;
+            int take = request.PageSize.Value;
             int totalItemCount = await source.CountAsync();
 
-            return new Page<T>(await source.Skip(skip).Take(take).ToListAsync(), request.Page, request.PageSize, totalItemCount);
+            return new Page<T>(await source.Skip(skip).Take(take).ToListAsync(), request.Page.Value, request.PageSize.Value, totalItemCount);
         }
 
         public static IAsyncFilteredExpressionQuery<TResult> Select<TResult>(this IQueryable<TResult> source, string fields)

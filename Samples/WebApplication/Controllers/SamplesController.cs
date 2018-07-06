@@ -1,28 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Dynamic.Core;
 using System.Net;
-using App.Metrics;
-using App.Metrics.Formatters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Sillycore;
 using Sillycore.BackgroundProcessing;
-using Sillycore.DynamicFiltering;
+using Sillycore.Domain.Abstractions;
 using Sillycore.Extensions;
 using Sillycore.Web.Controllers;
 using Sillycore.Web.Filters;
-using WebApplication.BackgroundJobs;
 using WebApplication.Configuration;
 using WebApplication.Domain;
-using WebApplication.HealthCheckers;
 using WebApplication.Requests;
 
 namespace WebApplication.Controllers
 {
-    //[Authorization("defaultPolicy")]
     [Route("samples")]
     public class SamplesController : SillyController
     {
@@ -30,13 +23,15 @@ namespace WebApplication.Controllers
         private readonly IConfiguration _configuration;
         private readonly BackgroundJobManager _backgroundJobManager;
         private readonly AppSettings _appSettings;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public SamplesController(ILogger<SamplesController> logger, IConfiguration configuration, BackgroundJobManager backgroundJobManager, AppSettings appSettings)
+        public SamplesController(ILogger<SamplesController> logger, IConfiguration configuration, BackgroundJobManager backgroundJobManager, AppSettings appSettings, IDateTimeProvider dateTimeProvider)
         {
             _logger = logger;
             _configuration = configuration;
             _backgroundJobManager = backgroundJobManager;
             _appSettings = appSettings;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         [HttpGet("")]
@@ -69,7 +64,7 @@ namespace WebApplication.Controllers
             {
                 Id = Guid.NewGuid(),
                 Name = Convert.ToBase64String(Guid.NewGuid().ToByteArray()),
-                CreatedOn = SillycoreApp.Instance.DateTimeProvider.Now
+                CreatedOn = _dateTimeProvider.Now
             };
         }
     }

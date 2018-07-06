@@ -99,7 +99,7 @@ namespace Sillycore.EntityFramework.DynamicFiltering
                 throw new PagingException($"You need to initialize a paging request before paging on a list. The parameter request should be initialized.");
             }
 
-            if (request.Page == 0)
+            if (!request.Page.HasValue)
             {
                 if (!string.IsNullOrEmpty(request.OrderBy))
                 {
@@ -130,11 +130,11 @@ namespace Sillycore.EntityFramework.DynamicFiltering
                 Source = Source.OrderBy(request.OrderBy + " descending");
             }
 
-            int skip = (request.Page - 1) * request.PageSize;
-            int take = request.PageSize;
+            int skip = (request.Page.Value - 1) * request.PageSize.Value;
+            int take = request.PageSize.Value;
             int totalItemCount = await Source.CountAsync();
 
-            return new Page<TResult>(await ToListAsync(Source.Skip(skip).Take(take)), request.Page, request.PageSize, totalItemCount);
+            return new Page<TResult>(await ToListAsync(Source.Skip(skip).Take(take)), request.Page.Value, request.PageSize.Value, totalItemCount);
         }
     }
 }

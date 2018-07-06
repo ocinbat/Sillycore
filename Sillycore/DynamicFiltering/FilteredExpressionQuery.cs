@@ -5,6 +5,7 @@ using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Reflection;
 using Castle.DynamicProxy;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Enums;
@@ -107,7 +108,7 @@ namespace Sillycore.DynamicFiltering
                 throw new PagingException($"You need to initialize a paging request before paging on a list. The parameter request should be initialized.");
             }
 
-            if (request.Page == 0)
+            if (!request.Page.HasValue)
             {
                 if (!string.IsNullOrEmpty(request.OrderBy))
                 {
@@ -138,11 +139,11 @@ namespace Sillycore.DynamicFiltering
                 Source = Source.OrderBy(request.OrderBy + " descending");
             }
 
-            int skip = (request.Page - 1) * request.PageSize;
-            int take = request.PageSize;
+            int skip = (request.Page.Value - 1) * request.PageSize.Value;
+            int take = request.PageSize.Value;
             int totalItemCount = Source.Count();
 
-            return new Page<TResult>(ToList(Source.Skip(skip).Take(take)), request.Page, request.PageSize, totalItemCount);
+            return new Page<TResult>(ToList(Source.Skip(skip).Take(take)), request.Page.Value, request.PageSize.Value, totalItemCount);
         }
 
         public IQueryable<object> ToObjectQuery(IQueryable<TResult> query)
