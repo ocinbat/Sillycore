@@ -16,6 +16,9 @@ namespace Sillycore.Web.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public class HelpController : SillyController
     {
+        private static readonly string EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        private static readonly string DockerImageName = Environment.GetEnvironmentVariable("Sillycore.DockerImageName");
+
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger<HelpController> _logger;
         private readonly BackgroundJobManager _backgroundJobManager;
@@ -39,7 +42,8 @@ namespace Sillycore.Web.Controllers
             {
                 HealthCheckResponse response = new HealthCheckResponse();
 
-                response.DockerImageName = Environment.GetEnvironmentVariable("Sillycore.DockerImageName");
+                response.Environment = EnvironmentName;
+                response.DockerImageName = DockerImageName;
 
                 if (SillycoreApp.Instance.DataStore.Get<bool>(Constants.IsShuttingDown))
                 {
