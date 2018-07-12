@@ -8,6 +8,7 @@ using MassTransit.ExtensionsDependencyInjectionIntegration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Sillycore.Extensions;
 using Sillycore.RabbitMq.Attributes;
 using Sillycore.RabbitMq.Configuration;
 
@@ -58,6 +59,11 @@ namespace Sillycore.RabbitMq
                     {
                         h.Username(rabbitMqConfiguration.Username);
                         h.Password(rabbitMqConfiguration.Password);
+
+                        if (rabbitMqConfiguration.Nodes.HasElements())
+                        {
+                            h.UseCluster(cc => cc.ClusterMembers = rabbitMqConfiguration.Nodes);
+                        }
                     });
 
                     foreach (ConsumerConfiguration consumerConfiguration in consumerConfigurations)
