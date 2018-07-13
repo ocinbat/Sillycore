@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using App.Metrics.Scheduling;
+using Microsoft.ApplicationInsights.Extensibility;
 using Newtonsoft.Json;
 using Sillycore;
 using Sillycore.NLog;
@@ -21,7 +22,7 @@ namespace WebApplication
              *  2) Comment in the Authorization attribute above the SampleController class declaration
              */
             //RunRequestsToWebApplication();
-
+            
             SillycoreAppBuilder.Instance
                 .UseUtcTimes()
                 .UseNLog()

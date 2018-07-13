@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Sillycore.Domain.Responses;
@@ -7,6 +8,8 @@ namespace Sillycore.Web.Filters
 {
     public class GlobalExceptionFilter : ExceptionFilterAttribute
     {
+        private static readonly string EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
         private readonly ILogger<GlobalExceptionFilter> _logger;
 
         public GlobalExceptionFilter(ILogger<GlobalExceptionFilter> logger)
@@ -16,18 +19,17 @@ namespace Sillycore.Web.Filters
 
         public override void OnException(ExceptionContext context)
         {
-            while (context.Exception?.InnerException != null)
-            {
-                context.Exception = context.Exception.InnerException;
-            }
-
-            _logger.LogError(context.Exception, "There was a problem while processing your request.");
+            _logger.LogError(context.Exception, context.Exception?.Message);
 
             ErrorResponse errorResponse = new ErrorResponse();
             errorResponse.AdditionalInfo = context.Exception?.Message;
             errorResponse.ErrorCode = "InternalServerError";
-            // TODO Bunu resource'a çıkar.
             errorResponse.AddErrorMessage("There was a problem while processing your request.");
+
+            if (EnvironmentName?.ToLowerInvariant() != "production")
+            {
+                errorResponse.Exception = context.Exception?.ToString();
+            }
 
             var objectResult = new ObjectResult(errorResponse);
             objectResult.StatusCode = 500;

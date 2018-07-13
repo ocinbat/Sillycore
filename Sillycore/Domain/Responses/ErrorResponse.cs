@@ -10,6 +10,8 @@ namespace Sillycore.Domain.Responses
 
         public string AdditionalInfo { get; set; }
 
+        public string Exception { get; set; }
+
         public string GetFullMessage()
         {
             string message = ErrorCode;

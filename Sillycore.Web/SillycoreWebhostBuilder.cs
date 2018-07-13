@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -19,6 +20,7 @@ namespace Sillycore.Web
 
         public SillycoreWebhostBuilder(SillycoreAppBuilder sillycoreAppBuilder, string applicationName, string[] args)
         {
+            TelemetryConfiguration.Active.DisableTelemetry = true;
             SillycoreAppBuilder = sillycoreAppBuilder;
             _applicationName = applicationName;
             _args = args;
