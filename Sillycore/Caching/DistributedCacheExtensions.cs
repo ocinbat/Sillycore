@@ -10,12 +10,24 @@ namespace Sillycore.Caching
         public static T Get<T>(this IDistributedCache cache, string key)
         {
             string entry = cache.GetString(key);
+
+            if (String.IsNullOrWhiteSpace(entry))
+            {
+                return default(T);
+            }
+
             return JsonConvert.DeserializeObject<T>(entry, SillycoreApp.JsonSerializerSettings);
         }
 
         public static async Task<T> GetAsync<T>(this IDistributedCache cache, string key)
         {
             string entry = await cache.GetStringAsync(key);
+
+            if (String.IsNullOrWhiteSpace(entry))
+            {
+                return default(T);
+            }
+
             return JsonConvert.DeserializeObject<T>(entry, SillycoreApp.JsonSerializerSettings);
         }
 
