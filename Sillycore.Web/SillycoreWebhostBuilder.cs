@@ -79,11 +79,13 @@ namespace Sillycore.Web
 
             SillycoreApp app = SillycoreAppBuilder.Build();
 
+            IWebHost webHost = app.DataStore.Get<IWebHostBuilder>(Constants.WebHostBuilder).Build();
+
             IServiceProvider serviceProvider = app.DataStore.Get<IServiceProvider>(Sillycore.Constants.ServiceProvider);
-            ILogger<SillycoreWebhostBuilder> logger = serviceProvider.GetService<ILogger<SillycoreWebhostBuilder>>();
+            ILogger<SillycoreWebhostBuilder> logger = serviceProvider.GetService<ILoggerFactory>().CreateLogger<SillycoreWebhostBuilder>();
             logger.LogInformation($"{_applicationName} started.");
 
-            app.DataStore.Get<IWebHostBuilder>(Constants.WebHostBuilder).Build().Run();
+            webHost.Run();
         }
 
         private void RegisterHealthCheckers()
@@ -117,7 +119,6 @@ namespace Sillycore.Web
             webHostBuilder.UseKestrel();
             webHostBuilder.UseContentRoot(Directory.GetCurrentDirectory());
             webHostBuilder.UseConfiguration(SillycoreAppBuilder.Instance.Configuration);
-            webHostBuilder.UseApplicationInsights();
 
             if (_withIisIntegration)
             {
