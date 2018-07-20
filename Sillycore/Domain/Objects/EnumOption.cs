@@ -29,7 +29,7 @@ namespace Sillycore.Domain.Objects
                 MemberInfo[] member = enumType.GetMember(enumValue.ToString());
 
                 DisplayAttribute displayAttribute = (DisplayAttribute)member[0].GetCustomAttributes(typeof(DisplayAttribute), false).FirstOrDefault();
-                DescriptionAttribute descriptionAttribute = (DescriptionAttribute)member[0].GetCustomAttributes(typeof(DisplayAttribute), false).FirstOrDefault();
+                DescriptionAttribute descriptionAttribute = (DescriptionAttribute)member[0].GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault();
 
                 EnumOption option = new EnumOption()
                 {
