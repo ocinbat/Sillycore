@@ -36,6 +36,14 @@ namespace Sillycore.Web.Controllers
             return new PageResult<T>(page);
         }
 
+        protected IActionResult NotFound(string errorMessage)
+        {
+            ErrorResponse errorResponse = new ErrorResponse();
+            errorResponse.AddErrorMessage(errorMessage);
+
+            return base.NotFound(errorResponse);
+        }
+
         protected IActionResult InvalidRequest(string errorMessage)
         {
             return InvalidRequest(errorMessage, String.Empty);
