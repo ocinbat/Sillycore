@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Sillycore.BackgroundProcessing;
@@ -39,6 +40,7 @@ namespace WebApplication.Controllers
         [HttpGet("")]
         [ProducesResponseType(typeof(List<Sample>), (int)HttpStatusCode.OK)]
         [TransformException(typeof(NotImplementedException), HttpStatusCode.InternalServerError, "Patladık.", "TestErrorCode")]
+        [RetryOnException(RetryCount = 3, ExceptionType = typeof(DbUpdateException))]
         public IActionResult QuerySamples([FromQuery]QuerySamplesRequest request)
         {
             List<Sample> samples = new List<Sample>();
