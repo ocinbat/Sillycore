@@ -40,7 +40,6 @@ namespace WebApplication.Controllers
         [HttpGet("")]
         [ProducesResponseType(typeof(List<Sample>), (int)HttpStatusCode.OK)]
         [TransformException(typeof(NotImplementedException), HttpStatusCode.InternalServerError, "Patladık.", "TestErrorCode")]
-        [RetryOnException(RetryCount = 3, ExceptionType = typeof(DbUpdateException))]
         public IActionResult QuerySamples([FromQuery]QuerySamplesRequest request)
         {
             List<Sample> samples = new List<Sample>();
