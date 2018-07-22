@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <PackageId>Sillycore.Web</PackageId>
-    <PackageVersion>5.13.0</PackageVersion>
+    <PackageVersion>5.13.1</PackageVersion>
     <Authors>Ömer Cinbat, Burç Erdil</Authors>
     <Description>A helper library to kickstart API developments on top of Sillycore.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>

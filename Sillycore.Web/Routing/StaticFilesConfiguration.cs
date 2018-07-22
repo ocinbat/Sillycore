@@ -6,5 +6,6 @@ namespace Sillycore.Web.Routing
     public class StaticFilesConfiguration
     {
         public bool ServeUnknownFileTypes { get; set; } = false;
+        public string DefaultContentType { get; set; }
     }
 }

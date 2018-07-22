@@ -15,7 +15,8 @@ namespace Sillycore.Web.Routing
             StaticFilesConfiguration staticFilesConfiguration = app.ApplicationServices.GetService<StaticFilesConfiguration>();
             app.UseStaticFiles(new StaticFileOptions()
             {
-                ServeUnknownFileTypes = staticFilesConfiguration.ServeUnknownFileTypes
+                ServeUnknownFileTypes = staticFilesConfiguration.ServeUnknownFileTypes,
+                DefaultContentType = staticFilesConfiguration.DefaultContentType
             });
         }
     }
