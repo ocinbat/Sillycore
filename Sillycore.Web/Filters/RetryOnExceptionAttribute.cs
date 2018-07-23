@@ -22,7 +22,7 @@ namespace Sillycore.Web.Filters
                 tryCount++;
                 ActionExecutedContext actionExecutedContext = await next();
 
-                if (actionExecutedContext.Exception != null && actionExecutedContext.Exception.GetType() == ExceptionType && tryCount < RetryCount)
+                if (actionExecutedContext.Exception != null && ExceptionType.IsInstanceOfType(actionExecutedContext.Exception) && tryCount < RetryCount)
                 {
                     actionExecutedContext.Exception = null;
                     actionExecutedContext.ExceptionDispatchInfo = null;
