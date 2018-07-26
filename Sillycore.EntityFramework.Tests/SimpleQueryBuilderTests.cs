@@ -342,6 +342,40 @@ namespace Sillycore.EntityFramework.Tests
 
         #endregion
 
+        #region In
+
+        [Test]
+        public void In_IfHasValue_ShouldFindContainingMatches()
+        {
+            //Arrange
+            var targetValues = new long[] { 1, 2 };
+
+            //Act
+            var sut = new SimpleQueryBuilder<Fake>(_fakeRepository.GetFakes());
+            var queryable = sut.In(f => f.AvailableQuantity, targetValues).Queryable();
+            var result = queryable.ToList();
+
+            //Verify
+            result.Should().HaveCount(2);
+        }
+
+        [Test]
+        public void NotIn_IfHasValue_ShouldFindNotContainingMatches()
+        {
+            //Arrange
+            var targetValues = new long[] { 1, 2 };
+
+            //Act
+            var sut = new SimpleQueryBuilder<Fake>(_fakeRepository.GetFakes());
+            var queryable = sut.NotIn(f => f.AvailableQuantity, targetValues).Queryable();
+            var result = queryable.ToList();
+
+            //Verify
+            result.Should().HaveCount(2);
+        }
+
+        #endregion
+
         private class FakeRepository
         {
             public IQueryable<Fake> GetFakes()

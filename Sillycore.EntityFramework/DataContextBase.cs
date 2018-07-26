@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -7,12 +8,15 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Sillycore.Domain.Abstractions;
+using Sillycore.EntityFramework.Attributes;
 using Sillycore.EntityFramework.Mapping;
 
 namespace Sillycore.EntityFramework
 {
     public abstract class DataContextBase : DbContext
     {
+        private long _inMemorySequenceId;
+
         protected bool SetUpdatedOnSameAsCreatedOnForNewObjects { get; set; }
 
         protected DataContextBase(DbContextOptions options)
@@ -100,6 +104,47 @@ namespace Sillycore.EntityFramework
                         auditable.UpdatedOn = SillycoreApp.Instance.DateTimeProvider.Now;
                         auditable.UpdatedBy = currentUser;
                     }
+                }
+            }
+        }
+
+        public virtual long GetNextId<TEntity>() where TEntity : IEntity<long>
+        {
+            if (this.Database.IsInMemory())
+            {
+                return ++_inMemorySequenceId;
+            }
+            var customAttribute = typeof(TEntity).GetCustomAttribute<SequenceAttribute>();
+            if (customAttribute == null)
+            {
+                throw new InvalidOperationException("You need to decorate your entity with Sequence attribute to use this extension method.");
+            }
+
+            bool shouldOpenConnection = this.Database.GetDbConnection().State == ConnectionState.Closed;
+
+            try
+            {
+                if (shouldOpenConnection)
+                {
+                    this.Database.OpenConnection();
+                }
+
+                var sequenceName = customAttribute.Name;
+                var dbCommmand = this.Database.GetDbConnection().CreateCommand();
+                dbCommmand.CommandText = $"SELECT (NEXT VALUE FOR {sequenceName})";
+
+                var id = (long)dbCommmand.ExecuteScalar();
+                if (id == 0)
+                {
+                    throw new InvalidOperationException($"Database did not return an instance of identity for sequence {sequenceName}.");
+                }
+                return id;
+            }
+            finally
+            {
+                if (shouldOpenConnection)
+                {
+                    this.Database.CloseConnection();
                 }
             }
         }
