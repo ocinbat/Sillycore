@@ -15,7 +15,7 @@ namespace Sillycore.EntityFramework
 {
     public abstract class DataContextBase : DbContext
     {
-        private long _inMemorySequanceId;
+        private long _inMemorySequenceId;
 
         protected bool SetUpdatedOnSameAsCreatedOnForNewObjects { get; set; }
 
@@ -112,7 +112,7 @@ namespace Sillycore.EntityFramework
         {
             if (this.Database.IsInMemory())
             {
-                return ++_inMemorySequanceId;
+                return ++_inMemorySequenceId;
             }
             var customAttribute = typeof(TEntity).GetCustomAttribute<SequenceAttribute>();
             if (customAttribute == null)
