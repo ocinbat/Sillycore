@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
 using Sillycore.EntityFramework.Extensions;
 
 namespace Sillycore.EntityFramework.Utils
@@ -216,6 +219,51 @@ namespace Sillycore.EntityFramework.Utils
             }
 
             return this;
+        }
+
+        #endregion
+
+        #region In
+
+        public SimpleQueryBuilder<TEntity> In<TMember>(Expression<Func<TEntity, TMember>> member, TMember[] value)
+        {
+            if (value?.Length > 0)
+            {
+                var inExpressions = CreateInExpression(member, value);
+                var param = inExpressions.param;
+                var whereExpression = Expression.Lambda<Func<TEntity, bool>>(inExpressions.call, param);
+                _query = _query.Where(whereExpression);
+            }
+
+            return this;
+        }
+
+        public SimpleQueryBuilder<TEntity> NotIn<TMember>(Expression<Func<TEntity, TMember>> member, TMember[] value)
+        {
+            if (value?.Length > 0)
+            {
+                var inExpressions = CreateInExpression(member, value);
+                var param = inExpressions.param;
+                var finalExpression = Expression.Not(inExpressions.call);
+                var whereExpression = Expression.Lambda<Func<TEntity, bool>>(finalExpression, param);
+                _query = _query.Where(whereExpression);
+            }
+
+            return this;
+        }
+
+
+        private static (ParameterExpression param, MethodCallExpression call) CreateInExpression<TMember>(Expression<Func<TEntity, TMember>> member, TMember[] value)
+        {
+            var param = Expression.Parameter(typeof(TEntity), "t");
+            var containsMethod = typeof(Enumerable)
+                .GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                .First(m => m.Name == "Contains" && m.GetParameters().Length == 2)
+                .MakeGenericMethod(new Type[] { typeof(TMember) });
+            var arrayExpression = Expression.Constant(value);
+            var memberExpr = LinqExtensions.GetMemberExpression(member, param);
+            var callExpression = Expression.Call(null, containsMethod, arrayExpression, memberExpr);
+            return (param, callExpression);
         }
 
         #endregion
