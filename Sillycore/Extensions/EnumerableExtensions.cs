@@ -8,6 +8,8 @@ namespace Sillycore.Extensions
 {
     public static class EnumerableExtensions
     {
+        private static readonly Random RandomGenerator = new Random();
+
         public static bool IsEmpty<T>(this T[] source)
         {
             return source == null || !source.Any();
@@ -26,12 +28,6 @@ namespace Sillycore.Extensions
         public static bool HasElements<T>(this IEnumerable<T> source)
         {
             return !IsEmpty(source);
-        }
-
-        public static IFilteredExpressionQuery<TResult> Select<TResult>(this IEnumerable<TResult> source, string fields)
-            where TResult : class
-        {
-            return new FilteredExpressionQuery<TResult>(source.AsQueryable(), fields);
         }
 
         /// <summary>
@@ -76,6 +72,27 @@ namespace Sillycore.Extensions
                 yield return new ReadOnlyCollection<T>(array);
             }
         }
-    }
 
+        public static T Random<T>(this IEnumerable<T> enumerable, Func<T, int> weightFunc)
+        {
+            int totalWeight = 0;
+
+            T selected = default(T);
+
+            foreach (var data in enumerable)
+            {
+                int weight = weightFunc(data);
+                int r = RandomGenerator.Next(totalWeight + weight);
+
+                if (r >= totalWeight)
+                {
+                    selected = data;
+                }
+
+                totalWeight += weight;
+            }
+
+            return selected;
+        }
+    }
 }
