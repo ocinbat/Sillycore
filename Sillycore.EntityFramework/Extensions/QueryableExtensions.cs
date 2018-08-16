@@ -7,7 +7,6 @@ using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Enums;
 using Sillycore.Domain.Objects;
 using Sillycore.Domain.Requests;
-using Sillycore.EntityFramework.DynamicFiltering;
 using Sillycore.Paging;
 
 namespace Sillycore.EntityFramework.Extensions
@@ -62,12 +61,6 @@ namespace Sillycore.EntityFramework.Extensions
             int totalItemCount = await source.CountAsync();
 
             return new Page<T>(await source.Skip(skip).Take(take).ToListAsync(), request.Page.Value, request.PageSize.Value, totalItemCount);
-        }
-
-        public static IAsyncFilteredExpressionQuery<TResult> Select<TResult>(this IQueryable<TResult> source, string fields)
-            where TResult : class
-        {
-            return new AsyncFilteredExpressionQuery<TResult>(source.AsNoTracking(), fields);
         }
     }
 }

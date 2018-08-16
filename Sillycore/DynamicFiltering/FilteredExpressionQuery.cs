@@ -15,7 +15,7 @@ using Sillycore.Paging;
 
 namespace Sillycore.DynamicFiltering
 {
-    public class FilteredExpressionQuery<TResult> : IFilteredExpressionQuery<TResult> where TResult : class
+    public class FilteredExpressionQuery<TResult> where TResult : class
     {
         public static readonly ProxyGenerator ProxyGenerator = new ProxyGenerator();
 

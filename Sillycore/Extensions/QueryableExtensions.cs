@@ -63,7 +63,7 @@ namespace Sillycore.Extensions
             return new Page<T>(source.Skip(skip).Take(take), request.Page.Value, request.PageSize.Value, totalItemCount);
         }
 
-        public static IFilteredExpressionQuery<TResult> Select<TResult>(this IQueryable<TResult> source, string fields)
+        public static FilteredExpressionQuery<TResult> Select<TResult>(this IQueryable<TResult> source, string fields)
             where TResult : class
         {
             return new FilteredExpressionQuery<TResult>(source, fields);

@@ -30,6 +30,12 @@ namespace Sillycore.Extensions
             return !IsEmpty(source);
         }
 
+        public static FilteredExpressionQuery<TResult> Select<TResult>(this IEnumerable<TResult> source, string fields)
+            where TResult : class
+        {
+            return new FilteredExpressionQuery<TResult>(source.AsQueryable(), fields);
+        }
+
         /// <summary>
         /// Taken from https://github.com/elastic/elasticsearch-net-example/blob/master/src/NuSearch.Domain/Extensions/PartitionExtension.cs
         /// </summary>
