@@ -6,7 +6,7 @@ namespace Sillycore.Extensions
 {
     public static class DateTimeExtensions
     {
-        private static readonly IHolidayProvider HolidayProvider = SillycoreApp.Instance.ServiceProvider.GetService<IHolidayProvider>();
+        private static readonly IHolidayProvider HolidayProvider = SillycoreApp.Instance?.ServiceProvider.GetService<IHolidayProvider>();
 
         /// <summary>
         /// Returns a new <see cref="DateTime"/> that adds the specified number of work days to the value of this instance.

@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
+using System.Linq.Dynamic;
 using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Enums;
@@ -13,30 +14,25 @@ using Sillycore.Domain.Requests;
 using Sillycore.DynamicFiltering;
 using Sillycore.Paging;
 
-namespace Sillycore.EntityFramework.DynamicFiltering
+namespace Sillycore.EntityFramework.Extensions
 {
-    public class AsyncFilteredExpressionQuery<TResult> : FilteredExpressionQuery<TResult>, IAsyncFilteredExpressionQuery<TResult> where TResult : class
+    public static class FilteredExpressionQueryExtensions
     {
-        public AsyncFilteredExpressionQuery(IQueryable<TResult> source, string fields)
-            : base(source, fields)
+        public static async Task<List<TResult>> ToListAsync<TResult>(this FilteredExpressionQuery<TResult> filteredExpressionQuery) where TResult : class
         {
+            return await ToListAsync(filteredExpressionQuery, filteredExpressionQuery.Source);
         }
 
-        public async Task<List<TResult>> ToListAsync()
+        public static async Task<List<TResult>> ToListAsync<TResult>(this FilteredExpressionQuery<TResult> filteredExpressionQuery, IQueryable<TResult> query) where TResult : class
         {
-            return await ToListAsync(Source);
-        }
-
-        public async Task<List<TResult>> ToListAsync(IQueryable<TResult> query)
-        {
-            IQueryable<object> runtimeTypeSelectExpressionQuery = ToObjectQuery(query);
+            IQueryable<object> runtimeTypeSelectExpressionQuery = filteredExpressionQuery.ToObjectQuery(query);
 
             // Get result from database
             List<object> listOfObjects = await runtimeTypeSelectExpressionQuery.ToListAsync();
 
             MethodInfo castMethod = typeof(Queryable)
                 .GetMethod("Cast", BindingFlags.Public | BindingFlags.Static)
-                .MakeGenericMethod(ProxyType);
+                .MakeGenericMethod(filteredExpressionQuery.ProxyType);
 
             // Cast list<objects> to IQueryable<runtimeType>
             IQueryable castedSource = castMethod.Invoke(
@@ -45,13 +41,13 @@ namespace Sillycore.EntityFramework.DynamicFiltering
             ) as IQueryable;
 
             // Create instance of runtime type parameter
-            ParameterExpression runtimeParameter = Expression.Parameter(ProxyType, "p");
+            ParameterExpression runtimeParameter = Expression.Parameter(filteredExpressionQuery.ProxyType, "p");
 
             IDictionary<string, PropertyInfo> dynamicTypeFieldsDict =
-                ProxyProperties.ToDictionary(f => f.Name.ToLowerInvariant(), f => f);
+                filteredExpressionQuery.ProxyProperties.ToDictionary(f => f.Name.ToLowerInvariant(), f => f);
 
             // Generate bindings from runtime type to source type
-            IEnumerable<MemberBinding> bindingsToTargetType = SelectedProperties.Values
+            IEnumerable<MemberBinding> bindingsToTargetType = filteredExpressionQuery.SelectedProperties.Values
                 .Select(property => Expression.Bind(
                     property,
                     Expression.Property(
@@ -63,7 +59,7 @@ namespace Sillycore.EntityFramework.DynamicFiltering
             // Generate projection trom runtimeType to T and cast as IQueryable<object>
             IQueryable<TResult> targetTypeSelectExpressionQuery
                 = ExpressionMapper.GenerateProjectedQuery<TResult>(
-                    ProxyType,
+                    filteredExpressionQuery.ProxyType,
                     typeof(TResult),
                     bindingsToTargetType,
                     castedSource,
@@ -74,25 +70,25 @@ namespace Sillycore.EntityFramework.DynamicFiltering
             return targetTypeSelectExpressionQuery.ToList();
         }
 
-        public async Task<TResult> FirstAsync()
+        public static async Task<TResult> FirstAsync<TResult>(this FilteredExpressionQuery<TResult> filteredExpressionQuery) where TResult : class
         {
-            object obj = await ToObjectQuery(Source).FirstAsync();
+            object obj = await filteredExpressionQuery.ToObjectQuery(filteredExpressionQuery.Source).FirstAsync();
 
-            ClearInterceptors(obj);
+            filteredExpressionQuery.ClearInterceptors(obj);
 
             return (TResult)obj;
         }
 
-        public async Task<TResult> FirstOrDefaultAsync()
+        public static async Task<TResult> FirstOrDefaultAsync<TResult>(this FilteredExpressionQuery<TResult> filteredExpressionQuery) where TResult : class
         {
-            object obj = await ToObjectQuery(Source).FirstOrDefaultAsync();
+            object obj = await filteredExpressionQuery.ToObjectQuery(filteredExpressionQuery.Source).FirstOrDefaultAsync();
 
-            ClearInterceptors(obj);
+            filteredExpressionQuery.ClearInterceptors(obj);
 
             return (TResult)obj;
         }
 
-        public async Task<IPage<TResult>> ToPageAsync(PagedRequest request)
+        public static async Task<IPage<TResult>> ToPageAsync<TResult>(this FilteredExpressionQuery<TResult> filteredExpressionQuery, PagedRequest request) where TResult : class
         {
             if (request == null)
             {
@@ -105,15 +101,15 @@ namespace Sillycore.EntityFramework.DynamicFiltering
                 {
                     if (request.Order == OrderType.Asc)
                     {
-                        Source = Source.OrderBy(request.OrderBy);
+                        filteredExpressionQuery.Source = filteredExpressionQuery.Source.OrderBy(request.OrderBy);
                     }
                     else if (request.Order == OrderType.Desc)
                     {
-                        Source = Source.OrderBy(request.OrderBy + " descending");
+                        filteredExpressionQuery.Source = filteredExpressionQuery.Source.OrderBy(request.OrderBy + " descending");
                     }
                 }
 
-                return new Page<TResult>(await ToListAsync(), 0, 0, 0);
+                return new Page<TResult>(await ToListAsync(filteredExpressionQuery), 0, 0, 0);
             }
 
             if (String.IsNullOrEmpty(request.OrderBy))
@@ -123,18 +119,18 @@ namespace Sillycore.EntityFramework.DynamicFiltering
 
             if (request.Order == OrderType.Asc)
             {
-                Source = Source.OrderBy(request.OrderBy);
+                filteredExpressionQuery.Source = filteredExpressionQuery.Source.OrderBy(request.OrderBy);
             }
             else if (request.Order == OrderType.Desc)
             {
-                Source = Source.OrderBy(request.OrderBy + " descending");
+                filteredExpressionQuery.Source = filteredExpressionQuery.Source.OrderBy(request.OrderBy + " descending");
             }
 
             int skip = (request.Page.Value - 1) * request.PageSize.Value;
             int take = request.PageSize.Value;
-            int totalItemCount = await Source.CountAsync();
+            int totalItemCount = await filteredExpressionQuery.Source.CountAsync();
 
-            return new Page<TResult>(await ToListAsync(Source.Skip(skip).Take(take)), request.Page.Value, request.PageSize.Value, totalItemCount);
+            return new Page<TResult>(await ToListAsync(filteredExpressionQuery, filteredExpressionQuery.Source.Skip(skip).Take(take)), request.Page.Value, request.PageSize.Value, totalItemCount);
         }
     }
 }

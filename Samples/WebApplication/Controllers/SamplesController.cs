@@ -50,7 +50,7 @@ namespace WebApplication.Controllers
                 samples.Add(CreateNewSample());
             }
 
-            return Page(samples.Select(request.Fields).ToPage(request));
+            return Page(samples.AsQueryable().Select(request.Fields).ToPage(request));
         }
 
         [HttpPost("")]

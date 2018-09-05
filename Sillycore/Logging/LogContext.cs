@@ -10,7 +10,7 @@ namespace Sillycore.Logging
         private readonly ILogger _logger;
         private string _message;
         private bool _logExecutionTime = false;
-        private readonly bool _logExecutionTimeGlobal = SillycoreApp.Instance.Configuration["LogExecutionTime"].ToBool();
+        private readonly bool _logExecutionTimeGlobal = SillycoreApp.Instance?.Configuration["LogExecutionTime"].ToBool() ?? false;
 
         private readonly Stopwatch _sw;
 
