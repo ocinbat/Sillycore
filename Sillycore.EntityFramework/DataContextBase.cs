@@ -114,11 +114,6 @@ namespace Sillycore.EntityFramework
             {
                 return ++_inMemorySequenceId;
             }
-            var customAttribute = typeof(TEntity).GetCustomAttribute<SequenceAttribute>();
-            if (customAttribute == null)
-            {
-                throw new InvalidOperationException("You need to decorate your entity with Sequence attribute to use this extension method.");
-            }
 
             bool shouldOpenConnection = this.Database.GetDbConnection().State == ConnectionState.Closed;
 
@@ -129,16 +124,11 @@ namespace Sillycore.EntityFramework
                     this.Database.OpenConnection();
                 }
 
-                var sequenceName = customAttribute.Name;
-                var dbCommmand = this.Database.GetDbConnection().CreateCommand();
-                dbCommmand.CommandText = $"SELECT (NEXT VALUE FOR {sequenceName})";
-
-                var id = (long)dbCommmand.ExecuteScalar();
-                if (id == 0)
-                {
-                    throw new InvalidOperationException($"Database did not return an instance of identity for sequence {sequenceName}.");
-                }
-                return id;
+                var sequenceName = GetSequenceName<TEntity>();
+                
+                var sql = $"SELECT (NEXT VALUE FOR {sequenceName})";
+                
+                return GetSequenceId(sequenceName, sql);
             }
             finally
             {
@@ -148,17 +138,12 @@ namespace Sillycore.EntityFramework
                 }
             }
         }
-        public virtual long GetNextIdRange<TEntity, TId>(int rangeSize)  where TEntity : IEntity<TId>
+        public virtual long GetNextIdRange<TEntity, TId>(int rangeSize)  where TEntity : IEntity<long>
         {
             if (this.Database.IsInMemory())
             {
-                return ++_inMemorySequenceId;
-            }
-            var customAttribute = typeof(TEntity).GetCustomAttribute<SequenceAttribute>();
-            if (customAttribute == null)
-            {
-                throw new InvalidOperationException("You need to decorate your entity with Sequence attribute to use this extension method.");
-            }
+                return _inMemorySequenceId = rangeSize + _inMemorySequenceId;
+            } 
 
             bool shouldOpenConnection = this.Database.GetDbConnection().State == ConnectionState.Closed;
 
@@ -169,9 +154,10 @@ namespace Sillycore.EntityFramework
                     this.Database.OpenConnection();
                 }
 
-                var sequenceName = customAttribute.Name;
+                var sequenceName = GetSequenceName<TEntity>();
+
                 var dbCommmand = this.Database.GetDbConnection().CreateCommand();
-                dbCommmand.CommandText = ($@"
+                var sql = $@"
                 DECLARE @range_first_value sql_variant ,   
                         @range_first_value_output sql_variant ;  
                 
@@ -180,14 +166,10 @@ namespace Sillycore.EntityFramework
                 , @range_size = {rangeSize} 
                 , @range_first_value = @range_first_value_output OUTPUT ;  
                 
-                SELECT @range_first_value_output AS FirstNumber ;");
+                SELECT @range_first_value_output AS FirstNumber ;";
+                dbCommmand.CommandText = sql;
 
-                var id = (long)dbCommmand.ExecuteScalar();
-                if (id == 0)
-                {
-                    throw new InvalidOperationException($"Database did not return an instance of identity for sequence {sequenceName}.");
-                }
-                return id;
+                return GetSequenceId(sequenceName, sql);
             }
             finally
             {
@@ -197,5 +179,30 @@ namespace Sillycore.EntityFramework
                 }
             }
         }
+        private long GetSequenceId(string sequenceName, string sql)
+        {
+            var dbCommmand = this.Database.GetDbConnection().CreateCommand();
+            dbCommmand.CommandText = sql;
+
+            var id = (long)dbCommmand.ExecuteScalar();
+            if (id == 0)
+            {
+                throw new InvalidOperationException($"Database did not return an instance of identity for sequence {sequenceName}.");
+            }
+            return id;
+        }
+
+        private static string GetSequenceName<TEntity>() where TEntity : IEntity<long>
+        {
+            var customAttribute = typeof(TEntity).GetCustomAttribute<SequenceAttribute>();
+            if (customAttribute == null)
+            {
+                throw new InvalidOperationException("You need to decorate your entity with Sequence attribute to use this extension method.");
+            }
+            var sequenceName = customAttribute.Name;
+            return sequenceName;
+        }
+
+      
     }
 }
