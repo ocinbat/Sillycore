@@ -148,5 +148,54 @@ namespace Sillycore.EntityFramework
                 }
             }
         }
+        public virtual long GetNextIdRange<TEntity, TId>(int rangeSize)  where TEntity : IEntity<TId>
+        {
+            if (this.Database.IsInMemory())
+            {
+                return ++_inMemorySequenceId;
+            }
+            var customAttribute = typeof(TEntity).GetCustomAttribute<SequenceAttribute>();
+            if (customAttribute == null)
+            {
+                throw new InvalidOperationException("You need to decorate your entity with Sequence attribute to use this extension method.");
+            }
+
+            bool shouldOpenConnection = this.Database.GetDbConnection().State == ConnectionState.Closed;
+
+            try
+            {
+                if (shouldOpenConnection)
+                {
+                    this.Database.OpenConnection();
+                }
+
+                var sequenceName = customAttribute.Name;
+                var dbCommmand = this.Database.GetDbConnection().CreateCommand();
+                dbCommmand.CommandText = ($@"
+                DECLARE @range_first_value sql_variant ,   
+                        @range_first_value_output sql_variant ;  
+                
+                EXEC sp_sequence_get_range  
+                @sequence_name = N'{sequenceName}'  
+                , @range_size = {rangeSize} 
+                , @range_first_value = @range_first_value_output OUTPUT ;  
+                
+                SELECT @range_first_value_output AS FirstNumber ;");
+
+                var id = (long)dbCommmand.ExecuteScalar();
+                if (id == 0)
+                {
+                    throw new InvalidOperationException($"Database did not return an instance of identity for sequence {sequenceName}.");
+                }
+                return id;
+            }
+            finally
+            {
+                if (shouldOpenConnection)
+                {
+                    this.Database.CloseConnection();
+                }
+            }
+        }
     }
 }
