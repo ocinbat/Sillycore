@@ -27,14 +27,16 @@ namespace WebApplication.Controllers
         private readonly BackgroundJobManager _backgroundJobManager;
         private readonly AppSettings _appSettings;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IEnumerable<IService> _services;
 
-        public SamplesController(ILogger<SamplesController> logger, IConfiguration configuration, BackgroundJobManager backgroundJobManager, AppSettings appSettings, IDateTimeProvider dateTimeProvider)
+        public SamplesController(ILogger<SamplesController> logger, IConfiguration configuration, BackgroundJobManager backgroundJobManager, AppSettings appSettings, IDateTimeProvider dateTimeProvider, IEnumerable<IService> services)
         {
             _logger = logger;
             _configuration = configuration;
             _backgroundJobManager = backgroundJobManager;
             _appSettings = appSettings;
             _dateTimeProvider = dateTimeProvider;
+            _services = services;
         }
 
         [HttpGet("")]
@@ -43,6 +45,7 @@ namespace WebApplication.Controllers
         [RetryOnException(ExceptionType = typeof(Exception))]
         public IActionResult QuerySamples([FromQuery]QuerySamplesRequest request)
         {
+            _logger.LogInformation($"asddasda");
             List<Sample> samples = new List<Sample>();
 
             for (int i = 0; i < 100; i++)

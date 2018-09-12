@@ -69,20 +69,18 @@ namespace Sillycore.Web
             SillycoreAppBuilder.DataStore.Set(Sillycore.Constants.UseShutDownDelay, true);
             RegisterHealthCheckers();
 
+            IWebHost webHost = null;
+
             SillycoreAppBuilder.BeforeBuild(() =>
             {
                 IWebHostBuilder webhostBuilder = SillycoreAppBuilder.DataStore.Get<IWebHostBuilder>(Constants.WebHostBuilder)
                     .UseStartup(typeof(SillycoreStartup));
 
-                SillycoreAppBuilder.DataStore.Set(Constants.WebHostBuilder, webhostBuilder);
+                webHost = webhostBuilder.Build();
             });
 
             SillycoreApp app = SillycoreAppBuilder.Build();
-
-            IWebHost webHost = app.DataStore.Get<IWebHostBuilder>(Constants.WebHostBuilder).Build();
-
-            IServiceProvider serviceProvider = app.DataStore.Get<IServiceProvider>(Sillycore.Constants.ServiceProvider);
-            ILogger<SillycoreWebhostBuilder> logger = serviceProvider.GetService<ILoggerFactory>().CreateLogger<SillycoreWebhostBuilder>();
+            ILogger<SillycoreWebhostBuilder> logger = app.ServiceProvider.GetService<ILoggerFactory>().CreateLogger<SillycoreWebhostBuilder>();
             logger.LogInformation($"{_applicationName} started.");
 
             webHost.Run();
