@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-
-namespace Sillycore.EntityFramework.Extensions
+﻿namespace Sillycore.EntityFramework.Extensions
 {
     public interface IEntityEventListener
     {
