@@ -15,17 +15,17 @@ namespace Sillycore.EntityFramework
     public abstract class DataContextBase : DbContext, IEntityEventPublisher
     {
         private long _inMemorySequenceId;
-        private readonly List<IEntityEventListener> _eventListeners;
+        internal List<IEntityEventListener> EventListeners { get; }
 
         protected DataContextBase(DbContextOptions options, SillycoreDataContextOptions sillycoreDataContextOptions)
             : base(options)
         {
-            _eventListeners = new List<IEntityEventListener>();
+            EventListeners = new List<IEntityEventListener>();
             if (sillycoreDataContextOptions.UseDefaultEventListeners)
             {
-                _eventListeners.Add(
+                EventListeners.Add(
                     new AuditEventListener(sillycoreDataContextOptions.SetUpdatedOnSameAsCreatedOnForNewObjects));
-                _eventListeners.Add(new SoftDeleteEventListener());
+                EventListeners.Add(new SoftDeleteEventListener());
             }
         }
 
@@ -63,7 +63,7 @@ namespace Sillycore.EntityFramework
 
         private void NotifyBeforeSaveChangesEvent()
         {
-            foreach (var listener in _eventListeners)
+            foreach (var listener in EventListeners)
             {
                 listener.NotifyBeforeSaveChanges(this);
             }
@@ -167,17 +167,17 @@ namespace Sillycore.EntityFramework
 
         public void SubscribeListener(IEntityEventListener listener)
         {
-            if (!_eventListeners.Contains(listener))
+            if (!EventListeners.Contains(listener))
             {
-                _eventListeners.Add(listener);
+                EventListeners.Add(listener);
             }
         }
 
         public void UnsubscribeListener(IEntityEventListener listener)
         {
-            if (_eventListeners.Contains(listener))
+            if (EventListeners.Contains(listener))
             {
-                _eventListeners.Remove(listener);
+                EventListeners.Remove(listener);
             }
         }
     }
