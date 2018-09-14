@@ -25,14 +25,14 @@ namespace Sillycore.EntityFramework.Extensions
         public void NotifyBeforeSaveChanges(DataContextBase dataContext)
         {
             string currentUser = GetCurrentUserName();
-
+            
             IEnumerable<EntityEntry> entities = dataContext.ChangeTracker.Entries().Where(x => x.Entity is IAuditable && (x.State == EntityState.Added || x.State == EntityState.Modified));
 
             foreach (EntityEntry entry in entities)
             {
                 if (entry.Entity is IAuditable)
                 {
-                    IAuditable auditable = ((IAuditable)entry.Entity);
+                    IAuditable auditable = (IAuditable)entry.Entity;
 
                     if (entry.State == EntityState.Added)
                     {
@@ -46,7 +46,7 @@ namespace Sillycore.EntityFramework.Extensions
                             }
                         }
 
-                        if (String.IsNullOrEmpty(auditable.CreatedBy))
+                        if (string.IsNullOrEmpty(auditable.CreatedBy))
                         {
                             auditable.CreatedBy = currentUser;
 

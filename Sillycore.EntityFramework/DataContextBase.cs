@@ -23,8 +23,7 @@ namespace Sillycore.EntityFramework
             EventListeners = new List<IEntityEventListener>();
             if (sillycoreDataContextOptions.UseDefaultEventListeners)
             {
-                EventListeners.Add(
-                    new AuditEventListener(sillycoreDataContextOptions.SetUpdatedOnSameAsCreatedOnForNewObjects));
+                EventListeners.Add(new AuditEventListener(sillycoreDataContextOptions.SetUpdatedOnSameAsCreatedOnForNewObjects));
                 EventListeners.Add(new SoftDeleteEventListener());
             }
         }
