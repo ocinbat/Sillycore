@@ -64,7 +64,7 @@ namespace Sillycore.EntityFramework.Tests
             dataContext.StubEntities.Add(stubEntity);
 
             //Act
-            var sut = new AuditEventListener(true);
+            var sut = new AuditEventListener();
             sut.NotifyBeforeSaveChanges(dataContext);
 
             //Verify
@@ -82,8 +82,7 @@ namespace Sillycore.EntityFramework.Tests
             DbContextOptions<StubDataContextBase> contextOptions = CreateInMemoryDatabaseOptions();
             var dataContext = new StubDataContextBase(contextOptions, new SillycoreDataContextOptions
             {
-                UseDefaultEventListeners = false,
-                SetUpdatedOnSameAsCreatedOnForNewObjects = true
+                UseDefaultEventListeners = false
             });
 
             var stubEntity = _fixture.Build<StubEntity>()
@@ -96,7 +95,7 @@ namespace Sillycore.EntityFramework.Tests
             dataContext.StubEntities.Add(stubEntity);
 
             //Act
-            var sut = new AuditEventListener(true);
+            var sut = new AuditEventListener();
             sut.NotifyBeforeSaveChanges(dataContext);
 
             //Verify
@@ -114,8 +113,7 @@ namespace Sillycore.EntityFramework.Tests
             DbContextOptions<StubDataContextBase> contextOptions = CreateInMemoryDatabaseOptions();
             var dataContext = new StubDataContextBase(contextOptions, new SillycoreDataContextOptions
             {
-                UseDefaultEventListeners = false,
-                SetUpdatedOnSameAsCreatedOnForNewObjects = false
+                UseDefaultEventListeners = false
             });
 
             var stubEntity = _fixture.Build<StubEntity>()
@@ -128,7 +126,7 @@ namespace Sillycore.EntityFramework.Tests
             dataContext.StubEntities.Add(stubEntity);
 
             //Act
-            var sut = new AuditEventListener(false);
+            var sut = new AuditEventListener();
             sut.NotifyBeforeSaveChanges(dataContext);
 
             //Verify
@@ -146,8 +144,7 @@ namespace Sillycore.EntityFramework.Tests
             DbContextOptions<StubDataContextBase> contextOptions = CreateInMemoryDatabaseOptions();
             var dataContext = new StubDataContextBase(contextOptions, new SillycoreDataContextOptions
             {
-                UseDefaultEventListeners = false,
-                SetUpdatedOnSameAsCreatedOnForNewObjects = false
+                UseDefaultEventListeners = false
             });
 
             var stubEntity = _fixture.Build<StubEntity>()
@@ -159,7 +156,7 @@ namespace Sillycore.EntityFramework.Tests
             dataContext.MarkAsModified(stubEntity);
 
             //Act
-            var sut = new AuditEventListener(false);
+            var sut = new AuditEventListener();
             sut.NotifyBeforeSaveChanges(dataContext);
 
             //Verify

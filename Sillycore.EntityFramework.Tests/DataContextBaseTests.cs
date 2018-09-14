@@ -11,7 +11,6 @@ namespace Sillycore.EntityFramework.Tests
 {
     public class DataContextBaseTests
     {
-
         [Test]
         public void Ctor_WhenDefaultOptionsUsed_ShouldAddDefaultEventListeners()
         {
@@ -43,25 +42,6 @@ namespace Sillycore.EntityFramework.Tests
 
             //Verify
             sut.EventListeners.Should().HaveCount(0);
-        }
-
-        [Test]
-        public void Ctor_WhenDefaultEventListenersAdded_ShouldConfigureAuditLog()
-        {
-            //Arrange
-            var contextOptions = CreateInMemoryDatabaseOptions();
-
-            var sillycoreOptions = new SillycoreDataContextOptions()
-            {
-                SetUpdatedOnSameAsCreatedOnForNewObjects = true
-            };
-
-            //Act
-            DataContextBase sut = new StubDataContextBase(contextOptions, sillycoreOptions);
-
-            //Verify
-            var listener  = (AuditEventListener) sut.EventListeners.First(el => el.GetType().IsAssignableFrom(typeof(AuditEventListener)));
-            listener.SetUpdatedOnSameAsCreatedOnForNewObjects.Should().BeTrue();
         }
 
         [Test]

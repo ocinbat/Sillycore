@@ -16,6 +16,7 @@ namespace Sillycore.EntityFramework
     {
         private long _inMemorySequenceId;
         internal List<IEntityEventListener> EventListeners { get; }
+        protected internal bool SetUpdatedOnSameAsCreatedOnForNewObjects { get; set; }
 
         protected DataContextBase(DbContextOptions options, SillycoreDataContextOptions sillycoreDataContextOptions)
             : base(options)
@@ -23,7 +24,7 @@ namespace Sillycore.EntityFramework
             EventListeners = new List<IEntityEventListener>();
             if (sillycoreDataContextOptions.UseDefaultEventListeners)
             {
-                EventListeners.Add(new AuditEventListener(sillycoreDataContextOptions.SetUpdatedOnSameAsCreatedOnForNewObjects));
+                EventListeners.Add(new AuditEventListener());
                 EventListeners.Add(new SoftDeleteEventListener());
             }
         }

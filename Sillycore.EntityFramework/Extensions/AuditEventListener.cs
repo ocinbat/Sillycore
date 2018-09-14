@@ -10,13 +10,6 @@ namespace Sillycore.EntityFramework.Extensions
 {
     public class AuditEventListener : IEntityEventListener
     {
-        public bool SetUpdatedOnSameAsCreatedOnForNewObjects { get; }
-
-        public AuditEventListener(bool setUpdatedOnSameAsCreatedOnForNewObjects)
-        {
-            SetUpdatedOnSameAsCreatedOnForNewObjects = setUpdatedOnSameAsCreatedOnForNewObjects;
-        }
-
         protected virtual string GetCurrentUserName()
         {
             return Thread.CurrentPrincipal?.Identity?.Name;
@@ -40,7 +33,7 @@ namespace Sillycore.EntityFramework.Extensions
                         {
                             auditable.CreatedOn = SillycoreApp.Instance.DateTimeProvider.Now;
 
-                            if (SetUpdatedOnSameAsCreatedOnForNewObjects)
+                            if (dataContext.SetUpdatedOnSameAsCreatedOnForNewObjects)
                             {
                                 auditable.UpdatedOn = auditable.CreatedOn;
                             }
@@ -50,7 +43,7 @@ namespace Sillycore.EntityFramework.Extensions
                         {
                             auditable.CreatedBy = currentUser;
 
-                            if (SetUpdatedOnSameAsCreatedOnForNewObjects)
+                            if (dataContext.SetUpdatedOnSameAsCreatedOnForNewObjects)
                             {
                                 auditable.UpdatedBy = auditable.CreatedBy;
                             }
