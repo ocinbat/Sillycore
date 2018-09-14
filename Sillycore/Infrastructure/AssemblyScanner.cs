@@ -37,7 +37,7 @@ namespace Sillycore.Infrastructure
         {
             Assemblies.Add(assembly.FullName, assembly);
 
-            AssemblyName[] assemblyNames = assembly.GetReferencedAssemblies();
+            AssemblyName[] assemblyNames = assembly.GetReferencedAssemblies().Where(x => !x.FullName.StartsWith("Microsoft")).ToArray();
 
             if (assemblyNames.HasElements())
             {

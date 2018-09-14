@@ -1,26 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Sillycore.Domain.Abstractions;
 using Sillycore.EntityFramework.Attributes;
+using Sillycore.EntityFramework.Extensions;
 using Sillycore.EntityFramework.Mapping;
 
 namespace Sillycore.EntityFramework
 {
-    public abstract class DataContextBase : DbContext
+    public abstract class DataContextBase : DbContext, IEntityEventPublisher
     {
         private long _inMemorySequenceId;
+        internal List<IEntityEventListener> EventListeners { get; }
+        protected internal bool SetUpdatedOnSameAsCreatedOnForNewObjects { get; set; }
 
-        protected bool SetUpdatedOnSameAsCreatedOnForNewObjects { get; set; }
+        protected DataContextBase(DbContextOptions options, SillycoreDataContextOptions sillycoreDataContextOptions)
+            : base(options)
+        {
+            EventListeners = new List<IEntityEventListener>();
+            if (sillycoreDataContextOptions.UseDefaultEventListeners)
+            {
+                EventListeners.Add(new AuditEventListener());
+                EventListeners.Add(new SoftDeleteEventListener());
+            }
+        }
 
         protected DataContextBase(DbContextOptions options)
-            : base(options)
+            : this(options, new SillycoreDataContextOptions())
         {
         }
 
@@ -36,8 +46,7 @@ namespace Sillycore.EntityFramework
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
-            HandleSoftDeletableEntities();
-            HandleAuditableEntities();
+            NotifyBeforeSaveChangesEvent();
             return base.SaveChanges(acceptAllChangesOnSuccess);
         }
 
@@ -48,63 +57,15 @@ namespace Sillycore.EntityFramework
 
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
         {
-            HandleSoftDeletableEntities();
-            HandleAuditableEntities();
+            NotifyBeforeSaveChangesEvent();
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 
-        private void HandleSoftDeletableEntities()
+        private void NotifyBeforeSaveChangesEvent()
         {
-            IEnumerable<EntityEntry> entries = ChangeTracker.Entries().Where(x => x.Entity is ISoftDeletable && x.State == EntityState.Deleted);
-
-            foreach (var entry in entries)
+            foreach (var listener in EventListeners)
             {
-                entry.State = EntityState.Modified;
-                ISoftDeletable entity = (ISoftDeletable)entry.Entity;
-                entity.IsDeleted = true;
-            }
-        }
-
-        private void HandleAuditableEntities()
-        {
-            string currentUser = Thread.CurrentPrincipal?.Identity?.Name;
-
-            IEnumerable<EntityEntry> entities = ChangeTracker.Entries().Where(x => x.Entity is IAuditable && (x.State == EntityState.Added || x.State == EntityState.Modified));
-
-            foreach (EntityEntry entry in entities)
-            {
-                if (entry.Entity is IAuditable)
-                {
-                    IAuditable auditable = ((IAuditable)entry.Entity);
-
-                    if (entry.State == EntityState.Added)
-                    {
-                        if (auditable.CreatedOn == DateTime.MinValue)
-                        {
-                            auditable.CreatedOn = SillycoreApp.Instance.DateTimeProvider.Now;
-
-                            if (SetUpdatedOnSameAsCreatedOnForNewObjects)
-                            {
-                                auditable.UpdatedOn = auditable.CreatedOn;
-                            }
-                        }
-
-                        if (String.IsNullOrEmpty(auditable.CreatedBy))
-                        {
-                            auditable.CreatedBy = currentUser;
-
-                            if (SetUpdatedOnSameAsCreatedOnForNewObjects)
-                            {
-                                auditable.UpdatedBy = auditable.CreatedBy;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        auditable.UpdatedOn = SillycoreApp.Instance.DateTimeProvider.Now;
-                        auditable.UpdatedBy = currentUser;
-                    }
-                }
+                listener.NotifyBeforeSaveChanges(this);
             }
         }
 
@@ -125,9 +86,9 @@ namespace Sillycore.EntityFramework
                 }
 
                 var sequenceName = GetSequenceName<TEntity>();
-                
+
                 var sql = $"SELECT (NEXT VALUE FOR {sequenceName})";
-                
+
                 return GetSequenceId(sequenceName, sql);
             }
             finally
@@ -138,12 +99,12 @@ namespace Sillycore.EntityFramework
                 }
             }
         }
-        public virtual long GetNextIdRange<TEntity, TId>(int rangeSize)  where TEntity : IEntity<long>
+        public virtual long GetNextIdRange<TEntity, TId>(int rangeSize) where TEntity : IEntity<long>
         {
             if (this.Database.IsInMemory())
             {
                 return _inMemorySequenceId = rangeSize + _inMemorySequenceId;
-            } 
+            }
 
             bool shouldOpenConnection = this.Database.GetDbConnection().State == ConnectionState.Closed;
 
@@ -203,6 +164,21 @@ namespace Sillycore.EntityFramework
             return sequenceName;
         }
 
-      
+
+        public void SubscribeListener(IEntityEventListener listener)
+        {
+            if (!EventListeners.Contains(listener))
+            {
+                EventListeners.Add(listener);
+            }
+        }
+
+        public void UnsubscribeListener(IEntityEventListener listener)
+        {
+            if (EventListeners.Contains(listener))
+            {
+                EventListeners.Remove(listener);
+            }
+        }
     }
 }
