@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -17,9 +18,14 @@ namespace Sillycore.EntityFramework.Extensions
             _setUpdatedOnSameAsCreatedOnForNewObjects = setUpdatedOnSameAsCreatedOnForNewObjects;
         }
 
+        protected virtual string GetCurrentUserName()
+        {
+            return Thread.CurrentPrincipal?.Identity?.Name;
+        }
+
         public void NotifyBeforeSaveChanges(DataContextBase dataContext)
         {
-            string currentUser = Thread.CurrentPrincipal?.Identity?.Name;
+            string currentUser = GetCurrentUserName();
 
             IEnumerable<EntityEntry> entities = dataContext.ChangeTracker.Entries().Where(x => x.Entity is IAuditable && (x.State == EntityState.Added || x.State == EntityState.Modified));
 
