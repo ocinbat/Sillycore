@@ -66,10 +66,16 @@ namespace Sillycore.Web
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseForwardedHeaders(new ForwardedHeadersOptions()
+            var forwardOptions = new ForwardedHeadersOptions
             {
-                ForwardedHeaders = ForwardedHeaders.All
-            });
+                ForwardedHeaders = ForwardedHeaders.All,
+                RequireHeaderSymmetry = false
+            };
+
+            forwardOptions.KnownNetworks.Clear();
+            forwardOptions.KnownProxies.Clear();
+
+            app.UseForwardedHeaders(forwardOptions);
 
             List<IApplicationConfigurator> configurators = new List<IApplicationConfigurator>();
 
