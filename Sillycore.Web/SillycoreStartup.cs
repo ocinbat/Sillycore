@@ -4,9 +4,14 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Anetta.Extensions;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Newtonsoft.Json;
 using Sillycore.Infrastructure;
 using Sillycore.Web.Abstractions;
+using Sillycore.Web.Filters;
 
 namespace Sillycore.Web
 {
@@ -21,6 +26,38 @@ namespace Sillycore.Web
                 services.Add(descriptor);
             }
 
+            services.AddMvc()
+                .AddApplicationPart(Assembly.GetEntryAssembly())
+                .AddApplicationPart(GetType().Assembly)
+                .AddMvcOptions(o =>
+                {
+                    o.InputFormatters.RemoveType<XmlDataContractSerializerInputFormatter>();
+                    o.InputFormatters.RemoveType<XmlSerializerInputFormatter>();
+
+                    o.OutputFormatters.RemoveType<HttpNoContentOutputFormatter>();
+                    o.OutputFormatters.RemoveType<StreamOutputFormatter>();
+                    o.OutputFormatters.RemoveType<StringOutputFormatter>();
+                    o.OutputFormatters.RemoveType<XmlDataContractSerializerOutputFormatter>();
+                    o.OutputFormatters.RemoveType<XmlSerializerOutputFormatter>();
+
+                    o.Filters.Add<GlobalExceptionFilter>();
+                })
+                .AddJsonOptions(o =>
+                {
+                    o.SerializerSettings.ContractResolver = SillycoreApp.JsonSerializerSettings.ContractResolver;
+                    o.SerializerSettings.Formatting = SillycoreApp.JsonSerializerSettings.Formatting;
+                    o.SerializerSettings.NullValueHandling = SillycoreApp.JsonSerializerSettings.NullValueHandling;
+                    o.SerializerSettings.DefaultValueHandling = SillycoreApp.JsonSerializerSettings.DefaultValueHandling;
+                    o.SerializerSettings.ReferenceLoopHandling = SillycoreApp.JsonSerializerSettings.ReferenceLoopHandling;
+                    o.SerializerSettings.DateTimeZoneHandling = SillycoreApp.JsonSerializerSettings.DateTimeZoneHandling;
+                    o.SerializerSettings.Converters.Clear();
+
+                    foreach (JsonConverter converter in SillycoreApp.JsonSerializerSettings.Converters)
+                    {
+                        o.SerializerSettings.Converters.Add(converter);
+                    }
+                });
+
             SillycoreAppBuilder.Instance.Services = services;
             ServiceProvider = services.BuildAnettaServiceProvider();
             SillycoreAppBuilder.Instance.DataStore.Set(Sillycore.Constants.ServiceProvider, ServiceProvider);
@@ -29,6 +66,8 @@ namespace Sillycore.Web
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseForwardedHeaders();
+
             List<IApplicationConfigurator> configurators = new List<IApplicationConfigurator>();
 
             foreach (Type type in AssemblyScanner.GetAllTypesOfInterface<IApplicationConfigurator>())
@@ -41,6 +80,22 @@ namespace Sillycore.Web
             {
                 configurator.Configure(app, env, SillycoreAppBuilder.Instance.Configuration, app.ApplicationServices);
             }
+
+            app.UseMvc(r =>
+            {
+                if (SillycoreAppBuilder.Instance.DataStore.Get<bool>(Constants.RedirectRootToSwagger))
+                {
+                    r.MapRoute(name: "Default",
+                        template: "",
+                        defaults: new { controller = "Help", action = "Index" });
+                }
+                else
+                {
+                    r.MapRoute(name: "Default",
+                        template: "",
+                        defaults: new { controller = "Home", action = "Index" });
+                }
+            });
         }
     }
 }
