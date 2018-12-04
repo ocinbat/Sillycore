@@ -9,6 +9,7 @@ namespace Sillycore.Logging
     {
         private readonly ILogger _logger;
         private string _message;
+        private int _thresholdInMs = 0;
         private bool _logExecutionTime = false;
         private readonly bool _logExecutionTimeGlobal = SillycoreApp.Instance?.Configuration["LogExecutionTime"].ToBool() ?? false;
 
@@ -26,6 +27,12 @@ namespace Sillycore.Logging
             return this;
         }
 
+        public LogContext WithThresholdInMs(int thresholdIsMs)
+        {
+            _thresholdInMs = thresholdIsMs;
+            return this;
+        }
+
         public LogContext WithExecutionTime()
         {
             _logExecutionTime = true;
@@ -38,7 +45,11 @@ namespace Sillycore.Logging
             {
                 _sw.Stop();
                 long elapsedMs = _sw.ElapsedMilliseconds;
-                _logger.LogInformation($"{_message} took {elapsedMs} miliseconds");
+
+                if (_thresholdInMs < 1 || elapsedMs > _thresholdInMs)
+                {
+                    _logger.LogInformation($"{_message} took {elapsedMs} miliseconds");
+                }
             }
             else
             {
