@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using App.Metrics.AspNetCore;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +14,7 @@ namespace Sillycore.Web
     public class SillycoreWebhostBuilder
     {
         private readonly string[] _args;
-        private readonly string _applicationName;
+        public readonly string ApplicationName;
         public readonly SillycoreAppBuilder SillycoreAppBuilder;
 
         private bool _withIisIntegration = false;
@@ -22,11 +23,11 @@ namespace Sillycore.Web
         {
             TelemetryConfiguration.Active.DisableTelemetry = true;
             SillycoreAppBuilder = sillycoreAppBuilder;
-            _applicationName = applicationName;
+            ApplicationName = applicationName;
             _args = args;
             IWebHostBuilder webhostBuilder = CreateDefaultBuilder(_args);
 
-            SillycoreAppBuilder.DataStore.Set(Constants.ApplicationName, _applicationName);
+            SillycoreAppBuilder.DataStore.Set(Constants.ApplicationName, ApplicationName);
             SillycoreAppBuilder.DataStore.Set(Constants.WebHostBuilder, webhostBuilder);
             SillycoreAppBuilder.DataStore.Set(Constants.IsShuttingDown, false);
             SillycoreAppBuilder.DataStore.Set(Constants.UseSwagger, false);
@@ -76,12 +77,12 @@ namespace Sillycore.Web
                 IWebHostBuilder webhostBuilder = SillycoreAppBuilder.DataStore.Get<IWebHostBuilder>(Constants.WebHostBuilder)
                     .UseStartup(typeof(SillycoreStartup));
 
-                webHost = webhostBuilder.Build();
+                webHost = webhostBuilder.UseMetrics().Build();
             });
 
             SillycoreApp app = SillycoreAppBuilder.Build();
             ILogger<SillycoreWebhostBuilder> logger = app.ServiceProvider.GetService<ILoggerFactory>().CreateLogger<SillycoreWebhostBuilder>();
-            logger.LogInformation($"{_applicationName} started.");
+            logger.LogInformation($"{ApplicationName} started.");
 
             webHost.Run();
         }

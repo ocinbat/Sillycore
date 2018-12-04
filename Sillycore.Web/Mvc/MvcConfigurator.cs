@@ -17,6 +17,7 @@ namespace Sillycore.Web.Mvc
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
+            app.UseMetricsAllMiddleware();
             app.UseMvc(r =>
             {
                 if (SillycoreAppBuilder.Instance.DataStore.Get<bool>(Constants.RedirectRootToSwagger))

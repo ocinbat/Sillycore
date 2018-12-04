@@ -36,7 +36,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sillycore.Daemon", "Sillyco
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sillycore.EntityFramework.Tests", "Sillycore.EntityFramework.Tests\Sillycore.EntityFramework.Tests.csproj", "{BA98D558-CD0D-40CB-A0B9-ED49EB680379}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sillycore.AppMetrics", "Sillycore.AppMetrics\Sillycore.AppMetrics.csproj", "{775A1B4D-DA59-4434-924C-4C25206A27CB}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D58D20FE-F120-40C7-A87C-E9CCEE4F93CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -88,10 +88,6 @@ Global
 		{BA98D558-CD0D-40CB-A0B9-ED49EB680379}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA98D558-CD0D-40CB-A0B9-ED49EB680379}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA98D558-CD0D-40CB-A0B9-ED49EB680379}.Release|Any CPU.Build.0 = Release|Any CPU
-		{775A1B4D-DA59-4434-924C-4C25206A27CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{775A1B4D-DA59-4434-924C-4C25206A27CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{775A1B4D-DA59-4434-924C-4C25206A27CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{775A1B4D-DA59-4434-924C-4C25206A27CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -99,6 +95,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{71E12D22-CF71-4326-B2B5-6C7DCC0EDDBA} = {583056BC-14D3-4671-8A53-E46F4AB6B8F9}
 		{5483ED34-AF6C-4250-B496-46E3F1E97C53} = {583056BC-14D3-4671-8A53-E46F4AB6B8F9}
+		{75CD79F8-DF6D-4F66-BD68-1F490DB03CB3} = {D58D20FE-F120-40C7-A87C-E9CCEE4F93CE}
+		{BA98D558-CD0D-40CB-A0B9-ED49EB680379} = {D58D20FE-F120-40C7-A87C-E9CCEE4F93CE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E6C78FCE-F5DA-45B5-B9D3-F5F8A855B296}

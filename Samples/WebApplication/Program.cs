@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using App.Metrics.Scheduling;
-using Microsoft.ApplicationInsights.Extensibility;
 using Newtonsoft.Json;
 using Sillycore;
 using Sillycore.NLog;
@@ -26,10 +25,9 @@ namespace WebApplication
             SillycoreAppBuilder.Instance
                 .UseUtcTimes()
                 .UseNLog()
-                .UseWebApi("WebApplication")
+                .UseWebApi("SillySampleApi")
                     .WithSwagger()
                     .Build();
-            
         }
 
         public static readonly Uri ApiBaseAddress = new Uri("http://localhost:5000/");
