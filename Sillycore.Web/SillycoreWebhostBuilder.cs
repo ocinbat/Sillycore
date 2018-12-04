@@ -77,7 +77,8 @@ namespace Sillycore.Web
                 IWebHostBuilder webhostBuilder = SillycoreAppBuilder.DataStore.Get<IWebHostBuilder>(Constants.WebHostBuilder)
                     .UseStartup(typeof(SillycoreStartup));
 
-                webHost = webhostBuilder.UseMetrics().Build();
+                webHost = webhostBuilder
+                    .Build();
             });
 
             SillycoreApp app = SillycoreAppBuilder.Build();

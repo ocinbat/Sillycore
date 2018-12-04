@@ -6,17 +6,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Anetta.Extensions;
+using App.Metrics;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Sillycore.Infrastructure;
 using Sillycore.Web.Abstractions;
 using Sillycore.Web.Filters;
+using Sillycore.Web.Configuration;
 
 namespace Sillycore.Web
 {
     public class SillycoreStartup
     {
+        public IConfiguration Configuration { get; }
+
+        public SillycoreStartup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
         public IServiceProvider ServiceProvider { get; set; }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -26,7 +37,34 @@ namespace Sillycore.Web
                 services.Add(descriptor);
             }
 
+            MetricsElasticSearchOptions metricsElasticSearchOptions = new MetricsElasticSearchOptions();
+            Configuration.Bind("MetricsElasticSearchOptions", metricsElasticSearchOptions);
+
+            IMetricsBuilder metricsBuilder = AppMetrics.CreateDefaultBuilder();
+
+            metricsBuilder.Configuration.Configure(o =>
+            {
+                o.Enabled = true;
+                o.ReportingEnabled = true;
+                o.AddAppTag(SillycoreAppBuilder.Instance.DataStore.Get<string>(Constants.ApplicationName));
+            });
+
+            if (metricsElasticSearchOptions.Enabled)
+            {
+                metricsBuilder.Report.ToElasticsearch(o =>
+                {
+                    o.Elasticsearch.BaseUri = new Uri(metricsElasticSearchOptions.BaseUri);
+                    o.Elasticsearch.Index = metricsElasticSearchOptions.Index;
+                    o.FlushInterval = TimeSpan.FromSeconds(metricsElasticSearchOptions.FlushIntervalInSeconds);
+                });
+            }
+
+            services.AddMetrics(metricsBuilder);
+            services.AddMetricsTrackingMiddleware();
+            services.AddMetricsReportScheduler();
+
             services.AddMvc()
+                .AddMetrics()
                 .AddApplicationPart(Assembly.GetEntryAssembly())
                 .AddApplicationPart(GetType().Assembly)
                 .AddMvcOptions(o =>
@@ -90,6 +128,7 @@ namespace Sillycore.Web
                 configurator.Configure(app, env, SillycoreAppBuilder.Instance.Configuration, app.ApplicationServices);
             }
 
+            app.UseMetricsAllMiddleware();
             app.UseMvc(r =>
             {
                 if (SillycoreAppBuilder.Instance.DataStore.Get<bool>(Constants.RedirectRootToSwagger))
