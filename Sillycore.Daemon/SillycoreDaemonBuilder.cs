@@ -24,7 +24,8 @@ namespace Sillycore.Daemon
                 .WhenStart(OnStart)
                 .WhenStopping(OnStop)
                 .UseWebApi(_serviceName)
-                .Build();
+                    .WithSwagger()
+                    .Build();
         }
 
         private static void OnStart()
