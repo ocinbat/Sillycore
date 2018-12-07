@@ -4,8 +4,6 @@ build_script:
     dotnet build Sillycore/Sillycore.csproj
 
     dotnet build Sillycore.Web/Sillycore.Web.csproj
-    
-    dotnet build Sillycore.AppMetrics/Sillycore.AppMetrics.csproj
 
     dotnet build Sillycore.NLog/Sillycore.NLog.csproj
 
@@ -22,8 +20,6 @@ after_test:
 
     dotnet pack Sillycore.Web/Sillycore.Web.csproj -c Release --include-symbols
 
-    dotnet pack Sillycore.AppMetrics/Sillycore.AppMetrics.csproj -c Release --include-symbols
-
     dotnet pack Sillycore.NLog/Sillycore.NLog.csproj -c Release --include-symbols
 
     dotnet pack Sillycore.EntityFramework/Sillycore.EntityFramework.csproj -c Release --include-symbols
@@ -38,8 +34,6 @@ artifacts:
   name: Sillycore
 - path: Sillycore.Web/bin/Release/*.nupkg
   name: Sillycore.Web
-- path: Sillycore.AppMetrics/bin/Release/*.nupkg
-  name: Sillycore.AppMetrics
 - path: Sillycore.NLog/bin/Release/*.nupkg
   name: Sillycore.NLog
 - path: Sillycore.EntityFramework/bin/Release/*.nupkg
