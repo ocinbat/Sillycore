@@ -33,7 +33,7 @@ namespace Sillycore.RabbitMq
             {
                 ConsumerAttribute consumerAttribute = typeInfo.GetCustomAttribute<ConsumerAttribute>();
 
-                if (consumerAttribute != null && (String.IsNullOrWhiteSpace(consumerAttribute.RabbitMq) || consumerAttribute.RabbitMq.Equals(configKey)))
+                if (consumerAttribute != null && consumerAttribute.RabbitMq.Equals(configKey))
                 {
                     ConsumerConfiguration consumerConfiguration = CreateConsumerConfigurationForType(typeInfo.AsType(), consumerAttribute);
                     consumerConfigurations.Add(consumerConfiguration);

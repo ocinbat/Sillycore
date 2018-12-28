@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
 	  <PackageId>Sillycore.RabbitMq</PackageId>
-    <PackageVersion>5.2.0</PackageVersion>
+    <PackageVersion>5.2.1</PackageVersion>
     <Authors>Ömer Cinbat, Burak Çelenk</Authors>
     <Description>A bunch of helpers to minimize configuration process of MassTransit on top of RabbitMq.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
