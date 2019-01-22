@@ -19,7 +19,9 @@ namespace Sillycore.Web.ApplicationLifetime
             {
                 if (SillycoreApp.Instance.DataStore.Get<bool>(Sillycore.Constants.UseShutDownDelay))
                 {
-                    if (SillycoreAppBuilder.Instance.Configuration["ASPNETCORE_ENVIRONMENT"].ToLowerInvariant() != "development")
+                    string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+                    if (!String.IsNullOrWhiteSpace(environment) && environment.ToLowerInvariant() != "development")
                     {
                         SillycoreApp.Instance.DataStore.Set(Constants.IsShuttingDown, true);
                         Thread.Sleep(30000);

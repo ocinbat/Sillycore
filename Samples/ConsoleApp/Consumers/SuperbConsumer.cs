@@ -7,7 +7,7 @@ using Sillycore.RabbitMq.Attributes;
 
 namespace ConsoleApp.Consumers
 {
-    [Consumer(QueueName = "superb_command_queue")]
+    [Consumer(QueueName = "sillycore.superb_command_queue")]
     public class SuperbConsumer : IConsumer<SomeCommand>
     {
         public async Task Consume(ConsumeContext<SomeCommand> context)

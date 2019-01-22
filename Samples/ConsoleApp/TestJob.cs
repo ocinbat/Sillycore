@@ -38,7 +38,7 @@ namespace ConsoleApp
             await _busControl.Send(new SomeCommand()
             {
                 Data = data
-            }, "superb_command_queue");
+            }, "sillycore.superb_command_queue");
         }
     }
 }
