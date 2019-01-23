@@ -58,6 +58,7 @@ namespace WebApplication.Controllers
 
         [HttpPost("")]
         [ProducesResponseType(typeof(Sample), (int)HttpStatusCode.Created)]
+        [ValidateModelState]
         public IActionResult CreateSample([FromBody]Sample request)
         {
             return Created(request);

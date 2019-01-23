@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Anetta.Extensions;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
@@ -34,8 +35,17 @@ namespace Sillycore.Web
                 services.Add(descriptor);
             }
 
+            Assembly entryAssembly = Assembly.GetEntryAssembly();
+
             services.AddMvc()
-                .AddApplicationPart(Assembly.GetEntryAssembly())
+                .AddFluentValidation(fv =>
+                {
+                    fv.RegisterValidatorsFromAssembly(entryAssembly);
+                    fv.ImplicitlyValidateChildProperties = true;
+                    fv.RunDefaultMvcValidationAfterFluentValidationExecutes = true;
+                    fv.LocalizationEnabled = true;
+                })
+                .AddApplicationPart(entryAssembly)
                 .AddApplicationPart(GetType().Assembly)
                 .AddMvcOptions(o =>
                 {
@@ -104,13 +114,13 @@ namespace Sillycore.Web
                 {
                     r.MapRoute(name: "Default",
                         template: "",
-                        defaults: new { controller = "Help", action = "Index" });
+                        defaults: new {controller = "Help", action = "Index"});
                 }
                 else
                 {
                     r.MapRoute(name: "Default",
                         template: "",
-                        defaults: new { controller = "Home", action = "Index" });
+                        defaults: new {controller = "Home", action = "Index"});
                 }
             });
         }
