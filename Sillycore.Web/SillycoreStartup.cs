@@ -37,7 +37,10 @@ namespace Sillycore.Web
 
             Assembly entryAssembly = Assembly.GetEntryAssembly();
 
-            services.AddMvc()
+            services.AddMvc(o =>
+                {
+                    o.AllowEmptyInputInBodyModelBinding = true;
+                })
                 .AddFluentValidation(fv =>
                 {
                     fv.RegisterValidatorsFromAssembly(entryAssembly);
