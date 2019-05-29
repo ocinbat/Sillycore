@@ -21,10 +21,12 @@
   <ItemGroup>
     <PackageReference Include="Anetta" Version="0.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.1" />
+    <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="7.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Sillycore.NLog\Sillycore.NLog.csproj" />
+    <ProjectReference Include="..\..\Sillycore.Serilog\Sillycore.Serilog.csproj" />
     <ProjectReference Include="..\..\Sillycore.Web\Sillycore.Web.csproj" />
     <ProjectReference Include="..\..\Sillycore\Sillycore.csproj" />
   </ItemGroup>

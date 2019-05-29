@@ -1,5 +1,6 @@
 ﻿using Sillycore;
 using Sillycore.NLog;
+using Sillycore.Serilog;
 using Sillycore.Web;
 
 namespace WebApplication
@@ -16,7 +17,7 @@ namespace WebApplication
             
             SillycoreAppBuilder.Instance
                 .UseUtcTimes()
-                .UseNLog()
+                .UseSerilog()
                 .UseWebApi("SillySampleApi")
                     .WithSwagger()
                     .Build();

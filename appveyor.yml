@@ -8,6 +8,8 @@ build_script:
 
     dotnet build Sillycore.NLog/Sillycore.NLog.csproj
 
+    dotnet build Sillycore.Serilog/Sillycore.Serilog.csproj
+
     dotnet build Sillycore.EntityFramework/Sillycore.EntityFramework.csproj
 
     dotnet build Sillycore.RabbitMq/Sillycore.RabbitMq.csproj
@@ -23,6 +25,8 @@ after_test:
 
     dotnet pack Sillycore.NLog/Sillycore.NLog.csproj -c Release --include-symbols
 
+    dotnet pack Sillycore.Serilog/Sillycore.Serilog.csproj -c Release --include-symbols
+
     dotnet pack Sillycore.EntityFramework/Sillycore.EntityFramework.csproj -c Release --include-symbols
 
     dotnet pack Sillycore.RabbitMq/Sillycore.RabbitMq.csproj -c Release --include-symbols
@@ -37,6 +41,8 @@ artifacts:
   name: Sillycore.Web
 - path: Sillycore.NLog/bin/Release/*.nupkg
   name: Sillycore.NLog
+- path: Sillycore.Serilog/bin/Release/*.nupkg
+  name: Sillycore.Serilog
 - path: Sillycore.EntityFramework/bin/Release/*.nupkg
   name: Sillycore.EntityFramework
 - path: Sillycore.RabbitMq/bin/Release/*.nupkg

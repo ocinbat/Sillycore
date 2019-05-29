@@ -4,6 +4,7 @@ using Sillycore.Daemon;
 using Sillycore.EntityFramework;
 using Sillycore.NLog;
 using Sillycore.RabbitMq;
+using Sillycore.Serilog;
 
 namespace ConsoleApp
 {
@@ -13,7 +14,7 @@ namespace ConsoleApp
         {
             SillycoreAppBuilder.Instance
                 .UseUtcTimes()
-                .UseNLog()
+                .UseSerilog()
                 .UseDataContext<DataContext>("DataContext")
                 .UseRabbitMq()
                 .UseDaemon<Service>("ConsoleApp")
