@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Sillycore.Domain.Responses;
@@ -19,22 +21,32 @@ namespace Sillycore.Web.Filters
 
         public override void OnException(ExceptionContext context)
         {
-            _logger.LogError(context.Exception, context.Exception?.Message);
+            ControllerActionDescriptor actionDescriptor = context.ActionDescriptor as ControllerActionDescriptor;
 
-            ErrorResponse errorResponse = new ErrorResponse();
-            errorResponse.AdditionalInfo = context.Exception?.Message;
-            errorResponse.ErrorCode = "InternalServerError";
-            errorResponse.AddErrorMessage("There was a problem while processing your request.");
-
-            if (EnvironmentName?.ToLowerInvariant() != "production")
+            if (actionDescriptor != null)
             {
-                errorResponse.Exception = context.Exception?.ToString();
+                var attribute = actionDescriptor.ControllerTypeInfo.GetCustomAttribute(typeof(ApiControllerAttribute));
+
+                if (attribute != null)
+                {
+                    _logger.LogError(context.Exception, context.Exception?.Message);
+
+                    ErrorResponse errorResponse = new ErrorResponse();
+                    errorResponse.AdditionalInfo = context.Exception?.Message;
+                    errorResponse.ErrorCode = "InternalServerError";
+                    errorResponse.AddErrorMessage("There was a problem while processing your request.");
+
+                    if (EnvironmentName?.ToLowerInvariant() != "production")
+                    {
+                        errorResponse.Exception = context.Exception?.ToString();
+                    }
+
+                    var objectResult = new ObjectResult(errorResponse);
+                    objectResult.StatusCode = 500;
+
+                    context.Result = objectResult;
+                }
             }
-
-            var objectResult = new ObjectResult(errorResponse);
-            objectResult.StatusCode = 500;
-
-            context.Result = objectResult;
         }
     }
 }

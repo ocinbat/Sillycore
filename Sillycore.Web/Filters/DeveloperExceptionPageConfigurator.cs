@@ -15,6 +15,10 @@ namespace Sillycore.Web.Filters
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+            }
         }
     }
 }

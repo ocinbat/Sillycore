@@ -19,6 +19,7 @@ using WebApplication.Requests;
 
 namespace WebApplication.Controllers
 {
+    [ApiController]
     [Route("samples")]
     public class SamplesController : SillyController
     {
@@ -42,7 +43,6 @@ namespace WebApplication.Controllers
         [HttpGet("")]
         [ProducesResponseType(typeof(List<Sample>), (int)HttpStatusCode.OK)]
         [TransformException(typeof(NotImplementedException), HttpStatusCode.InternalServerError, "Patladık.", "TestErrorCode")]
-        [RetryOnException(ExceptionType = typeof(Exception))]
         public IActionResult QuerySamples([FromQuery]QuerySamplesRequest request)
         {
             _logger.LogInformation($"asddasda");
