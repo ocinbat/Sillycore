@@ -8,11 +8,9 @@ using Sillycore.Web.Controllers;
 
 namespace WebApplication.Controllers
 {
-    [Route("Home")]
     public class HomeController : SillyController
     {
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        [HttpGet("Error")]
         public IActionResult Error()
         {
             return Ok();

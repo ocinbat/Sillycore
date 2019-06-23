@@ -115,15 +115,15 @@ namespace Sillycore.Web
             {
                 if (SillycoreAppBuilder.Instance.DataStore.Get<bool>(Constants.RedirectRootToSwagger))
                 {
-                    r.MapRoute(name: "Default",
-                        template: "",
-                        defaults: new {controller = "Help", action = "Index"});
+                    r.MapRoute(
+                        name: "Default",
+                        template: "{controller=Help}/{action=Index}/{id?}");
                 }
                 else
                 {
-                    r.MapRoute(name: "Default",
-                        template: "",
-                        defaults: new {controller = "Home", action = "Index"});
+                    r.MapRoute(
+                        name: "Default",
+                        template: "{controller=Home}/{action=Index}/{id?}");
                 }
             });
         }
