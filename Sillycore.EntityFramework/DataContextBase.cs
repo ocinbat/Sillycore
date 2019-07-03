@@ -87,7 +87,7 @@ namespace Sillycore.EntityFramework
                         {
                             if (auditable.CreatedOn == DateTime.MinValue)
                             {
-                                auditable.CreatedOn = SillycoreApp.Instance.DateTimeProvider.Now;
+                                auditable.CreatedOn = SillycoreApp.Instance?.DateTimeProvider?.Now ?? DateTime.UtcNow;
 
                                 if (SetUpdatedOnSameAsCreatedOnForNewObjects)
                                 {
@@ -107,7 +107,7 @@ namespace Sillycore.EntityFramework
                         }
                         else
                         {
-                            auditable.UpdatedOn = SillycoreApp.Instance.DateTimeProvider.Now;
+                            auditable.UpdatedOn = SillycoreApp.Instance?.DateTimeProvider?.Now ?? DateTime.UtcNow;
                             auditable.UpdatedBy = currentUser;
                         }
                     }
