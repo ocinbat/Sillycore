@@ -44,5 +44,10 @@ namespace Sillycore.Domain.Responses
     public class BaseResponse<T> : BaseResponse
     {
         public T Data { get; set; }
+
+        public BaseResponse(T data)
+        {
+            Data = data;
+        }
     }
 }

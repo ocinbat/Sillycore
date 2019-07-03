@@ -8,6 +8,7 @@ using System.Reflection;
 using Anetta.Extensions;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -34,6 +35,12 @@ namespace Sillycore.Web
             {
                 services.Add(descriptor);
             }
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                // TODO Disable this and implement InvalidModelStateResponseFactory
+                options.SuppressModelStateInvalidFilter = true;
+            });
 
             Assembly entryAssembly = Assembly.GetEntryAssembly();
 
