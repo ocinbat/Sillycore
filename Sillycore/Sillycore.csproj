@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <PackageId>Sillycore</PackageId>
-    <PackageVersion>6.0.0</PackageVersion>
+    <PackageVersion>6.1.0</PackageVersion>
     <Authors>Ömer Cinbat,Mustafa Özdemir</Authors>
     <Description>A helper library to provide rapid development flexibility to .net developers.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>

@@ -40,4 +40,9 @@ namespace Sillycore.Domain.Responses
             Messages.Add(new MessageDto(content, type));
         }
     }
+
+    public class BaseResponse<T> : BaseResponse
+    {
+        public T Data { get; set; }
+    }
 }
