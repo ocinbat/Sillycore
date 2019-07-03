@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Sillycore.Domain.Abstractions;
 using Sillycore.EntityFramework.Attributes;
 using Sillycore.EntityFramework.Mapping;
+using Sillycore.Extensions;
 
 namespace Sillycore.EntityFramework
 {
@@ -55,13 +56,16 @@ namespace Sillycore.EntityFramework
 
         private void HandleSoftDeletableEntities()
         {
-            IEnumerable<EntityEntry> entries = ChangeTracker.Entries().Where(x => x.Entity is ISoftDeletable && x.State == EntityState.Deleted);
+            IEnumerable<EntityEntry> entries = ChangeTracker?.Entries()?.Where(x => x.Entity is ISoftDeletable && x.State == EntityState.Deleted);
 
-            foreach (var entry in entries)
+            if (entries.HasElements())
             {
-                entry.State = EntityState.Modified;
-                ISoftDeletable entity = (ISoftDeletable)entry.Entity;
-                entity.IsDeleted = true;
+                foreach (var entry in entries)
+                {
+                    entry.State = EntityState.Modified;
+                    ISoftDeletable entity = (ISoftDeletable)entry.Entity;
+                    entity.IsDeleted = true;
+                }
             }
         }
 
@@ -69,40 +73,43 @@ namespace Sillycore.EntityFramework
         {
             string currentUser = Thread.CurrentPrincipal?.Identity?.Name;
 
-            IEnumerable<EntityEntry> entities = ChangeTracker.Entries().Where(x => x.Entity is IAuditable && (x.State == EntityState.Added || x.State == EntityState.Modified));
+            IEnumerable<EntityEntry> entities = ChangeTracker?.Entries()?.Where(x => x.Entity is IAuditable && (x.State == EntityState.Added || x.State == EntityState.Modified));
 
-            foreach (EntityEntry entry in entities)
+            if (entities.HasElements())
             {
-                if (entry.Entity is IAuditable)
+                foreach (EntityEntry entry in entities)
                 {
-                    IAuditable auditable = ((IAuditable)entry.Entity);
-
-                    if (entry.State == EntityState.Added)
+                    if (entry.Entity is IAuditable)
                     {
-                        if (auditable.CreatedOn == DateTime.MinValue)
-                        {
-                            auditable.CreatedOn = SillycoreApp.Instance.DateTimeProvider.Now;
+                        IAuditable auditable = ((IAuditable)entry.Entity);
 
-                            if (SetUpdatedOnSameAsCreatedOnForNewObjects)
+                        if (entry.State == EntityState.Added)
+                        {
+                            if (auditable.CreatedOn == DateTime.MinValue)
                             {
-                                auditable.UpdatedOn = auditable.CreatedOn;
+                                auditable.CreatedOn = SillycoreApp.Instance.DateTimeProvider.Now;
+
+                                if (SetUpdatedOnSameAsCreatedOnForNewObjects)
+                                {
+                                    auditable.UpdatedOn = auditable.CreatedOn;
+                                }
+                            }
+
+                            if (String.IsNullOrEmpty(auditable.CreatedBy))
+                            {
+                                auditable.CreatedBy = currentUser;
+
+                                if (SetUpdatedOnSameAsCreatedOnForNewObjects)
+                                {
+                                    auditable.UpdatedBy = auditable.CreatedBy;
+                                }
                             }
                         }
-
-                        if (String.IsNullOrEmpty(auditable.CreatedBy))
+                        else
                         {
-                            auditable.CreatedBy = currentUser;
-
-                            if (SetUpdatedOnSameAsCreatedOnForNewObjects)
-                            {
-                                auditable.UpdatedBy = auditable.CreatedBy;
-                            }
+                            auditable.UpdatedOn = SillycoreApp.Instance.DateTimeProvider.Now;
+                            auditable.UpdatedBy = currentUser;
                         }
-                    }
-                    else
-                    {
-                        auditable.UpdatedOn = SillycoreApp.Instance.DateTimeProvider.Now;
-                        auditable.UpdatedBy = currentUser;
                     }
                 }
             }

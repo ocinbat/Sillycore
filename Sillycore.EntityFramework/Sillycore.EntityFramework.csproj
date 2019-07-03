@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
 	<PackageId>Sillycore.EntityFramework</PackageId>
-    <PackageVersion>6.0.0</PackageVersion>
+    <PackageVersion>6.0.1</PackageVersion>
     <Authors>Metehan Şenol, Ömer Cinbat, Kutlu Araslı</Authors>
     <Description></Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
