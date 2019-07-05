@@ -21,7 +21,7 @@ namespace Sillycore
             DefaultValueHandling = DefaultValueHandling.Ignore,
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-            Converters = new List<JsonConverter> {new StringEnumConverter {CamelCaseText = true}}
+            Converters = new List<JsonConverter> { new StringEnumConverter { CamelCaseText = true } }
         };
 
         public static SillycoreApp Instance { get; set; }

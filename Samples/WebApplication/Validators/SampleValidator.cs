@@ -11,6 +11,7 @@ namespace WebApplication.Validators
     {
         public SampleValidator(IService service)
         {
+            RuleFor(r => r).NotNull();
             RuleFor(x => x.Id).NotNull();
             RuleFor(x => x.Name).Length(1, 10);
         }
