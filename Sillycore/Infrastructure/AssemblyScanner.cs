@@ -43,11 +43,19 @@ namespace Sillycore.Infrastructure
             {
                 foreach (AssemblyName assemblyName in assemblyNames)
                 {
-                    Assembly referencedAssembly = Assembly.Load(assemblyName);
-
-                    if (!Assemblies.ContainsKey(referencedAssembly.FullName))
+                    try
                     {
-                        LoadAssembly(referencedAssembly);
+                        Assembly referencedAssembly = Assembly.Load(assemblyName);
+
+                        if (!Assemblies.ContainsKey(referencedAssembly.FullName))
+                        {
+                            LoadAssembly(referencedAssembly);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
+                        Console.WriteLine($"There was a problem while loading {assemblyName}");
                     }
                 }
             }
