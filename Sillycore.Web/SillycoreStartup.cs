@@ -44,6 +44,8 @@ namespace Sillycore.Web
 
             Assembly entryAssembly = Assembly.GetEntryAssembly();
 
+            services.AddAnnotations();
+
             services.AddMvc()
                 .AddFluentValidation(fv =>
                 {
@@ -84,7 +86,7 @@ namespace Sillycore.Web
                 });
 
             SillycoreAppBuilder.Instance.Services = services;
-            ServiceProvider = services.BuildAnettaServiceProvider();
+            ServiceProvider = services.BuildServiceProvider();
             SillycoreAppBuilder.Instance.DataStore.Set(Sillycore.Constants.ServiceProvider, ServiceProvider);
             return ServiceProvider;
         }

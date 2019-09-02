@@ -148,7 +148,8 @@ namespace Sillycore
         {
             if (DataStore.Get(Constants.ServiceProvider) == null)
             {
-                IServiceProvider serviceProvider = Services.BuildAnettaServiceProvider();
+                Services.AddAnnotations();
+                IServiceProvider serviceProvider = Services.BuildServiceProvider();
                 DataStore.Set(Constants.ServiceProvider, serviceProvider);
             }
         }

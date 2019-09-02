@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <PackageId>Sillycore.Daemon</PackageId>
-    <PackageVersion>6.0.0</PackageVersion>
+    <PackageVersion>6.1.0</PackageVersion>
     <Authors>Ömer Cinbat</Authors>
     <Description>A worker with on start and on stop actions for windows/linux and macOs.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
