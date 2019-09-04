@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Sillycore.Abstractions;
+using Anetta.ServiceConfiguration;
 
 namespace Sillycore.Web.Cors
 {

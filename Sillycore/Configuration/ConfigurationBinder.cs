@@ -2,7 +2,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Sillycore.Abstractions;
+using Anetta.ServiceConfiguration;
 using Sillycore.Infrastructure;
 
 namespace Sillycore.Configuration

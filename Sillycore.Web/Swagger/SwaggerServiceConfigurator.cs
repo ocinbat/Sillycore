@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
-using Sillycore.Abstractions;
+using Anetta.ServiceConfiguration;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Sillycore.Web.Swagger

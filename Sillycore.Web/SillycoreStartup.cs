@@ -44,8 +44,6 @@ namespace Sillycore.Web
 
             Assembly entryAssembly = Assembly.GetEntryAssembly();
 
-            services.AddAnnotations();
-
             services.AddMvc()
                 .AddFluentValidation(fv =>
                 {

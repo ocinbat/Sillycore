@@ -6,21 +6,16 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using Anetta.Extensions;
+using Anetta.ServiceConfiguration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
-using Sillycore.Abstractions;
 using Sillycore.BackgroundProcessing;
 using Sillycore.Domain.Abstractions;
 using Sillycore.Domain.Objects.DateTimeProviders;
-using Sillycore.Domain.Requests;
-using Sillycore.Extensions;
-using Sillycore.Infrastructure;
 
 namespace Sillycore
 {
@@ -51,11 +46,8 @@ namespace Sillycore
 
         public SillycoreApp Build()
         {
-            foreach (Type type in AssemblyScanner.GetAllTypesOfInterface<IServiceConfigurator>())
-            {
-                IServiceConfigurator configurator = (IServiceConfigurator)Activator.CreateInstance(type);
-                configurator.Configure(Services, Configuration);
-            }
+            Services.AddAnnotations();
+            Services.AddServiceConfigurators(Configuration);
 
             foreach (var task in _beforeBuildTasks)
             {

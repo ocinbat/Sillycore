@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <PackageId>Sillycore</PackageId>
-    <PackageVersion>6.2.1</PackageVersion>
-    <Authors>Ömer Cinbat,Mustafa Özdemir</Authors>
+    <PackageVersion>7.0.0</PackageVersion>
+    <Authors>Ömer Cinbat, Mustafa Özdemir</Authors>
     <Description>A helper library to provide rapid development flexibility to .net developers.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes></PackageReleaseNotes>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Anetta" Version="1.0.1" />
+    <PackageReference Include="Anetta" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.2.0" />
