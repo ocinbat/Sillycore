@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
@@ -19,7 +20,10 @@ namespace Sillycore.Web.Swagger
                     configuration.Bind("Sillycore:Swagger", swaggerConfiguration);
 
                     c.SwaggerDoc(swaggerConfiguration.Version, swaggerConfiguration.GetSwaggerInfo());
-
+                    var security = new Dictionary<string, IEnumerable<string>>
+                    {
+                        {"Bearer", new string[] { }},
+                    };
                     c.AddSecurityDefinition("Bearer", new ApiKeyScheme
                     {
                         Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
@@ -27,6 +31,7 @@ namespace Sillycore.Web.Swagger
                         In = "header",
                         Type = "apiKey"
                     });
+                    c.AddSecurityRequirement(security);
                     c.DescribeAllEnumsAsStrings();
                     c.DescribeStringEnumsInCamelCase();
                     c.DescribeAllParametersInCamelCase();
