@@ -7,7 +7,7 @@ namespace ConsoleApp.Data
     public class DataContext : DataContextBase
     {
         public DataContext(DbContextOptions options) 
-            : base(options)
+            : base(options, null)
         {
         }
 

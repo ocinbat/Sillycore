@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Sillycore.Domain.Abstractions;
@@ -17,12 +18,14 @@ namespace Sillycore.EntityFramework
     public abstract class DataContextBase : DbContext
     {
         private long _inMemorySequenceId;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         protected bool SetUpdatedOnSameAsCreatedOnForNewObjects { get; set; }
 
-        protected DataContextBase(DbContextOptions options)
+        protected DataContextBase(DbContextOptions options, IHttpContextAccessor httpContextAccessor)
             : base(options)
         {
+            _httpContextAccessor = httpContextAccessor;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -54,6 +57,79 @@ namespace Sillycore.EntityFramework
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
 
+        public virtual long GetNextId<TEntity>() where TEntity : IEntity<long>
+        {
+            if (this.Database.IsInMemory())
+            {
+                return ++_inMemorySequenceId;
+            }
+
+            bool shouldOpenConnection = this.Database.GetDbConnection().State == ConnectionState.Closed;
+
+            try
+            {
+                if (shouldOpenConnection)
+                {
+                    this.Database.OpenConnection();
+                }
+
+                var sequenceName = GetSequenceName<TEntity>();
+
+                var sql = $"SELECT (NEXT VALUE FOR {sequenceName})";
+
+                return GetSequenceId(sequenceName, sql);
+            }
+            finally
+            {
+                if (shouldOpenConnection)
+                {
+                    this.Database.CloseConnection();
+                }
+            }
+        }
+
+        public virtual long GetNextIdRange<TEntity, TId>(int rangeSize) where TEntity : IEntity<long>
+        {
+            if (this.Database.IsInMemory())
+            {
+                return _inMemorySequenceId = rangeSize + _inMemorySequenceId;
+            }
+
+            bool shouldOpenConnection = this.Database.GetDbConnection().State == ConnectionState.Closed;
+
+            try
+            {
+                if (shouldOpenConnection)
+                {
+                    this.Database.OpenConnection();
+                }
+
+                var sequenceName = GetSequenceName<TEntity>();
+
+                var dbCommmand = this.Database.GetDbConnection().CreateCommand();
+                var sql = $@"
+                DECLARE @range_first_value sql_variant ,   
+                        @range_first_value_output sql_variant ;  
+                
+                EXEC sp_sequence_get_range  
+                @sequence_name = N'{sequenceName}'  
+                , @range_size = {rangeSize} 
+                , @range_first_value = @range_first_value_output OUTPUT ;  
+                
+                SELECT @range_first_value_output AS FirstNumber ;";
+                dbCommmand.CommandText = sql;
+
+                return GetSequenceId(sequenceName, sql);
+            }
+            finally
+            {
+                if (shouldOpenConnection)
+                {
+                    this.Database.CloseConnection();
+                }
+            }
+        }
+
         private void HandleSoftDeletableEntities()
         {
             IEnumerable<EntityEntry> entries = ChangeTracker?.Entries()?.Where(x => x.Entity is ISoftDeletable && x.State == EntityState.Deleted);
@@ -71,7 +147,7 @@ namespace Sillycore.EntityFramework
 
         private void HandleAuditableEntities()
         {
-            string currentUser = Thread.CurrentPrincipal?.Identity?.Name;
+            string currentUser = _httpContextAccessor?.HttpContext?.User?.Identity?.Name;
 
             IEnumerable<EntityEntry> entities = ChangeTracker?.Entries()?.Where(x => x.Entity is IAuditable && (x.State == EntityState.Added || x.State == EntityState.Modified));
 
@@ -115,77 +191,6 @@ namespace Sillycore.EntityFramework
             }
         }
 
-        public virtual long GetNextId<TEntity>() where TEntity : IEntity<long>
-        {
-            if (this.Database.IsInMemory())
-            {
-                return ++_inMemorySequenceId;
-            }
-
-            bool shouldOpenConnection = this.Database.GetDbConnection().State == ConnectionState.Closed;
-
-            try
-            {
-                if (shouldOpenConnection)
-                {
-                    this.Database.OpenConnection();
-                }
-
-                var sequenceName = GetSequenceName<TEntity>();
-                
-                var sql = $"SELECT (NEXT VALUE FOR {sequenceName})";
-                
-                return GetSequenceId(sequenceName, sql);
-            }
-            finally
-            {
-                if (shouldOpenConnection)
-                {
-                    this.Database.CloseConnection();
-                }
-            }
-        }
-        public virtual long GetNextIdRange<TEntity, TId>(int rangeSize)  where TEntity : IEntity<long>
-        {
-            if (this.Database.IsInMemory())
-            {
-                return _inMemorySequenceId = rangeSize + _inMemorySequenceId;
-            } 
-
-            bool shouldOpenConnection = this.Database.GetDbConnection().State == ConnectionState.Closed;
-
-            try
-            {
-                if (shouldOpenConnection)
-                {
-                    this.Database.OpenConnection();
-                }
-
-                var sequenceName = GetSequenceName<TEntity>();
-
-                var dbCommmand = this.Database.GetDbConnection().CreateCommand();
-                var sql = $@"
-                DECLARE @range_first_value sql_variant ,   
-                        @range_first_value_output sql_variant ;  
-                
-                EXEC sp_sequence_get_range  
-                @sequence_name = N'{sequenceName}'  
-                , @range_size = {rangeSize} 
-                , @range_first_value = @range_first_value_output OUTPUT ;  
-                
-                SELECT @range_first_value_output AS FirstNumber ;";
-                dbCommmand.CommandText = sql;
-
-                return GetSequenceId(sequenceName, sql);
-            }
-            finally
-            {
-                if (shouldOpenConnection)
-                {
-                    this.Database.CloseConnection();
-                }
-            }
-        }
         private long GetSequenceId(string sequenceName, string sql)
         {
             var dbCommmand = this.Database.GetDbConnection().CreateCommand();
@@ -199,7 +204,7 @@ namespace Sillycore.EntityFramework
             return id;
         }
 
-        private static string GetSequenceName<TEntity>() where TEntity : IEntity<long>
+        private string GetSequenceName<TEntity>() where TEntity : IEntity<long>
         {
             var customAttribute = typeof(TEntity).GetCustomAttribute<SequenceAttribute>();
             if (customAttribute == null)
@@ -209,7 +214,5 @@ namespace Sillycore.EntityFramework
             var sequenceName = customAttribute.Name;
             return sequenceName;
         }
-
-      
     }
 }
